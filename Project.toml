@@ -3,6 +3,10 @@ uuid = "e618d77b-d0d4-44a4-84cd-7e2c5c764d14"
 authors = ["tcarion <tristan.carion@gmail.com> and contributors"]
 version = "0.1.0"
 
+[deps]
+GeoInterface = "cf35fbd7-0cd7-5166-be24-54bfbe79505f"
+Proj4 = "9a7e659c-8ee8-5706-894e-f68f43bc57ea"
+
 [compat]
 julia = "1"
 
