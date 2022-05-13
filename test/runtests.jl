@@ -8,5 +8,7 @@ using Proj4
         dist = 111321.
         dest = ATP45.horizontal_walk(lon, lat, dist, 90.)
         @test dest ≈ [lon+1, lat] atol=1e-4
-    end
+   end
+
+   @testset "ATP45 simple" begin include("atp45_simple.jl") end
 end
