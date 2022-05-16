@@ -37,7 +37,7 @@ end
 
 
 """
-    circle_area(lon::AbstractFloat, lat::AbstractFloat, radius::AbstractFloat, res::AbstractFloat)
+    circle_area(lon::AbstractFloat, lat::AbstractFloat, radius::AbstractFloat, pas::AbstractFloat)
 
 Calculate the coordinates of the release or the hazard area (circle)
 
