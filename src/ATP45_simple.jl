@@ -11,7 +11,7 @@ end
 """
     wind_direction(Vx, Vy)
 
-Returns the angle between the wind vector and the West-East direction
+Return the angle between the wind vector and the West-East direction
 
 """
 
@@ -37,14 +37,14 @@ end
 
 
 """
-    circle_area(lon::AbstractFloat, lat::AbstractFloat, res::AbstractFloat, radius::AbstractFloat)
+    circle_area(lon::AbstractFloat, lat::AbstractFloat, radius::AbstractFloat, res::AbstractFloat)
 
-Calculates the coordinates of the release or the hazard area (circle)
+Calculate the coordinates of the release or the hazard area (circle)
 
 """
 
-function circle_area(lon::AbstractFloat, lat::AbstractFloat, res::AbstractFloat, radius::AbstractFloat)
-    azimuth = 0.:res:360.
+function circle_area(lon::AbstractFloat, lat::AbstractFloat, radius::AbstractFloat; pas = 1.)
+    azimuth = 0.:pas:360.
     coords = []
     for az in azimuth
         push!(coords, horizontal_walk(lon, lat, radius, az))
@@ -56,7 +56,7 @@ end
 """
     hazard_area_triangle(lon, lat, Vx, Vy, hauteur, radius)
 
-Calculates the coordinates of the ends of the hazard area (a triangle) in the case of a wind speed > 10km/h
+Calculate the coordinates of the ends of the hazard area (a triangle) in the case of a wind speed > 10km/h
 
 """
 
@@ -70,11 +70,11 @@ function hazard_area_triangle(lon, lat, Vx, Vy, hauteur, radius)
 end
 
 
-function simplified_proc(lon, lat, res, Vx, Vy)
-    release_area = Polygon([circle_area(lon, lat, res, 2000.)])
+function simplified_proc(lon, lat, Vx, Vy; pas = 1.)
+    release_area = Polygon([circle_area(lon, lat, 2000.; pas)])
     prop1 = Dict("type" => "release", "shape" => "circle")
     if wind_speed(Vx, Vy) <= 10
-        hazard_area = Polygon([circle_area(lon, lat, res, 10000.)])
+        hazard_area = Polygon([circle_area(lon, lat, 10000.; pas)])
         prop2 = Dict("type" => "hazard", "shape" => "circle")
         return Feature(release_area, prop1), Feature(hazard_area, prop2)
     else
@@ -85,11 +85,11 @@ function simplified_proc(lon, lat, res, Vx, Vy)
 end
 
 
-function typeA(lon, lat, res, Vx, Vy)
-    release_area = Polygon([circle_area(lon, lat, res, 1000.)])
+function typeA(lon, lat, Vx, Vy; pas = 1.)
+    release_area = Polygon([circle_area(lon, lat, 1000.; pas)])
     prop1 = Dict("type" => "release", "shape" => "circle")
     if wind_speed(Vx, Vy) <= 10
-        hazard_area = Polygon([circle_area(lon, lat, res, 10000.)])
+        hazard_area = Polygon([circle_area(lon, lat, 10000.; pas)])
         prop2 = Dict("type" => "hazard", "shape" => "circle")
         return Feature(release_area, prop1), Feature(hazard_area, prop2)
     else
@@ -100,17 +100,32 @@ function typeA(lon, lat, res, Vx, Vy)
 end
 
 
-function typeB(Cont_type, lon, lat, res, Vx, Vy)
-    if Cont_type in ["BML", "SHL", "MNE", "Surface burst RKT", "Surface burst MSL"]
-        typeA(lon, lat, res, Vx, Vy)
-    elseif Cont_type in ["BOM", "NKN", "Air burst RKT", "Air burst MSL"]
-        simplified_proc(lon, lat, res, Vx, Vy)
+function typeB(cont_type, lon, lat, Vx, Vy; pas = 1.)
+    if haskey(CONT_TYPE1, cont_type)
+        typeA(lon, lat, Vx, Vy; pas)
+    elseif haskey(CONT_TYPE2, cont_type)
+        simplified_proc(lon, lat, Vx, Vy; pas)
     end
 end
 
 
-function typeC(lon, lat, res)
-    hazard_area = Polygon([circle_area(lon, lat, res, 10000.)])
-    prop1 = Dict("type" => "hazard", "shape" => "circle")
-    return Feature(hazard_area, prop1)
+function typeC(lon, lat; pas = 1.)
+    hazard_area = Polygon([circle_area(lon, lat, 10000.; pas)])
+    prop = Dict("type" => "hazard", "shape" => "circle")
+    return Feature(hazard_area, prop)
 end
+
+const CONT_TYPE1 = Dict(
+    :BML => Dict("name" => "Bomblet"),
+    :SHL => Dict("name" => "Shell"),
+    :MNE => Dict("name" => "Mine"),
+    :SB_RKT => Dict("name" => "Surface Burst Rocket"),
+    :SB_MSL => Dict("name" => "Surface Burst Missile")
+)
+    
+const CONT_TYPE2 = Dict(
+    :BOM => Dict("name" => "Bomb"),
+    :NKN => Dict("name" => "Unknown"),
+    :AB_RKT => Dict("name" => "Air Burst Rocket"),
+    :AB_MSL => Dict("name" => "Air Burst Missile")
+)
