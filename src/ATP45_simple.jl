@@ -37,14 +37,14 @@ end
 
 
 """
-    circle_area(lon::AbstractFloat, lat::AbstractFloat, radius::AbstractFloat, pas::AbstractFloat)
+    circle_area(lon::AbstractFloat, lat::AbstractFloat, radius::AbstractFloat, res)
 
 Calculate the coordinates of the release or the hazard area (circle)
 
 """
 
-function circle_area(lon::AbstractFloat, lat::AbstractFloat, radius::AbstractFloat; pas = 1.)
-    azimuth = 0.:pas:360.
+function circle_area(lon::AbstractFloat, lat::AbstractFloat, radius::AbstractFloat, res = 360)
+    azimuth = range(0., 360., length = res)
     coords = []
     for az in azimuth
         push!(coords, horizontal_walk(lon, lat, radius, az))
@@ -70,11 +70,11 @@ function hazard_area_triangle(lon, lat, Vx, Vy, hauteur, radius)
 end
 
 
-function simplified_proc(lon, lat, Vx, Vy; pas = 1.)
-    release_area = Polygon([circle_area(lon, lat, 2000.; pas)])
+function simplified_proc(lon, lat, Vx, Vy, res = 360)
+    release_area = Polygon([circle_area(lon, lat, 2000., res)])
     prop1 = Dict("type" => "release", "shape" => "circle")
     if wind_speed(Vx, Vy) <= 10
-        hazard_area = Polygon([circle_area(lon, lat, 10000.; pas)])
+        hazard_area = Polygon([circle_area(lon, lat, 10000., res)])
         prop2 = Dict("type" => "hazard", "shape" => "circle")
         return Feature(release_area, prop1), Feature(hazard_area, prop2)
     else
@@ -85,11 +85,11 @@ function simplified_proc(lon, lat, Vx, Vy; pas = 1.)
 end
 
 
-function typeA(lon, lat, Vx, Vy; pas = 1.)
-    release_area = Polygon([circle_area(lon, lat, 1000.; pas)])
+function typeA(lon, lat, Vx, Vy, res = 360)
+    release_area = Polygon([circle_area(lon, lat, 1000., res)])
     prop1 = Dict("type" => "release", "shape" => "circle")
     if wind_speed(Vx, Vy) <= 10
-        hazard_area = Polygon([circle_area(lon, lat, 10000.; pas)])
+        hazard_area = Polygon([circle_area(lon, lat, 10000., res)])
         prop2 = Dict("type" => "hazard", "shape" => "circle")
         return Feature(release_area, prop1), Feature(hazard_area, prop2)
     else
@@ -100,20 +100,21 @@ function typeA(lon, lat, Vx, Vy; pas = 1.)
 end
 
 
-function typeB(cont_type, lon, lat, Vx, Vy; pas = 1.)
-    if haskey(CONT_TYPE1, cont_type)
-        typeA(lon, lat, Vx, Vy; pas)
-    elseif haskey(CONT_TYPE2, cont_type)
-        simplified_proc(lon, lat, Vx, Vy; pas)
+function typeB(cont_type, lon, lat, Vx, Vy, res = 360)
+    if haskey(CONT_TYPE[:TYPE1], cont_type)
+        typeA(lon, lat, Vx, Vy, res)
+    elseif haskey(CONT_TYPE[:TYPE2], cont_type)
+        simplified_proc(lon, lat, Vx, Vy, res)
     end
 end
 
 
-function typeC(lon, lat; pas = 1.)
-    hazard_area = Polygon([circle_area(lon, lat, 10000.; pas)])
+function typeC(lon, lat, res = 360)
+    hazard_area = Polygon([circle_area(lon, lat, 10000., res)])
     prop = Dict("type" => "hazard", "shape" => "circle")
     return Feature(hazard_area, prop)
 end
+
 
 const CONT_TYPE1 = Dict(
     :BML => Dict("name" => "Bomblet"),
@@ -128,4 +129,9 @@ const CONT_TYPE2 = Dict(
     :NKN => Dict("name" => "Unknown"),
     :AB_RKT => Dict("name" => "Air Burst Rocket"),
     :AB_MSL => Dict("name" => "Air Burst Missile")
+)
+
+const CONT_TYPE = Dict(
+    :TYPE1 => CONT_TYPE1,
+    :TYPE2 => CONT_TYPE2
 )
