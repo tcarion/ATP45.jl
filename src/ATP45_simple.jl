@@ -1,3 +1,16 @@
+abstract type AbstractWind end
+mutable struct WindCoords <: AbstractWind
+    u::Real
+    v::Real
+end
+
+mutable struct WindAzimuth <: AbstractWind
+    speed::Real
+    azimuth::Real
+end
+function WindCoords(wind::WindAzimuth)
+    
+end
 """
 Vx and Vy are the components of the wind speed vector on the West-East and South-North directions respectively
 
@@ -83,7 +96,11 @@ function simplified_proc(lon, lat, Vx, Vy; pas = 1.)
         return Feature(release_area, prop1), Feature(hazard_area, prop2)
     end
 end
-
+simplified_proc(lon, lat, wind::WindCoords, pas = 1.) = simplified_proc(lon, lat, wind.u, wind.u; pas = pas)
+function simplified_proc(lon, lat, wind::WindAzimuth, pas = 1.)
+    windcoords = WindCoords(wind)
+    simplified_proc(lon, lat, windcoords, pas = pas)
+end
 
 function typeA(lon, lat, Vx, Vy; pas = 1.)
     release_area = Polygon([circle_area(lon, lat, 1000.; pas)])
