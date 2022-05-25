@@ -8,9 +8,45 @@ mutable struct WindAzimuth <: AbstractWind
     speed::Real
     azimuth::Real
 end
-function WindCoords(wind::WindAzimuth)
-    
+
+mutable struct Atp45Input
+    "Vector of locations in format [lon, lat]"
+    locations::Vector{Vector{Real}}
+    "Information about the wind"
+    wind::AbstractWind
+    "Type of containers"
+    cont_type::Symbol
+    "Type of procedure"
+    cbrn_type::String
 end
+
+mutable struct Atp45Result
+    "Coordinates of the multiple Atp45 model areas"
+    collection::FeatureCollection
+    "Input used for the model"
+    input::Atp45Input
+end
+
+function run(input::Atp45Input)
+    #result::FeatureCollection = foo()
+    if input.cbrn_type == "TypeA"
+        result = proc(input, 1000.)
+    elseif input.cbrn_type == "TypeB"
+        result = typeB(input)
+    elseif input.cbrn_type == "TypeC"
+        result = typeC(input)
+    else
+        result = proc(input, 2000.)
+    end
+    Atp45Result(result, input)
+end
+
+function windCoords(wind::WindAzimuth)
+    u = wind.speed*cosd(90 - wind.azimuth)
+    v = wind.speed*sind(90 - wind.azimuth)
+    return u, v
+end
+
 """
 Vx and Vy are the components of the wind speed vector on the West-East and South-North directions respectively
 
@@ -31,8 +67,6 @@ Return the angle between the wind vector and the West-East direction
 function wind_direction(Vx, Vy)
     if Vx >= 0
         return atand(Vy/Vx)
-    elseif Vy >= 0
-        return 180. + atand(Vy/Vx)
     else
         return atand(Vy/Vx) - 180.
     end
@@ -73,8 +107,8 @@ Calculate the coordinates of the ends of the hazard area (a triangle) in the cas
 
 """
 
-function hazard_area_triangle(lon, lat, Vx, Vy, hauteur, radius)
-    l = hauteur/cosd(30)
+function hazard_area_triangle(lon, lat, Vx, Vy, dist, radius)
+    l = dist/cosd(30)
     coords = []
     push!(coords, horizontal_walk(lon, lat, -2*radius, azimuth(Vx, Vy)))
     push!(coords, horizontal_walk(coords[1][1], coords[1][2], l, azimuth(Vx, Vy) - 30.))
@@ -82,73 +116,62 @@ function hazard_area_triangle(lon, lat, Vx, Vy, hauteur, radius)
     return coords
 end
 
-
-function simplified_proc(lon, lat, Vx, Vy, res = 360)
-    release_area = Polygon([circle_area(lon, lat, 2000., res)])
-    prop1 = Dict("type" => "release", "shape" => "circle")
-    if wind_speed(Vx, Vy) <= 10
-        hazard_area = Polygon([circle_area(lon, lat, 10000., res)])
-        prop2 = Dict("type" => "hazard", "shape" => "circle")
-        return Feature(release_area, prop1), Feature(hazard_area, prop2)
-    else
-        hazard_area = Polygon([hazard_area_triangle(lon, lat, Vx, Vy, 14000., 2000.)])
-        prop2 = Dict("type" => "hazard", "shape" => "triangle")
-        return Feature(release_area, prop1), Feature(hazard_area, prop2)
-    end
-end
-simplified_proc(lon, lat, wind::WindCoords, pas = 1.) = simplified_proc(lon, lat, wind.u, wind.u; pas = pas)
-function simplified_proc(lon, lat, wind::WindAzimuth, pas = 1.)
+hazard_area_triangle(lon, lat, wind::WindCoords, dist, radius) = hazard_area_triangle(lon, lat, wind.u, wind.v, dist, radius)
+function hazard_area_triangle(lon, lat, wind::WindAzimuth, dist, radius)
     windcoords = WindCoords(wind)
-    simplified_proc(lon, lat, windcoords, pas = pas)
+    hazard_area_triangle(lon, lat, windcoords, dist, radius)
 end
 
-function typeA(lon, lat, Vx, Vy, res = 360)
-    release_area = Polygon([circle_area(lon, lat, 1000., res)])
+
+function proc(input::Atp45Input, radius, res = 360)
+    lon = input.locations[1][1]
+    lat = input.locations[1][2]
+    release_area = Polygon([circle_area(lon, lat, radius, res)])
     prop1 = Dict("type" => "release", "shape" => "circle")
+    features = [Feature(release_area, prop1)]
     if wind_speed(Vx, Vy) <= 10
         hazard_area = Polygon([circle_area(lon, lat, 10000., res)])
         prop2 = Dict("type" => "hazard", "shape" => "circle")
-        return Feature(release_area, prop1), Feature(hazard_area, prop2)
+        push!(features, Feature(hazard_area, prop2))
     else
-        hazard_area = Polygon([hazard_area_triangle(lon, lat, Vx, Vy, 12000., 1000.)])
+        hazard_area = Polygon([hazard_area_triangle(lon, lat, input.wind, 10000. + 2*radius, radius)])
         prop2 = Dict("type" => "hazard", "shape" => "triangle")
-        return Feature(release_area, prop1), Feature(hazard_area, prop2)
+        push!(features, Feature(hazard_area, prop2))
+    end
+    FeatureCollection(features)
+end
+
+
+
+function typeB(input::Atp45Input, res = 360)
+    if haskey(CONT_TYPE[:TYPE1], input[3])
+        proc(input, 1000., res)
+    elseif haskey(CONT_TYPE[:TYPE2], input[3])
+        proc(input, 2000., res)
     end
 end
 
 
-function typeB(cont_type, lon, lat, Vx, Vy, res = 360)
-    if haskey(CONT_TYPE[:TYPE1], cont_type)
-        typeA(lon, lat, Vx, Vy, res)
-    elseif haskey(CONT_TYPE[:TYPE2], cont_type)
-        simplified_proc(lon, lat, Vx, Vy, res)
-    end
-end
-
-
-function typeC(lon, lat, res = 360)
+function typeC(input::Atp45Input, res = 360)
+    lon = input.locations[1][1]
+    lat = input.locations[1][2]
     hazard_area = Polygon([circle_area(lon, lat, 10000., res)])
     prop = Dict("type" => "hazard", "shape" => "circle")
     return Feature(hazard_area, prop)
 end
 
-
-const CONT_TYPE1 = Dict(
-    :BML => Dict("name" => "Bomblet"),
-    :SHL => Dict("name" => "Shell"),
-    :MNE => Dict("name" => "Mine"),
-    :SB_RKT => Dict("name" => "Surface Burst Rocket"),
-    :SB_MSL => Dict("name" => "Surface Burst Missile")
-)
-    
-const CONT_TYPE2 = Dict(
-    :BOM => Dict("name" => "Bomb"),
-    :NKN => Dict("name" => "Unknown"),
-    :AB_RKT => Dict("name" => "Air Burst Rocket"),
-    :AB_MSL => Dict("name" => "Air Burst Missile")
-)
-
 const CONT_TYPE = Dict(
-    :TYPE1 => CONT_TYPE1,
-    :TYPE2 => CONT_TYPE2
+    :TYPE1 => Dict(
+        :BML => Dict("name" => "Bomblet"),
+        :SHL => Dict("name" => "Shell"),
+        :MNE => Dict("name" => "Mine"),
+        :SB_RKT => Dict("name" => "Surface Burst Rocket"),
+        :SB_MSL => Dict("name" => "Surface Burst Missile")
+    ),
+    :TYPE2 => Dict(
+        :BOM => Dict("name" => "Bomb"),
+        :NKN => Dict("name" => "Unknown"),
+        :AB_RKT => Dict("name" => "Air Burst Rocket"),
+        :AB_MSL => Dict("name" => "Air Burst Missile")
+    )
 )
