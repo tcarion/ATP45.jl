@@ -1,4 +1,8 @@
 using Test
+using ATP45
+
+input = Atp45Input([[50., 3.]], WindCoords(10., 10.), :BOM, "TypeB")
+ATP45.run(input)
 
 lon, lat = 2.5, 46.
 Vx, Vy = 0., 10.

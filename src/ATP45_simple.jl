@@ -56,6 +56,12 @@ function wind_speed(Vx, Vy)
     return sqrt(Vx^2 + Vy^2)
 end
 
+wind_speed(wind::WindCoords) = wind_speed(wind.u, wind.v)
+function wind_speed(wind::WindAzimuth)
+    windcoords = windCoords(wind)
+    wind_speed(windcoords[1], windcoords[2])
+end
+
 
 """
     wind_direction(Vx, Vy)
@@ -118,8 +124,8 @@ end
 
 hazard_area_triangle(lon, lat, wind::WindCoords, dist, radius) = hazard_area_triangle(lon, lat, wind.u, wind.v, dist, radius)
 function hazard_area_triangle(lon, lat, wind::WindAzimuth, dist, radius)
-    windcoords = WindCoords(wind)
-    hazard_area_triangle(lon, lat, windcoords, dist, radius)
+    windcoords = windCoords(wind)
+    hazard_area_triangle(lon, lat, windcoords[1], windcoords[2], dist, radius)
 end
 
 
@@ -129,7 +135,7 @@ function proc(input::Atp45Input, radius, res = 360)
     release_area = Polygon([circle_area(lon, lat, radius, res)])
     prop1 = Dict("type" => "release", "shape" => "circle")
     features = [Feature(release_area, prop1)]
-    if wind_speed(Vx, Vy) <= 10
+    if wind_speed(input.wind) <= 10
         hazard_area = Polygon([circle_area(lon, lat, 10000., res)])
         prop2 = Dict("type" => "hazard", "shape" => "circle")
         push!(features, Feature(hazard_area, prop2))
@@ -144,9 +150,9 @@ end
 
 
 function typeB(input::Atp45Input, res = 360)
-    if haskey(CONT_TYPE[:TYPE1], input[3])
+    if haskey(CONT_TYPE[:TYPE1], input.cont_type)
         proc(input, 1000., res)
-    elseif haskey(CONT_TYPE[:TYPE2], input[3])
+    elseif haskey(CONT_TYPE[:TYPE2], input.cont_type)
         proc(input, 2000., res)
     end
 end

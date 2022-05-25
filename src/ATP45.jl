@@ -16,6 +16,6 @@ end
 include("helpers.jl")
 include("ATP45_simple.jl")
 
-export WindCoords, WindAzimuth
+export WindCoords, WindAzimuth, Atp45Input
 
 end
