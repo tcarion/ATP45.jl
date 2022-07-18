@@ -35,8 +35,8 @@ plot!(ATP45.simplified_proc(2.5, 46., 10., 1., 1.)[1])
 Vx = [0., 100., 100., 100., 0., -100., -100., -100.]
 Vy = [100., 100., 0., -100., -100., -100., 0., 100.]
 for (vx, vy) in zip(Vx, Vy)
-    plot!(ATP45.simplified_proc(2.5, 46., vx, vy, 10.)[2])
-    plot!(ATP45.simplified_proc(2.5, 46., vx, vy, 10.)[1])
+    plot!(ATP45.proc(2.5, 46., vx, vy)[2])
+    plot!(ATP45.proc(2.5, 46., vx, vy)[1])
     display(plot!(line(2.5, 46., 14000., vx, vy)))
 end
 
