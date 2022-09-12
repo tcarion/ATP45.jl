@@ -1,101 +1,3 @@
-const CONTAINERS = Dict(
-    :BML => Dict(
-        :name => "Bomblet",
-        :type => 1,
-        :stab => 10
-    ),
-    :SHL => Dict(
-        :name => "Shell",
-        :type => 1,
-        :stab => 10
-    ),
-    :MNE => Dict(
-        :name => "Mine",
-        :type => 1,
-        :stab => 10
-    ),
-    :SB_RKT => Dict(
-        :name => "Surface Burst Rocket",
-        :type => 1,
-        :stab => 15
-    ),
-    :SB_MSL => Dict(
-        :name => "Surface Burst Missile",
-        :type => 1,
-        :stab => 15
-    ),
-    :BOM => Dict(
-        :name => "Bomb",
-        :type => 2,
-        :stab => 15
-    ),
-    :NKN => Dict(
-        :name => "Unknown",
-        :type => 2,
-        :stab => 15
-    ),
-    :AB_RKT => Dict(
-        :name => "Air Burst Rocket",
-        :type => 2,
-        :stab => 15
-    ),
-    :AB_MSL => Dict(
-        :name => "Air Burst Missile",
-        :type => 2,
-        :stab => 15
-    ),
-    :SPR => Dict(
-        :name => "Tank",
-        :type => 3
-    ),
-    :GEN => Dict(
-        :name => "Aerosols",
-        :type => 3
-    )
-)
-
-
-const PROCEDURES = Dict(
-    :simplified => Dict(
-        :name => "Simplified Procedure"
-    ),
-    :A => Dict(
-        :name => "Non Persistent Agents"
-    ),
-    :B => Dict(
-        :name => "Persistent Agents"
-    ),
-    :C => Dict(
-        :name => "Unobserved Release"
-    ),
-    :P => Dict(
-        :name => "Localized Point Release"
-    ),
-    :Q => Dict(
-        :name => "Large Area Release"
-    ),
-    :R => Dict(
-        :name => "Unknown Container"
-    )
-)
-
-
-const INCIDENTS = Dict(
-    :chem => Dict(
-        :name => "Chemical"
-    ),
-    :bio => Dict(
-        :name => "Biological"
-    ),
-    :radio => Dict(
-        :name => "Radiological"
-    ),
-    :nucl => Dict(
-        :name => "Nuclear"
-    )
-)
-
-
 @enum StabilityClass Unstable Neutral Stable
 
 tostab(stab::Symbol) = getproperty(@__MODULE__, stab)
@@ -108,9 +10,66 @@ mutable struct WindCoords <: AbstractWind
     v::Real
 end
 
-mutable struct WindAzimuth <: AbstractWind
+mutable struct WindDirection <: AbstractWind
     speed::Real
-    azimuth::Real
+    direction::Real
+end
+
+"""
+    _2windcoords(wind)
+
+Convert the speed and azimuth of the wind into the coordinates of the wind vector.
+"""
+function _2windcoords(wind::WindDirection)
+    u = wind.speed*cosd(90 - wind.direction)
+    v = wind.speed*sind(90 - wind.direction)
+    return u, v
+end
+
+function _2winddir(wind::WindCoords)
+    dir = wind_direction(wind.u, wind.v)
+    speed = wind_speed(wind)
+    return speed, dir
+end
+
+"""
+    wind_speed(Vx, Vy)
+
+Vx and Vy are the components of the wind speed vector on the West-East and South-North directions respectively
+Return the wind speed
+
+"""
+function wind_speed(Vx, Vy)
+    return sqrt(Vx^2 + Vy^2)
+end
+
+wind_speed(wind::WindCoords) = wind_speed(wind.u, wind.v)
+function wind_speed(wind::WindDirection)
+    windcoords = _2windcoords(wind)
+    wind_speed(windcoords[1], windcoords[2])
+end
+
+"""
+    wind_direction(Vx, Vy)
+
+Azimuth in degrees, the reference direction is North
+"""
+function wind_direction(Vx, Vy)
+    return 90. - atan(Vy, Vx) * 180 / π
+end
+
+function wind_direction(lon1, lat1, lon2, lat2)
+    x = cosd(lat1)*sind(lat2) - sind(lat1)*cosd(lat2)*cosd(lon2 - lon1)
+    y = sind(lon2 - lon1)*cosd(lat2)
+    return 2*atand(y/(sqrt(x^2 + y^2) + x))
+end
+
+function Base.convert(::Type{WindDirection}, w::WindCoords)
+    WindDirection(_2winddir(w)...)
+end
+
+function Base.convert(::Type{WindCoords}, w::WindDirection)
+    WindCoords(_2windcoords(w)...)
 end
 
 mutable struct Atp45Input
@@ -192,74 +151,7 @@ function run_bio(input::Atp45Input)
 end
 
 
-
 #TODO: implementation of radiological and nuclear incident with run_radio and run_nucl (Page 5-1 and 6-1)
-
-
-
-"""
-    windCoords(wind)
-
-Convert the speed and azimuth of the wind into the coordinates of the wind vector.
-"""
-function windCoords(wind::WindAzimuth)
-    u = wind.speed*cosd(90 - wind.azimuth)
-    v = wind.speed*sind(90 - wind.azimuth)
-    return u, v
-end
-
-
-
-"""
-    wind_speed(Vx, Vy)
-
-Vx and Vy are the components of the wind speed vector on the West-East and South-North directions respectively
-Return the wind speed
-
-"""
-function wind_speed(Vx, Vy)
-    return sqrt(Vx^2 + Vy^2)
-end
-
-wind_speed(wind::WindCoords) = wind_speed(wind.u, wind.v)
-function wind_speed(wind::WindAzimuth)
-    windcoords = windCoords(wind)
-    wind_speed(windcoords[1], windcoords[2])
-end
-
-
-
-"""
-    wind_direction(Vx, Vy)
-
-Return the angle between the wind vector and the West-East direction
-"""
-function wind_direction(Vx, Vy)
-    if Vx >= 0
-        return atand(Vy/Vx)
-    else
-        return atand(Vy/Vx) - 180.
-    end
-end
-
-
-
-"""
-    azimuth(Vx, Vy)
-
-Azimuth in degrees, the reference direction is North
-"""
-function azimuth(Vx, Vy)
-    return (90. - wind_direction(Vx, Vy))
-end
-
-function azimuth(lon1, lat1, lon2, lat2)
-    x = cosd(lat1)*sind(lat2) - sind(lat1)*cosd(lat2)*cosd(lon2 - lon1)
-    y = sind(lon2 - lon1)*cosd(lat2)
-    return 2*atand(y/(sqrt(x^2 + y^2) + x))
-end
-
-
 
 """
     circle_area(lon::AbstractFloat, lat::AbstractFloat, radius::AbstractFloat, res)
@@ -285,15 +177,15 @@ Calculate the coordinates of the ends of the hazard area (a triangle) in the cas
 function hazard_area_triangle(lon, lat, Vx, Vy, dist, radius)
     l = dist/cosd(30)
     coords = []
-    push!(coords, horizontal_walk(lon, lat, -2*radius, azimuth(Vx, Vy)))
-    push!(coords, horizontal_walk(coords[1][1], coords[1][2], l, azimuth(Vx, Vy) - 30.))
-    push!(coords, horizontal_walk(coords[1][1], coords[1][2], l, azimuth(Vx, Vy) + 30.))
+    push!(coords, horizontal_walk(lon, lat, -2*radius, wind_direction(Vx, Vy)))
+    push!(coords, horizontal_walk(coords[1][1], coords[1][2], l, wind_direction(Vx, Vy) - 30.))
+    push!(coords, horizontal_walk(coords[1][1], coords[1][2], l, wind_direction(Vx, Vy) + 30.))
     return coords
 end
 
 hazard_area_triangle(lon, lat, wind::WindCoords, dist, radius) = hazard_area_triangle(lon, lat, wind.u, wind.v, dist, radius)
-function hazard_area_triangle(lon, lat, wind::WindAzimuth, dist, radius)
-    windcoords = windCoords(wind)
+function hazard_area_triangle(lon, lat, wind::WindDirection, dist, radius)
+    windcoords = _2windcoords(wind)
     hazard_area_triangle(lon, lat, windcoords[1], windcoords[2], dist, radius)
 end
 
@@ -313,7 +205,7 @@ function typeB_2(input::Atp45Input, radius, res = 360)
     release_area1 = circle_area(lon1, lat1, radius, res)
     release_area2 = circle_area(lon2, lat2, radius, res)
 
-    az = Int(round(azimuth(lon1, lat1, lon2, lat2)))
+    az = Int(round(wind_direction(lon1, lat1, lon2, lat2)))
     if az < 0
         az += 360
     end
@@ -326,7 +218,7 @@ function typeB_2(input::Atp45Input, radius, res = 360)
         coords_release = [vcat([release_area1[az - 270:az - 90]]..., [release_area2[az - 90:end]]..., [release_area2[1:az - 270]]...)]
     end
 
-    release_area = Polygon(coords_release)
+    release_area = Polygon(coordinates = coords_release)
     prop1 = Dict("type" => "release", "shape" => "circles")
     feature = [Feature(release_area, prop1)]
 
@@ -341,7 +233,7 @@ function typeB_2(input::Atp45Input, radius, res = 360)
             coords_hazard = [vcat([hazard_area1[az - 270:az - 90]]..., [hazard_area2[az - 90:end]]..., [hazard_area2[1:az - 270]]...)]
         end
 
-        hazard_area = Polygon(coords_hazard)
+        hazard_area = Polygon(coordinates = coords_hazard)
         prop2 = Dict("type" => "hazard", "shape" => "circles")
         push!(feature, Feature(hazard_area, prop2))
     else
@@ -414,7 +306,7 @@ function typeB_2(input::Atp45Input, radius, res = 360)
             end
         end
         
-        hazard_area = Polygon(coords)
+        hazard_area = Polygon(coordinates = coords)
         prop2 = Dict("type" => "hazard", "shape" => "triangles")
         push!(feature, Feature(hazard_area, prop2))
     end
@@ -431,17 +323,17 @@ Calculate the release and hazard area according to the radius we want. Useful fo
 function proc(input::Atp45Input, dist, radius_release, radius_hazard, res = 360)
     lon = input.locations[1][1]
     lat = input.locations[1][2]
-    release_area = Polygon([circle_area(lon, lat, radius_release, res)])
+    release_area = Polygon(coordinates = [circle_area(lon, lat, radius_release, res)])
     prop1 = Dict("type" => "release", "shape" => "circle")
-    features = [Feature(release_area, prop1)]
+    features = [Feature(release_area; properties = prop1)]
     if wind_speed(input.wind) <= 10
-        hazard_area = Polygon([circle_area(lon, lat, radius_hazard, res)])
+        hazard_area = Polygon(coordinates = [circle_area(lon, lat, radius_hazard, res)])
         prop2 = Dict("type" => "hazard", "shape" => "circle")
-        push!(features, Feature(hazard_area, prop2))
+        push!(features, Feature(hazard_area; properties = prop2))
     else
-        hazard_area = Polygon([hazard_area_triangle(lon, lat, input.wind, dist + 2*radius_release, radius_release)])
+        hazard_area = Polygon(coordinates = [hazard_area_triangle(lon, lat, input.wind, dist + 2*radius_release, radius_release)])
         prop2 = Dict("type" => "hazard", "shape" => "triangle")
-        push!(features, Feature(hazard_area, prop2))
+        push!(features, Feature(hazard_area; properties = prop2))
     end
     FeatureCollection(features)
 end
@@ -474,8 +366,8 @@ Type C/S
 function Unobserved(input::Atp45Input, radius, res = 360)
     lon = input.locations[1][1]
     lat = input.locations[1][2]
-    hazard_area = Polygon([circle_area(lon, lat, radius, res)])
+    hazard_area = Polygon(coordinates = [circle_area(lon, lat, radius, res)])
     prop = Dict("type" => "hazard", "shape" => "circle")
-    feature = [Feature(hazard_area, prop)]
+    feature = [Feature(hazard_area; properties = prop)]
     FeatureCollection(feature)
 end

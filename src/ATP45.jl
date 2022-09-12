@@ -2,7 +2,7 @@ module ATP45
 
 using GeoInterface
 using Proj4
-using GeoJSON
+import GeoJSON: Feature, FeatureCollection, Polygon
 
 const EARTH_RADIUS = 6371.0e3
 const DEFAULT_PROJ = Ref{Any}(C_NULL)
@@ -14,8 +14,9 @@ end
 # include("shapes.jl")
 # include("coordinates.jl")
 include("helpers.jl")
-include("ATP45_simple.jl")
+include("constants.jl")
+include("atp45.jl")
 
-export WindCoords, WindAzimuth, Atp45Input
+export WindCoords, WindDirection, Atp45Input
 
 end
