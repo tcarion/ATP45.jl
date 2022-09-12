@@ -40,24 +40,27 @@ plot!(Tuple(relpoint), marker = :scatter, color = :red)
     @test wd_cc.direction == wdir.direction
 end
 
-function plotwind(w::ATP45.AbstractWind)
-    wc = convert(WindCoords, w)
-    quiver([0], [0], quiver = ([w.u], [w.v]))
-end
-
-@recipe function f(w::ATP45.AbstractWind; x_origin = 0., y_origin = 0.)
-    wc = convert(WindCoords, w)
-    seriestype --> :quiver
-    quiver --> ([wc.u], [wc.v])
-    [x_origin], [y_origin]
-end
-
 ##
-wdir = WindDirection(15., 110)
+wdir = WindDirection(15., 190)
+wcoords = WindCoords(-2, -1)
 p = plot(wdir, aspect_ratio = 1, x_origin = 1)
+plot!(p, wcoords, aspect_ratio = 1, x_origin = 1)
 plot!(p, aspec_ratio = 1.)
 ##
 
+wdir = WindDirection(15., 210)
+atp_input = Atp45Input(
+    [relpoint],
+    wdir,
+    :BOM,
+    :simplified,
+    ATP45.Stable
+)
+result = run_chem(atp_input)
+resultplot(result)
+plot!(wdir, x_origin = result.input.locations[1][1], y_origin = result.input.locations[1][2], w_scale = 0.01)
+plot!(aspect_ratio = 1.)
+##
 @test ATP45.hazard_area_triangle(lon, lat, Vx, Vy, 14000., 2000.)[1][1] == lon
 @test ATP45.hazard_area_triangle(lon, lat, Vy, Vx, 14000., 2000.)[1][2] ≈ lat atol=1e-4
 @test ATP45.circle_area(lon, lat, 1000., 360)[1][1] == lon

@@ -2,7 +2,10 @@ module ATP45
 
 using GeoInterface
 using Proj4
+using RecipesBase
+using GeoJSON
 import GeoJSON: Feature, FeatureCollection, Polygon
+import RecipesBase: @recipe
 
 const EARTH_RADIUS = 6371.0e3
 const DEFAULT_PROJ = Ref{Any}(C_NULL)
@@ -16,7 +19,9 @@ end
 include("helpers.jl")
 include("constants.jl")
 include("atp45.jl")
+include("recipes.jl")
 
 export WindCoords, WindDirection, Atp45Input
+export run_chem, run_bio
 
 end

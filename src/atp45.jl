@@ -35,7 +35,7 @@ end
 """
     wind_speed(Vx, Vy)
 
-Vx and Vy are the components of the wind speed vector on the West-East and South-North directions respectively
+`Vx` and `Vy` are the components of the wind speed vector on the West-East and South-North directions respectively
 Return the wind speed
 
 """
