@@ -96,8 +96,11 @@ const INCIDENTS = Dict(
 )
 
 
-@enum StabilityClass U N S
+@enum StabilityClass Unstable Neutral Stable
 
+tostab(stab::Symbol) = getproperty(@__MODULE__, stab)
+
+Base.convert(::Type{StabilityClass}, s::Symbol) = tostab(s)
 
 abstract type AbstractWind end
 mutable struct WindCoords <: AbstractWind
@@ -140,15 +143,15 @@ Calculate the release and hazard area according to the case we want, for a chemi
 function run_chem(input::Atp45Input)
     #result::FeatureCollection = foo()
     if input.procedure == :A                     # Page 3-15 and 3-16, Type A, Cases 1 and 2
-        if input.stab == U
+        if input.stab == Unstable
             if CONTAINERS[input.container][:stab] == 10                     
                 Atp45Result(proc(input, 10000., 1000., 10000.), input)
             elseif CONTAINERS[input.container][:stab] == 15
                 Atp45Result(proc(input, 15000., 1000., 10000.), input)
             end
-        elseif input.stab == N
+        elseif input.stab == Neutral
             Atp45Result(proc(input, 30000., 1000., 10000.), input)
-        elseif input.stab == S
+        elseif input.stab == Stable
             Atp45Result(proc(input, 50000., 1000., 10000.), input)
         end
     elseif input.procedure == :B                 # Page 3-18 to 3-25, Type B, all cases
@@ -179,6 +182,7 @@ function run_bio(input::Atp45Input)
     elseif input.procedure == :Q
         Atp45Result(proc(input, 10000., 10000., 20000.), input)
     elseif input.procedure == :R
+        # NOT WORKING
         Atp45Result(typeB_2(input, 2000., res), input)
     elseif input.procedure == :C
         Atp45Result(Unobserved(input, 50000.), input)
