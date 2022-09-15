@@ -10,7 +10,7 @@ Vx, Vy = 7., 5
 relpoint = [50., 4]
 atp_input = Atp45Input(
     [relpoint],
-    WindCoords(Vx, Vy),
+    WindVector(Vx, Vy),
     :BOM,
     :simplified,
     ATP45.Stable
@@ -30,10 +30,10 @@ plot!(Tuple(relpoint), marker = :scatter, color = :red)
 
 @testset "Wind" begin
     wdir = WindDirection(11., 45)
-    wc_conv = convert(WindCoords, wdir)
+    wc_conv = convert(WindVector, wdir)
     @test wc_conv.u ≈ wc_conv.v
     Vx, Vy = 1., 5.
-    wc = WindCoords(Vx, Vy)
+    wc = WindVector(Vx, Vy)
     wd_conv = convert(WindDirection, wc)
     wd_cc = convert(WindDirection, wc_conv)
     @test wd_cc.speed == wdir.speed
@@ -42,7 +42,7 @@ end
 
 ##
 wdir = WindDirection(15., 190)
-wcoords = WindCoords(-2, -1)
+wcoords = WindVector(-2, -1)
 p = plot(wdir, aspect_ratio = 1, x_origin = 1)
 plot!(p, wcoords, aspect_ratio = 1, x_origin = 1)
 plot!(p, aspec_ratio = 1.)

@@ -5,7 +5,7 @@ tostab(stab::Symbol) = getproperty(@__MODULE__, stab)
 Base.convert(::Type{StabilityClass}, s::Symbol) = tostab(s)
 
 abstract type AbstractWind end
-mutable struct WindCoords <: AbstractWind
+mutable struct WindVector <: AbstractWind
     u::Real
     v::Real
 end
@@ -16,17 +16,17 @@ mutable struct WindDirection <: AbstractWind
 end
 
 """
-    _2windcoords(wind)
+    _2windvector(wind)
 
 Convert the speed and azimuth of the wind into the coordinates of the wind vector.
 """
-function _2windcoords(wind::WindDirection)
+function _2windvector(wind::WindDirection)
     u = wind.speed*cosd(90 - wind.direction)
     v = wind.speed*sind(90 - wind.direction)
     return u, v
 end
 
-function _2winddir(wind::WindCoords)
+function _2winddir(wind::WindVector)
     dir = wind_direction(wind.u, wind.v)
     speed = wind_speed(wind)
     return speed, dir
@@ -43,10 +43,10 @@ function wind_speed(Vx, Vy)
     return sqrt(Vx^2 + Vy^2)
 end
 
-wind_speed(wind::WindCoords) = wind_speed(wind.u, wind.v)
+wind_speed(wind::WindVector) = wind_speed(wind.u, wind.v)
 function wind_speed(wind::WindDirection)
-    windcoords = _2windcoords(wind)
-    wind_speed(windcoords[1], windcoords[2])
+    WindVector = _2windvector(wind)
+    wind_speed(WindVector[1], WindVector[2])
 end
 
 """
@@ -64,12 +64,12 @@ function wind_direction(lon1, lat1, lon2, lat2)
     return 2*atand(y/(sqrt(x^2 + y^2) + x))
 end
 
-function Base.convert(::Type{WindDirection}, w::WindCoords)
+function Base.convert(::Type{WindDirection}, w::WindVector)
     WindDirection(_2winddir(w)...)
 end
 
-function Base.convert(::Type{WindCoords}, w::WindDirection)
-    WindCoords(_2windcoords(w)...)
+function Base.convert(::Type{WindVector}, w::WindDirection)
+    WindVector(_2windvector(w)...)
 end
 
 mutable struct Atp45Input
@@ -183,10 +183,10 @@ function hazard_area_triangle(lon, lat, Vx, Vy, dist, radius)
     return coords
 end
 
-hazard_area_triangle(lon, lat, wind::WindCoords, dist, radius) = hazard_area_triangle(lon, lat, wind.u, wind.v, dist, radius)
+hazard_area_triangle(lon, lat, wind::WindVector, dist, radius) = hazard_area_triangle(lon, lat, wind.u, wind.v, dist, radius)
 function hazard_area_triangle(lon, lat, wind::WindDirection, dist, radius)
-    windcoords = _2windcoords(wind)
-    hazard_area_triangle(lon, lat, windcoords[1], windcoords[2], dist, radius)
+    WindVector = _2windvector(wind)
+    hazard_area_triangle(lon, lat, WindVector[1], WindVector[2], dist, radius)
 end
 
 

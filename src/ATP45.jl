@@ -5,6 +5,7 @@ using Proj4
 using RecipesBase
 using GeoJSON
 import GeoJSON: Feature, FeatureCollection, Polygon
+
 import RecipesBase: @recipe
 
 const EARTH_RADIUS = 6371.0e3
@@ -21,7 +22,7 @@ include("constants.jl")
 include("atp45.jl")
 include("recipes.jl")
 
-export WindCoords, WindDirection, Atp45Input
+export WindVector, WindDirection, Atp45Input
 export run_chem, run_bio
 
 end
