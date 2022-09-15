@@ -10,6 +10,9 @@ Proj4 = "9a7e659c-8ee8-5706-894e-f68f43bc57ea"
 RecipesBase = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
 
 [compat]
+GeoInterface = "1.0"
+GeoJSON = "0.6"
+RecipesBase = "1.2"
 julia = "1"
 
 [extras]
