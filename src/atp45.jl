@@ -154,11 +154,11 @@ end
 #TODO: implementation of radiological and nuclear incident with run_radio and run_nucl (Page 5-1 and 6-1)
 
 """
-    circle_area(lon::AbstractFloat, lat::AbstractFloat, radius::AbstractFloat, res)
+    circle_area(lon::Number, lat::Number, radius::Number, res)
 
 Calculate the coordinates of the release or the hazard area (circle)
 """
-function circle_area(lon::AbstractFloat, lat::AbstractFloat, radius::AbstractFloat, res = 360)
+function circle_area(lon::Number, lat::Number, radius::Number, res = 360)
     azimuth = range(0., 360., length = res)
     coords = []
     for az in azimuth

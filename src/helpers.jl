@@ -9,5 +9,5 @@ function horizontal_walk(start::Vector{<:AbstractFloat}, distance::AbstractFloat
     q2, _ = geod_direct(lonlat2xy(start, proj), azimuth, distance, proj)
     xy2lonlat(q2, proj)
 end
-horizontal_walk(lon::AbstractFloat, lat::AbstractFloat, distance::AbstractFloat, azimuth::AbstractFloat) = horizontal_walk([lon, lat], distance, azimuth)
+horizontal_walk(lon::Number, lat::Number, distance::Number, azimuth::Number) = horizontal_walk(Float64.([lon, lat]), distance, azimuth)
 
