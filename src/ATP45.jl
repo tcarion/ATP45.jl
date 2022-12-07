@@ -8,6 +8,8 @@ import GeoJSON: Feature, FeatureCollection, Polygon
 
 import RecipesBase: @recipe
 
+const GI = GeoInterface
+
 const EARTH_RADIUS = 6371.0e3
 const DEFAULT_PROJ = Ref{Any}(C_NULL)
 
@@ -18,6 +20,7 @@ end
 # include("shapes.jl")
 # include("coordinates.jl")
 include("helpers.jl")
+include("zones.jl")
 include("constants.jl")
 include("atp45.jl")
 include("recipes.jl")
