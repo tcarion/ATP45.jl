@@ -12,6 +12,12 @@ id(o::T) where T = id(T)
 note(::Type) = ""
 note(o::T) where T = note(T)
 
+abstract type AbstractProcedure <: AbstractCategory end
+
+struct Simplified <: AbstractProcedure end
+id(::Type{Simplified}) = "simplified"
+description(::Type{Simplified}) = "Simplified procedure"
+
 abstract type AbstractReleaseType <: AbstractCategory end
 description(::Type{<:AbstractReleaseType}) = "No description"
 longname(::Type{<:AbstractReleaseType}) = "Unknown release type"
@@ -129,6 +135,8 @@ id(::Type{ContainerGroupD}) = "groupeD"
 # nextchoice(args::Vararg{Tuple{<:AbstractCategory}}) = nextchoice(typeof.(args)...)
 nextchoice(args::Vararg{<:AbstractCategory}) = nextchoice(typeof.(args)...)
 # nextchoice(::T...) where {T<:AbstractCategory} = println(T)
+nextchoice(::Type{Simplified}) = [LowerThan10(), HigherThan10()]
+
 nextchoice(::Type{ReleaseTypeA}) = [LowerThan10(), HigherThan10()]
 nextchoice(::Type{ReleaseTypeA}, ::Type{LowerThan10}) = "circle"
 nextchoice(::Type{ReleaseTypeA}, ::Type{HigherThan10}) = "triangle"
