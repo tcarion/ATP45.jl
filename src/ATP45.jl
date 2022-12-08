@@ -20,6 +20,8 @@ end
 # include("shapes.jl")
 # include("coordinates.jl")
 include("helpers.jl")
+include("categories.jl")
+include("meteorology.jl")
 include("zones.jl")
 include("constants.jl")
 include("atp45.jl")

@@ -1,9 +1,3 @@
-abstract type AbstractZone{N, T} end
-GI.isgeometry(geom::AbstractZone)::Bool = true
-GI.geomtrait(::AbstractZone) = PolygonTrait()
-GI.ngeom(::PolygonTrait, ::AbstractZone) = 1
-GI.getgeom(::PolygonTrait, zone::AbstractZone, i) = geometry(zone)
-
 const VectorCoordsType = Vector{<:Vector{<:Number}}
 
 """
@@ -39,6 +33,14 @@ GI.geomtrait(::ZoneBoundary) = LinearRingTrait()
 # We add the first point add the end to make it a closed shape.
 GI.ngeom(::LinearRingTrait, geom::ZoneBoundary{N, T}) where {N, T} = N + 1
 GI.getgeom(::LinearRingTrait, geom::ZoneBoundary{N, T}, i) where {N, T} = geom.coords[(i-1)%N + 1]
+
+
+abstract type AbstractZone{N, T} end
+
+GI.isgeometry(geom::AbstractZone)::Bool = true
+GI.geomtrait(::AbstractZone) = PolygonTrait()
+GI.ngeom(::PolygonTrait, ::AbstractZone) = 1
+GI.getgeom(::PolygonTrait, zone::AbstractZone, i) = geometry(zone)
 
 """
     Zone{N, T} <: AbstractZone{N, T}

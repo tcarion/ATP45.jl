@@ -1,4 +1,4 @@
-@recipe function f(w::ATP45.AbstractWind; w_origin = [0., 0.], w_scale = 1., w_normalize = false)
+@recipe function f(w::AbstractWind; w_origin = [0., 0.], w_scale = 1., w_normalize = false)
     wc = convert(WindVector, w)
     coords = [wc.u, wc.v]
     if w_normalize
