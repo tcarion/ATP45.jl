@@ -1,10 +1,27 @@
 using Test
 using ATP45
+import ATP45: ReleaseLocation
 import ATP45: ZoneBoundary, Zone
 import ATP45: TriangleLike
 using GeoInterface
 import GeoInterface as GI
 using GeoJSON
+
+@testset "Release locations" begin
+    coords = [
+        [6., 49.],
+        [6., 51.],
+    ]
+    location = ReleaseLocation(coords)
+    @test GI.testgeometry(location)
+    @test GI.geomtrait(location) == MultiPointTrait()
+    @test GI.ngeom(location) == 2
+    @test GI.npoint(location) == 2
+    @test GI.coordinates(location) == coords
+    @test GI.getgeom(location, 1) == Tuple(coords[1])
+    @test_throws BoundsError GI.getgeom(location, 3) 
+    @test GeoJSON.write(location) == "{\"type\":\"MultiPoint\",\"coordinates\":[[6.0,49.0],[6.0,51.0]]}"
+end
 
 @testset "Zone boundary" begin
     coords = [
@@ -41,7 +58,6 @@ end
     @test GI.getgeom(zone, 1) == ZoneBoundary(coords)
     @test GeoJSON.write(zone) == "{\"type\":\"Polygon\",\"coordinates\":[[[6.0,49.0],[6.0,51.0],[5.0,50.0],[4.0,49.0],[6.0,49.0]]]}"
 end
-
 
 
 # @testset "Triangle shape" begin
