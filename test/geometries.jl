@@ -21,6 +21,14 @@ using GeoJSON
     @test GI.getgeom(location, 1) == Tuple(coords[1])
     @test_throws BoundsError GI.getgeom(location, 3) 
     @test GeoJSON.write(location) == "{\"type\":\"MultiPoint\",\"coordinates\":[[6.0,49.0],[6.0,51.0]]}"
+
+    location = ReleaseLocation((4., 50.))
+    @test GI.testgeometry(location)
+    @test GI.geomtrait(location) == MultiPointTrait()
+    @test GI.ngeom(location) == 1
+    @test GI.npoint(location) == 1
+    @test GI.coordinates(location) == [[4., 50.]]
+    @test_throws BoundsError GI.getgeom(location, 2) 
 end
 
 @testset "Zone boundary" begin

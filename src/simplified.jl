@@ -1,1 +1,0 @@
-required_inputs(::Type{Simplified}) = ()
