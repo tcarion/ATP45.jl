@@ -12,6 +12,7 @@ RecipesBase = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
 [compat]
 GeoInterface = "1.0"
 GeoJSON = "0.6"
+Proj = "1"
 RecipesBase = "1.2"
 julia = "1"
 
