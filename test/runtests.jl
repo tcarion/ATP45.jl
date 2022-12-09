@@ -11,5 +11,5 @@ using Proj4
    end
 
    @testset "ATP45 simple" begin include("atp45_simple.jl") end
-   @testset "Zones" begin include("zones.jl") end
+   @testset "Zones" begin include("geometries.jl") end
 end
