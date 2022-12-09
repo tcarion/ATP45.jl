@@ -1,7 +1,7 @@
 module ATP45
 
 using GeoInterface
-using Proj4
+using Proj
 using RecipesBase
 using GeoJSON
 import GeoJSON: Feature, FeatureCollection, Polygon
@@ -9,17 +9,21 @@ import GeoJSON: Feature, FeatureCollection, Polygon
 import RecipesBase: @recipe
 
 const EARTH_RADIUS = 6371.0e3
-const DEFAULT_PROJ = Ref{Any}(C_NULL)
+
+const DEFAULT_PROJ = Ref{Proj.geod_geodesic}()
 
 function __init__()
-    DEFAULT_PROJ[] = Projection("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+    # values for WGS84 (https://manpages.ubuntu.com/manpages/bionic/man3/geodesic.3.html)
+    a = 6378137.; f = 1/298.257223563
+    Proj.geod_init(DEFAULT_PROJ, a, f)
+    # DEFAULT_PROJ[] = Proj.proj_create("EPSG:4326")
 end
 
 # include("shapes.jl")
 # include("coordinates.jl")
 include("helpers.jl")
 include("constants.jl")
-include("atp45.jl")
+include("atp45_.jl")
 include("recipes.jl")
 
 export WindVector, WindDirection, Atp45Input
