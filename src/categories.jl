@@ -12,18 +12,29 @@ id(o::T) where T = id(T)
 note(::Type) = ""
 note(o::T) where T = note(T)
 
-abstract type AbstractProcedure <: AbstractCategory end
+"""
+    AbstractWeapon <: AbstractCategory
+Discriminate between the type of weapon (Chemical, Biological, Radiological, Nuclear)
+"""
+abstract type AbstractWeapon <: AbstractCategory end
 
-struct Simplified <: AbstractProcedure end
-id(::Type{Simplified}) = "simplified"
-description(::Type{Simplified}) = "Simplified procedure"
+struct ChemicalWeapon <: AbstractWeapon end
+id(::Type{ChemicalWeapon}) = "chemical"
+longname(::Type{ChemicalWeapon}) = "Chemical"
 
+struct BiologicalWeapon <: AbstractWeapon end
+id(::Type{BiologicalWeapon}) = "biological"
+longname(::Type{BiologicalWeapon}) = "Biological"
+
+"""
+    AbstractReleaseType <: AbstractCategory
+Discriminate between the release type (ex: Air Contaminating Attack, Ground Contaminating Attacks)
+"""
 abstract type AbstractReleaseType <: AbstractCategory end
 description(::Type{<:AbstractReleaseType}) = "No description"
 longname(::Type{<:AbstractReleaseType}) = "Unknown release type"
 id(::Type{<:AbstractReleaseType}) = ""
 note(::Type{<:AbstractReleaseType}) = ""
-
 
 struct ReleaseTypeA <: AbstractReleaseType end
 description(::Type{ReleaseTypeA}) = "Release following an attack with an air contaminating (non-persistent) chemical agent."
@@ -92,7 +103,7 @@ function containermacro(typ, id, descr)
     quote
         struct $typ <: AbstractContainerType end
         id(::Type{$typ}) = $id
-        description(::Type{$typ}) = $descr
+        longname(::Type{$typ}) = $descr
     end
 end
 
@@ -114,7 +125,7 @@ for ct in container_types
 end
 
 abstract type AbstractContainerGroup <: AbstractCategory end
-description(cg::Type{<:AbstractContainerGroup}) = join([description(x) for x in content(cg)], ", ")
+description(cg::Type{<:AbstractContainerGroup}) = join([longname(x) for x in content(cg)], ", ")
 
 struct ContainerGroupA <: AbstractContainerGroup end
 content(::Type{ContainerGroupA}) = (Bomblet, Bomb, SurfaceRocket, AirRocket, Shell, Mine, NotKnown, Missile)
@@ -135,7 +146,6 @@ id(::Type{ContainerGroupD}) = "groupeD"
 # nextchoice(args::Vararg{Tuple{<:AbstractCategory}}) = nextchoice(typeof.(args)...)
 nextchoice(args::Vararg{<:AbstractCategory}) = nextchoice(typeof.(args)...)
 # nextchoice(::T...) where {T<:AbstractCategory} = println(T)
-nextchoice(::Type{Simplified}) = [LowerThan10(), HigherThan10()]
 
 nextchoice(::Type{ReleaseTypeA}) = [LowerThan10(), HigherThan10()]
 nextchoice(::Type{ReleaseTypeA}, ::Type{LowerThan10}) = "circle"
