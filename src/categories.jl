@@ -147,6 +147,12 @@ id(::Type{ContainerGroupD}) = "groupeD"
 nextchoice(args::Vararg{<:AbstractCategory}) = nextchoice(typeof.(args)...)
 # nextchoice(::T...) where {T<:AbstractCategory} = println(T)
 
+nextchoice(::Type{Simplified}) = [ChemicalWeapon(), BiologicalWeapon()]
+
+# nextchoice(::Type{Simplified}, ::Type{ChemicalWeapon}) = [
+#     CircleLike()
+# ]
+
 nextchoice(::Type{ReleaseTypeA}) = [LowerThan10(), HigherThan10()]
 nextchoice(::Type{ReleaseTypeA}, ::Type{LowerThan10}) = "circle"
 nextchoice(::Type{ReleaseTypeA}, ::Type{HigherThan10}) = "triangle"

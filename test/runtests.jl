@@ -10,6 +10,8 @@ using Test
         @test dest ≈ [lon+1, lat] atol=1e-4
    end
 
-   @testset "ATP45 simple" begin include("atp45_simple.jl") end
-   @testset "Zones" begin include("geometries.jl") end
+#    @testset "ATP45 simple" begin include("atp45_simple.jl") end
+   @testset "Geometries" begin include("geometries.jl") end
+   @testset "Inputs" begin include("inputs.jl") end
+   @testset "Models run" begin include("models.jl") end
 end

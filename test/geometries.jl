@@ -2,7 +2,7 @@ using Test
 using ATP45
 import ATP45: ReleaseLocation
 import ATP45: ZoneBoundary, Zone
-import ATP45: TriangleLike
+import ATP45: CircleLike, TriangleLike
 using GeoInterface
 import GeoInterface as GI
 using GeoJSON
@@ -67,18 +67,29 @@ end
     @test GeoJSON.write(zone) == "{\"type\":\"Polygon\",\"coordinates\":[[[6.0,49.0],[6.0,51.0],[5.0,50.0],[4.0,49.0],[6.0,49.0]]]}"
 end
 
+@testset "CircleLike" begin
+    coords = [
+        [6., 51.],
+    ]
+    location = ReleaseLocation(coords)
+    radius = 10000
+    circle = CircleLike(location, radius, Dict("type" => "release"))
+    @test GI.testfeature(circle)
+    @test GI.geometry(circle) isa Zone
+    @test GI.properties(circle) isa Dict
+end
 
 # @testset "Triangle shape" begin
-    coords = [
-        [6., 49.],
-        [5., 50.],
-        [4., 49.],
-    ]
-    props = Dict(:type => "release")
-    triangle = TriangleLike(coords, props)
-    @test GI.npoint(triangle) == 3
-    GI.getcoord(triangle, 2)
-    GI.getgeom(triangle, 1)
-    GI.testgeometry(triangle)
+    # coords = [
+    #     [6., 49.],
+    #     [5., 50.],
+    #     [4., 49.],
+    # ]
+    # props = Dict(:type => "release")
+    # triangle = TriangleLike(coords, props)
+    # @test GI.npoint(triangle) == 3
+    # GI.getcoord(triangle, 2)
+    # GI.getgeom(triangle, 1)
+    # GI.testgeometry(triangle)
 # end
 

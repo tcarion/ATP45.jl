@@ -80,18 +80,41 @@ geometry(zone::Zone) = zone.geometry
 Zone(vec::VectorCoordsType) = Zone(ZoneBoundary(vec))
 Zone(args...) = Zone(ZoneBoundary(args...))
 
-# struct TriangleLike{T} <: AbstractZone
-#     geom::ZoneBoundary{3, T}
-#     properties::AbstractDict
-#     # function TriangleLike(x::Vector{<:Vector{<:T}}, y) where T<:Number
-#     #     push!(x, x[1])
-#     #     new(x, y)
-#     # end
-# end
+"""
+    AbstractZoneFeature{N, T}
+An ATP-45 zone with some properties related to it.
+"""
+abstract type AbstractZoneFeature{N, T} end
+# geometry(zonefeature::AbstractZoneFeature) = zonefeature.geometry
+properties(zonefeature::AbstractZoneFeature) = zonefeature.properties
+GI.isfeature(::Type{<:AbstractZoneFeature}) = true
+GI.trait(::AbstractZoneFeature) = FeatureTrait()
+GI.properties(zonefeature::AbstractZoneFeature) = properties(zonefeature)
 
-# TriangleLike(vec::Vector{<:Vector{<:Number}}, props) = TriangleLike(ZoneBoundary(vec), props)
+struct TriangleLike{T} <: AbstractZoneFeature{3, T}
+    geometry::Zone{3, T}
+    properties::Dict{String, String}
+    # function TriangleLike(x::Vector{<:Vector{<:T}}, y) where T<:Number
+    #     push!(x, x[1])
+    #     new(x, y)
+    # end
+end
 
-# GI.geomtrait(::TriangleLike) = TriangleTrait()
+struct CircleLike{N, T} <: AbstractZoneFeature{N, T}
+    center::ReleaseLocation{1, T}
+    radius::T
+    properties::Dict{String, String}
+end
+
+function CircleLike(releaselocation::ReleaseLocation{1, T}, radius::Number, props = Dict(); numpoint = 100) where {T}
+    CircleLike{numpoint, T}(releaselocation, radius, props)
+end
+
+function GI.geometry(circle::CircleLike{N, T}) where {N, T}
+    center = coords(circle.center)[1]
+    circle_coords = circle_coordinates(center..., circle.radius; res = N)
+    Zone(circle_coords)
+end
 # GI.ngeom(::TriangleTrait, geom::TriangleLike)::Integer = 1
 # GI.getgeom(::TriangleTrait, geom::TriangleLike, i) = geom.geom
 # GeoInterface.ngeom(::TriangleLike)::DataType = TriangleTrait()
