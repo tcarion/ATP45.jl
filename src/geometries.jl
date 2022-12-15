@@ -5,9 +5,9 @@ function (::Type{T})(vec::VectorCoordsType) where {T <: PointsSeries}
     # npoints = length(vec)
     T(Tuple(Tuple.(vec)))
 end
-function (::Type{T})(args...) where {T <: PointsSeries}
-    T(Tuple(Tuple.(args)))
-end
+# function (::Type{T})(args...) where {T <: PointsSeries}
+#     T(Tuple(Tuple.(args)))
+# end
 coords(ps::PointsSeries) = ps.coords
 
 abstract type AbstractReleaseLocation{N, T} <: PointsSeries{N, T} end
@@ -99,6 +99,13 @@ struct TriangleLike{T} <: AbstractZoneFeature{3, T}
     #     new(x, y)
     # end
 end
+function TriangleLike(releaselocation::ReleaseLocation{1, T}, wind::AbstractWind, dhd, back_distance, props = Dict()) where T
+    azimuth = wind_azimuth(wind)
+    center = coords(releaselocation)[1]
+    triangle_coords = triangle_coordinates(center..., T(azimuth), T(dhd), T(back_distance))
+    TriangleLike{T}(Zone(triangle_coords), props)
+end
+GI.geometry(triangle::TriangleLike) = triangle.geometry
 
 struct CircleLike{N, T} <: AbstractZoneFeature{N, T}
     center::ReleaseLocation{1, T}

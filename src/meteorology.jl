@@ -27,7 +27,7 @@ function _2windvector(wind::WindDirection)
 end
 
 function _2winddir(wind::WindVector)
-    dir = wind_direction(wind.u, wind.v)
+    dir = wind_azimuth(wind.u, wind.v)
     speed = wind_speed(wind)
     return speed, dir
 end
@@ -50,19 +50,22 @@ function wind_speed(wind::WindDirection)
 end
 
 """
-    wind_direction(Vx, Vy)
+    wind_azimuth(Vx, Vy)
 
 Azimuth in degrees, the reference direction is North
 """
-function wind_direction(Vx, Vy)
+function wind_azimuth(Vx, Vy)
     return 90. - atan(Vy, Vx) * 180 / π
 end
 
-function wind_direction(lon1, lat1, lon2, lat2)
+function wind_azimuth(lon1, lat1, lon2, lat2)
     x = cosd(lat1)*sind(lat2) - sind(lat1)*cosd(lat2)*cosd(lon2 - lon1)
     y = sind(lon2 - lon1)*cosd(lat2)
     return 2*atand(y/(sqrt(x^2 + y^2) + x))
 end
+
+wind_azimuth(wind::WindVector) = convert(WindDirection, wind).direction
+wind_azimuth(wind::WindDirection) = wind.direction
 
 function Base.convert(::Type{WindDirection}, w::WindVector)
     WindDirection(_2winddir(w)...)

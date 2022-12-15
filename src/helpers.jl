@@ -29,3 +29,16 @@ function circle_coordinates(lon::Number, lat::Number, radius::Number; res = 360)
         horizontal_walk(lon, lat, radius, azimuth)
     end
 end
+
+"""
+    triangle_coordinates(lon, lat, azimuth, dhd, back_distance)
+
+Calculate the coordinates of the triangle like zone given the release location, the wind direction `azimuth`, the downwind hazard distance `dhd` in meters.
+"""
+function triangle_coordinates(lon, lat, azimuth, dhd, back_distance)
+    l = (dhd + back_distance)/cosd(30)
+    coords = [horizontal_walk(lon, lat, -back_distance, azimuth)]
+    push!(coords, horizontal_walk(coords[1][1], coords[1][2], l, azimuth - 30.))
+    push!(coords, horizontal_walk(coords[1][1], coords[1][2], l, azimuth + 30.))
+    return coords
+end

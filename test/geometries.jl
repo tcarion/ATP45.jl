@@ -3,6 +3,7 @@ using ATP45
 import ATP45: ReleaseLocation
 import ATP45: ZoneBoundary, Zone
 import ATP45: CircleLike, TriangleLike
+import ATP45: WindDirection
 using GeoInterface
 import GeoInterface as GI
 using GeoJSON
@@ -79,17 +80,14 @@ end
     @test GI.properties(circle) isa Dict
 end
 
-# @testset "Triangle shape" begin
-    # coords = [
-    #     [6., 49.],
-    #     [5., 50.],
-    #     [4., 49.],
-    # ]
-    # props = Dict(:type => "release")
-    # triangle = TriangleLike(coords, props)
-    # @test GI.npoint(triangle) == 3
-    # GI.getcoord(triangle, 2)
-    # GI.getgeom(triangle, 1)
-    # GI.testgeometry(triangle)
-# end
-
+@testset "TriangeLike" begin
+    coords = [
+        [6., 51.],
+    ]
+    location = ReleaseLocation(coords)
+    radius = 2000
+    triangle = TriangleLike(location, WindDirection(11, 45.), 10000, 2*radius, Dict("type" => "release"))
+    @test GI.testfeature(triangle)
+    @test GI.geometry(triangle) isa Zone
+    @test GI.properties(triangle) isa Dict
+end
