@@ -17,20 +17,21 @@ end
     coll = result.collection
     legend --> false
     for coll in result.collection
-        coords = GeoJSON.coordinates(coll)[1]
-        tuple = Tuple.(push!(copy(coords), coords[1]))
+        coords = GI.coordinates(coll)[1]
+        # tuple = Tuple.(push!(copy(coords), coords[1]))
+        tuple = Tuple.(coords)
         @series begin
-            label := GeoJSON.properties(coll)["type"] * " area"
+            label := GI.properties(coll)["type"] * " area"
             tuple
         end
     end
 
-    for loc in result.input.locations
-        @series begin
-            color := :red
-            seriestype := :scatter
-            label := "release point"
-            [Tuple(loc)]
-        end
-    end
+    # for loc in result.input.locations
+    #     @series begin
+    #         color := :red
+    #         seriestype := :scatter
+    #         label := "release point"
+    #         [Tuple(loc)]
+    #     end
+    # end
 end
