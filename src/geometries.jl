@@ -108,7 +108,8 @@ function TriangleLike(releaselocation::ReleaseLocation{1, T}, wind::AbstractWind
     triangle_coords = triangle_coordinates(center..., T(azimuth), T(dhd), T(back_distance))
     TriangleLike{T}(Zone(triangle_coords), props)
 end
-GI.geometry(triangle::TriangleLike) = triangle.geometry
+geometry(triangle::TriangleLike) = triangle.geometry
+GI.geometry(triangle::TriangleLike) = geometry(triangle)
 
 struct CircleLike{N, T} <: AbstractZoneFeature{N, T}
     center::ReleaseLocation{1, T}
@@ -119,12 +120,12 @@ end
 function CircleLike(releaselocation::ReleaseLocation{1, T}, radius::Number, props = Dict(); numpoint = 100) where {T}
     CircleLike{numpoint, T}(releaselocation, radius, props)
 end
-
-function GI.geometry(circle::CircleLike{N, T}) where {N, T}
+function geometry(circle::CircleLike{N, T}) where {N, T}
     center = coords(circle.center)[1]
     circle_coords = circle_coordinates(center..., circle.radius; res = N)
     Zone(circle_coords)
 end
+GI.geometry(circle::CircleLike) = geometry(circle) 
 
 abstract type AbstractAtp45Result end
 properties(result::AbstractAtp45Result) = result.properties

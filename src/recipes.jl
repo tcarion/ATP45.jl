@@ -10,6 +10,41 @@
     [w_origin[1]], [w_origin[2]]
 end
 
+@recipe function f(ps::ReleaseLocation)
+    @series begin
+        seriestype := :scatter
+        collect(GI.coordinates(ps))
+    end
+end
+
+@recipe function f(zoneb::ZoneBoundary)
+    gcoords = GI.coordinates(zoneb)
+    @series begin
+        seriestype := :line
+        Tuple.(gcoords)
+    end
+end
+
+@recipe function f(zone::Zone)
+    gcoords = GI.coordinates(zone)
+    # tuple = Tuple.(gcoords[1])
+    # tuple = tuple[1] !== tuple[end] ? vcat(tuple..., tuple[1]) : tuple
+    # println(tuple)
+    @series begin
+        seriestype := :line
+        gcoords
+    end
+end
+
+@recipe function f(feat::AbstractZoneFeature)
+    props = properties(feat)
+    @series begin
+        seriestype := :line
+        label := get(props, "type", "")
+        geometry(feat)
+    end
+end
+
 @userplot ResultPlot
 
 @recipe function f(h::ResultPlot)
