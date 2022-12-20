@@ -1,13 +1,13 @@
 const VectorCoordsType = Vector{<:Vector{<:Number}}
 
 abstract type PointsSeries{N, T} end
-function (::Type{T})(vec::VectorCoordsType) where {T <: PointsSeries}
-    # npoints = length(vec)
-    T(Tuple(Tuple.(vec)))
-end
-# function (::Type{T})(args...) where {T <: PointsSeries}
-#     T(Tuple(Tuple.(args)))
-# end
+# Just make the constructor ok with different types of arguments.
+(::Type{T})(vec::VectorCoordsType) where {T <: PointsSeries} = T(Tuple(Tuple.(vec)))
+
+(::Type{T})(vec::Vector{<:Number}) where {T <: PointsSeries} = T((Tuple(vec),))
+
+(::Type{T})(args::Vararg{Vector{<:Number}}) where {T <: PointsSeries} = T(Tuple(Tuple.(args)))
+
 coords(ps::PointsSeries) = ps.coords
 
 abstract type AbstractReleaseLocation{N, T} <: PointsSeries{N, T} end
@@ -38,6 +38,7 @@ end
 """
     ZoneBoundary{N, T}
 Represents the border for a ATP45 zone. `N` is the number of vertices defining the zone.
+It implements the `GeoInterface.LinearRing` trait.
 
 # Examples
 ```julia-repl
@@ -72,6 +73,7 @@ GI.getgeom(::PolygonTrait, zone::AbstractZone, i) = geometry(zone)
 """
     Zone{N, T} <: AbstractZone{N, T}
 Defines a closed polygon with `N` vertices for representing a ATP-45 zone.
+It implements the `GeoInterface.Polygon` trait.
 """
 struct Zone{N, T} <: AbstractZone{N, T}
     geometry::ZoneBoundary{N, T}
@@ -82,7 +84,8 @@ Zone(args...) = Zone(ZoneBoundary(args...))
 
 """
     AbstractZoneFeature{N, T}
-An ATP-45 zone with some properties related to it.
+An ATP-45 [`Zone{N, T}`](@ref) with some properties related to it (typically the type of zone, e.g. release or hazard).
+It implements the `GeoInterface.Feature` trait.
 """
 abstract type AbstractZoneFeature{N, T} end
 # geometry(zonefeature::AbstractZoneFeature) = zonefeature.geometry
@@ -122,6 +125,23 @@ function GI.geometry(circle::CircleLike{N, T}) where {N, T}
     circle_coords = circle_coordinates(center..., circle.radius; res = N)
     Zone(circle_coords)
 end
-# GI.ngeom(::TriangleTrait, geom::TriangleLike)::Integer = 1
-# GI.getgeom(::TriangleTrait, geom::TriangleLike, i) = geom.geom
-# GeoInterface.ngeom(::TriangleLike)::DataType = TriangleTrait()
+
+abstract type AbstractAtp45Result end
+properties(result::AbstractAtp45Result) = result.properties
+GI.isfeaturecollection(::Type{<:AbstractAtp45Result}) = true
+GI.trait(::AbstractAtp45Result) = FeatureCollectionTrait()
+GI.nfeature(::FeatureCollectionTrait, result::AbstractAtp45Result) = length(zonecollection(result))
+GI.getfeature(::FeatureCollectionTrait, result::AbstractAtp45Result) = zonecollection(result)
+GI.getfeature(::FeatureCollectionTrait, result::AbstractAtp45Result, i::Integer) = zonecollection(result)[i]
+# GI.properties(result::AbstractAtp45Result) = properties(result)
+
+"""
+    Atp45Result
+Collection of zones representing the result of an ATP-45 procedure result. Also contains relevant information about the input conditions.
+It implements the `GeoInterface.FeatureCollection` trait.
+"""
+struct Atp45Result <: AbstractAtp45Result
+    zones::Vector{AbstractZoneFeature}
+    properties::Dict{String, String}
+end
+zonecollection(result::Atp45Result) = result.zones

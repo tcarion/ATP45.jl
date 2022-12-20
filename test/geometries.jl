@@ -3,6 +3,7 @@ using ATP45
 import ATP45: ReleaseLocation
 import ATP45: ZoneBoundary, Zone
 import ATP45: CircleLike, TriangleLike
+import ATP45: Atp45Result
 import ATP45: WindDirection
 using GeoInterface
 import GeoInterface as GI
@@ -23,7 +24,7 @@ using GeoJSON
     @test_throws BoundsError GI.getgeom(location, 3) 
     @test GeoJSON.write(location) == "{\"type\":\"MultiPoint\",\"coordinates\":[[6.0,49.0],[6.0,51.0]]}"
 
-    location = ReleaseLocation((4., 50.))
+    location = ReleaseLocation([4., 50.])
     @test GI.testgeometry(location)
     @test GI.geomtrait(location) == MultiPointTrait()
     @test GI.ngeom(location) == 1
@@ -86,8 +87,26 @@ end
     ]
     location = ReleaseLocation(coords)
     radius = 2000
-    triangle = TriangleLike(location, WindDirection(11, 45.), 10000, 2*radius, Dict("type" => "release"))
+    wind = WindDirection(11, 45.)
+    dhd = 10000
+    triangle = TriangleLike(location, wind, dhd, 2*radius, Dict("type" => "release"))
     @test GI.testfeature(triangle)
     @test GI.geometry(triangle) isa Zone
     @test GI.properties(triangle) isa Dict
+end
+
+@testset "Atp45 result" begin
+    coords = [
+        [6., 51.],
+    ]
+    location = ReleaseLocation(coords)
+    radius = 2000
+    wind = WindDirection(11, 45.)
+    dhd = 10000
+    triangle = TriangleLike(location, wind, dhd, 2*radius, Dict("type" => "release"))
+    circle = CircleLike(location, radius, Dict("type" => "hazard"))
+    result = Atp45Result([triangle, circle], Dict("procedure" => "dummy"))
+    @test GI.testfeaturecollection(result)
+    @test GI.nfeature(result) == 2
+    @test GI.getfeature(result, 1) == triangle
 end

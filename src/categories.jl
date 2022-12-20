@@ -147,7 +147,7 @@ id(::Type{ContainerGroupD}) = "groupeD"
 nextchoice(args::Vararg{<:AbstractCategory}) = nextchoice(typeof.(args)...)
 # nextchoice(::T...) where {T<:AbstractCategory} = println(T)
 
-nextchoice(::Type{Simplified}) = [ChemicalWeapon(), BiologicalWeapon()]
+# nextchoice(::Type{Simplified}) = [ChemicalWeapon(), BiologicalWeapon()]
 
 # nextchoice(::Type{Simplified}, ::Type{ChemicalWeapon}) = [
 #     CircleLike()
