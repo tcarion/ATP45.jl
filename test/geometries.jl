@@ -5,8 +5,9 @@ import ATP45: ZoneBoundary, Zone
 import ATP45: CircleLike, TriangleLike
 import ATP45: Atp45Result
 import ATP45: WindDirection
-using GeoInterface
-import GeoInterface as GI
+import ATP45: GI
+using ATP45.GeoInterface
+
 using GeoJSON
 
 @testset "Release locations" begin

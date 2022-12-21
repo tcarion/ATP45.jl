@@ -20,7 +20,7 @@ end
 Determine the type of APT-45 will be run. Each model is a callable object that takes the needed inputs as arguments.
 
 """
-abstract type AbstractModel end
+abstract type AbstractModel{T} end
 
 required_inputs(o::T) where {T <: AbstractModel} = required_inputs(T) 
 
@@ -50,4 +50,10 @@ function missing_inputs(model::AbstractModel, inputs...)::Vector{Any}
         end
     end
     missing_in
+end
+
+function get_input(inputs, input_type)
+    iinput = findfirst(isa.(inputs, Ref(input_type)))
+    isnothing(iinput) && error("Element of type $input_type not found in $inputs")
+    inputs[iinput]
 end

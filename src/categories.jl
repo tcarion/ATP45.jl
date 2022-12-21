@@ -154,15 +154,27 @@ nextchoice(args::Vararg{<:AbstractCategory}) = nextchoice(typeof.(args)...)
 # ]
 
 nextchoice(::Type{ReleaseTypeA}) = [LowerThan10(), HigherThan10()]
-nextchoice(::Type{ReleaseTypeA}, ::Type{LowerThan10}) = "circle"
-nextchoice(::Type{ReleaseTypeA}, ::Type{HigherThan10}) = "triangle"
+nextchoice(::Type{ReleaseTypeA}, ::Type{LowerThan10}) = nothing
+nextchoice(::Type{ReleaseTypeA}, ::Type{HigherThan10}) = nothing
 
 nextchoice(::Type{ReleaseTypeB}) = [ContainerGroupB(), ContainerGroupC(), ContainerGroupD()]
 nextchoice(::Type{ReleaseTypeB}, ::Type{ContainerGroupB}) = [LowerThan10(), HigherThan10()]
 nextchoice(::Type{ReleaseTypeB}, ::Type{ContainerGroupC}) = [LowerThan10(), HigherThan10()]
 nextchoice(::Type{ReleaseTypeB}, ::Type{ContainerGroupD}) = [LowerThan10(), HigherThan10()]
 
-nextchoice(::Type{ReleaseTypeB}, ::Type{ContainerGroupB}, ::Type{LowerThan10}) = "circle"
+nextchoice(::Type{ReleaseTypeB}, ::Type{ContainerGroupB}, ::Type{LowerThan10}) = nothing
 
-nextchoice(::Type{ReleaseTypeC}) = "circle"
+nextchoice(::Type{ReleaseTypeC}) = nothing
+
+categories_order() = [AbstractWeapon, AbstractReleaseType, AbstractContainerGroup]
+
+function sort_categories(categories)
+    order = categories_order()
+    ordered = AbstractCategory[]
+    for ocat in order
+        icategory = findfirst(isa.(categories, Ref(ocat)))
+        !isnothing(icategory) && push!(ordered, categories[icategory])
+    end
+    Tuple(ordered)
+end
 # nextchoice(::Type{ReleaseTypeB}, ::Type{HigherThan10}) = "circle"
