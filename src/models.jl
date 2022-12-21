@@ -23,6 +23,10 @@ Detailed(arg::AbstractCategory) = Detailed(Tuple([arg]))
 required_categories(::Type{<:Simplified}) = (AbstractWeapon,)
 required_inputs(::Type{<:Simplified}) = (AbstractReleaseLocation{1, <:Number}, AbstractWind)
 
+function (procedure::Simplified{T})(inputs...) where T <: Tuple{Union{RadiologicalWeapon, NuclearWeapon}}
+    error("The simplified procedure for radiological and nuclear weapon is not implemented yet.")
+end
+
 function (procedure::Simplified{T})(inputs...) where T
     mismes = missing_inputs(procedure, inputs...)
     isempty(mismes) || throw(MissingInputsException(mismes)) 
@@ -31,32 +35,12 @@ function (procedure::Simplified{T})(inputs...) where T
     Atp45Result(geometry |> collect, Dict("tobe" => "designed"))
 end
 
-# function (procedure::Simplified{Tuple{ChemicalWeapon}})(inputs...) 
-#     wind = get_input(inputs, AbstractWind)
-#     location = get_input(inputs, ReleaseLocation)
-
-#     speed = wind_speed(wind)
-#     release_radius = 2_000.
-#     if speed * 3.6 > 10.
-#         geometries = [
-#             CircleLike(location, release_radius, Dict("type" => "release")),
-#             TriangleLike(location, wind, 10_000., 2release_radius, Dict("type" => "hazard")),
-#         ]
-#     else
-#         geometries = [
-#             CircleLike(location, release_radius, Dict("type" => "release")),
-#             CircleLike(location, 10_000., Dict("type" => "hazard")),
-#         ]
-#     end
-#     Atp45Result(geometries, Dict("wind" => "wind"))
-# end
-
 ######
 ###### Methods dispatching on the right ATP45 zones parameters according to the given categories and inputs.
 ######
-_calculate_geometry(model::Simplified{Tuple{ChemicalWeapon}}, inputs) = _calculate_geometry(model, checkwind(inputs), inputs)
-_calculate_geometry(::Simplified{Tuple{ChemicalWeapon}}, ::LowerThan10, inputs) = _circle_circle(inputs, 2_000, 10_000)
-_calculate_geometry(::Simplified{Tuple{ChemicalWeapon}}, ::HigherThan10, inputs) = _circle_triangle(inputs, 2_000, 10_000)
+_calculate_geometry(model::Simplified{Tuple{T}}, inputs) where T<:AbstractWeapon = _calculate_geometry(model, checkwind(inputs), inputs)
+_calculate_geometry(::Simplified{Tuple{T}}, ::LowerThan10, inputs) where T<:Union{ChemicalWeapon, BiologicalWeapon} = _circle_circle(inputs, 2_000, 10_000)
+_calculate_geometry(::Simplified{Tuple{T}}, ::HigherThan10, inputs) where T<:Union{ChemicalWeapon, BiologicalWeapon} = _circle_triangle(inputs, 2_000, 10_000)
 
 
 ######

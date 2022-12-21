@@ -1,7 +1,7 @@
 using Test
 using ATP45
 import ATP45: Simplified, Detailed
-import ATP45: ChemicalWeapon
+import ATP45: ChemicalWeapon, BiologicalWeapon, RadiologicalWeapon, NuclearWeapon
 import ATP45: ReleaseTypeA
 import ATP45: WindDirection, ReleaseLocation
 import ATP45: MissingInputsException
@@ -16,6 +16,9 @@ import ATP45: Atp45Result
     result = simple(wind, release)
     @test result isa Atp45Result
 
+    biosimple = Simplified(BiologicalWeapon())
+    bioresult = biosimple(wind, release)
+    
     typeA = ReleaseTypeA()
     detailed = Detailed(weapon, typeA)
     detailed2 = Detailed(typeA, weapon)
