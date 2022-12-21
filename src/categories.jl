@@ -161,18 +161,18 @@ nextchoice(args::Vararg{<:AbstractCategory}) = nextchoice(typeof.(args)...)
 #     CircleLike()
 # ]
 
-nextchoice(::Type{ReleaseTypeA}) = [LowerThan10(), HigherThan10()]
-nextchoice(::Type{ReleaseTypeA}, ::Type{LowerThan10}) = nothing
-nextchoice(::Type{ReleaseTypeA}, ::Type{HigherThan10}) = nothing
+nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeA}) = [LowerThan10(), HigherThan10()]
+nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeA}, ::Type{LowerThan10}) = nothing
+nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeA}, ::Type{HigherThan10}) = nothing
 
-nextchoice(::Type{ReleaseTypeB}) = [ContainerGroupB(), ContainerGroupC(), ContainerGroupD()]
-nextchoice(::Type{ReleaseTypeB}, ::Type{ContainerGroupB}) = [LowerThan10(), HigherThan10()]
-nextchoice(::Type{ReleaseTypeB}, ::Type{ContainerGroupC}) = [LowerThan10(), HigherThan10()]
-nextchoice(::Type{ReleaseTypeB}, ::Type{ContainerGroupD}) = [LowerThan10(), HigherThan10()]
+nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeB}) = [ContainerGroupB(), ContainerGroupC(), ContainerGroupD()]
+nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeB}, ::Type{ContainerGroupB}) = [LowerThan10(), HigherThan10()]
+nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeB}, ::Type{ContainerGroupC}) = [LowerThan10(), HigherThan10()]
+nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeB}, ::Type{ContainerGroupD}) = [LowerThan10(), HigherThan10()]
 
-nextchoice(::Type{ReleaseTypeB}, ::Type{ContainerGroupB}, ::Type{LowerThan10}) = nothing
+nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeB}, ::Type{ContainerGroupB}, ::Type{LowerThan10}) = nothing
 
-nextchoice(::Type{ReleaseTypeC}) = nothing
+nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeC}) = nothing
 
 categories_order() = [AbstractWeapon, AbstractReleaseType, AbstractContainerGroup]
 
