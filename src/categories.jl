@@ -19,12 +19,20 @@ Discriminate between the type of weapon (Chemical, Biological, Radiological, Nuc
 abstract type AbstractWeapon <: AbstractCategory end
 
 struct ChemicalWeapon <: AbstractWeapon end
-id(::Type{ChemicalWeapon}) = "chemical"
+id(::Type{ChemicalWeapon}) = "chem"
 longname(::Type{ChemicalWeapon}) = "Chemical"
 
 struct BiologicalWeapon <: AbstractWeapon end
-id(::Type{BiologicalWeapon}) = "biological"
+id(::Type{BiologicalWeapon}) = "bio"
 longname(::Type{BiologicalWeapon}) = "Biological"
+
+struct RadiologicalWeapon <: AbstractWeapon end
+id(::Type{RadiologicalWeapon}) = "radio"
+longname(::Type{RadiologicalWeapon}) = "Radiological"
+
+struct NuclearWeapon <: AbstractWeapon end
+id(::Type{NuclearWeapon}) = "nuclear"
+longname(::Type{NuclearWeapon}) = "Nuclear"
 
 """
     AbstractReleaseType <: AbstractCategory
