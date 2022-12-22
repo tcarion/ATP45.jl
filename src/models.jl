@@ -49,60 +49,70 @@ function (procedure::Detailed{T})(inputs...) where T
     Atp45Result(geometry |> collect, Dict("tobe" => "designed"))
 end
 
-########
-######## Methods dispatching on the right ATP45 zones parameters according to the given categories and inputs.
-########
+#
+# Methods dispatching on the right ATP45 zones parameters according to the given categories and inputs.
+#
 
-######
-###### Simplified procedures
-######
+##
+## Simplified procedures
+##
 _calculate_geometry(model::Simplified{Tuple{T}}, inputs) where T<:AbstractWeapon = _calculate_geometry(model, checkwind(inputs), inputs)
 
-####
-#### Chemical and Biological weapons
-####
+###
+### Chemical and Biological weapons
+###
 _calculate_geometry(::Simplified{Tuple{T}}, ::LowerThan10, inputs) where T<:Union{ChemicalWeapon, BiologicalWeapon} = _circle_circle(inputs, 2_000, 10_000)
 _calculate_geometry(::Simplified{Tuple{T}}, ::HigherThan10, inputs) where T<:Union{ChemicalWeapon, BiologicalWeapon} = _circle_triangle(inputs, 2_000, 10_000)
 
-######
-###### Detailed procedures
-######
-
-####
-#### Chemical weapon
-####
+##
+## Detailed procedures
+##
 
 ###
-### Type A releases
+### Chemical weapon
 ###
+
+####
+#### Type A releases
+####
 _calculate_geometry(model::Detailed{Tuple{ChemicalWeapon, ReleaseTypeA}}, inputs) = _calculate_geometry(model, checkwind(inputs), inputs)
 _calculate_geometry(::Detailed{Tuple{ChemicalWeapon, ReleaseTypeA}}, ::LowerThan10, inputs) = _circle_circle(inputs, 1_000, 10_000)
 _calculate_geometry(::Detailed{Tuple{ChemicalWeapon, ReleaseTypeA}}, ::HigherThan10, inputs) = error("Not implemented yet. Requires stability classes")
 
 
-###
-### Type B releases
-###
+####
+#### Type B releases
+####
 _calculate_geometry(model::Detailed{<:Tuple{ChemicalWeapon, ReleaseTypeB, <:AbstractContainerGroup}}, inputs) = _calculate_geometry(model, checkwind(inputs), inputs)
+
+#####
+##### Container group B
+#####
 _calculate_geometry(::Detailed{Tuple{ChemicalWeapon, ReleaseTypeB, ContainerGroupB}}, ::LowerThan10, inputs) = _circle_circle(inputs, 1_000, 10_000)
 _calculate_geometry(::Detailed{Tuple{ChemicalWeapon, ReleaseTypeB, ContainerGroupB}}, ::HigherThan10, inputs) = _circle_triangle(inputs, 1_000, 10_000)
 
+#####
+##### Container group C
+#####
 _calculate_geometry(::Detailed{Tuple{ChemicalWeapon, ReleaseTypeB, ContainerGroupC}}, ::LowerThan10, inputs) = _circle_circle(inputs, 2_000, 10_000)
 _calculate_geometry(::Detailed{Tuple{ChemicalWeapon, ReleaseTypeB, ContainerGroupC}}, ::HigherThan10, inputs) = _circle_triangle(inputs, 2_000, 10_000)
 
+#####
+##### Container group D
+#####
 _calculate_geometry(::Detailed{Tuple{ChemicalWeapon, ReleaseTypeB, ContainerGroupD}}, ::LowerThan10, inputs) = error("Not implemented yet. Requires 2 releases")
 _calculate_geometry(::Detailed{Tuple{ChemicalWeapon, ReleaseTypeB, ContainerGroupD}}, ::HigherThan10, inputs) = error("Not implemented yet. Requires 2 releases")
 
-###
-### Type C releases
-###
+####
+#### Type C releases
+####
 _calculate_geometry(::Detailed{Tuple{ChemicalWeapon, ReleaseTypeC}}, inputs) = _circle(inputs, 10_000)
 
 
 
-########
-######## Helper functions to avoid repetition when building the ATP45 zones. 
-########
+#
+# Helper functions to avoid repetition when building the ATP45 zones. 
+#
 _circle(location::AbstractReleaseLocation, inner_radius) = (CircleLike(location, inner_radius, Dict("type" => "release")), )
 
 _circle(inputs, inner_radius) = _circle(get_location(inputs), inner_radius)

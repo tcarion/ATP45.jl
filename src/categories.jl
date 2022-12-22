@@ -1,17 +1,5 @@
 abstract type AbstractCategory end
 
-description(::Type) = ""
-description(o::T) where T = description(T)
-
-longname(::Type) = ""
-longname(o::T) where T = longname(T)
-
-id(::Type) = ""
-id(o::T) where T = id(T)
-
-note(::Type) = ""
-note(o::T) where T = note(T)
-
 """
     AbstractWeapon <: AbstractCategory
 Discriminate between the type of weapon (Chemical, Biological, Radiological, Nuclear)
