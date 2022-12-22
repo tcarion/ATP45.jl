@@ -3,7 +3,7 @@ using ATP45
 import ATP45: Simplified, Detailed
 import ATP45: ChemicalWeapon, BiologicalWeapon, RadiologicalWeapon, NuclearWeapon
 import ATP45: ReleaseTypeA, ReleaseTypeB, ReleaseTypeC
-import ATP45: ContainerGroupB
+import ATP45: Shell
 import ATP45: WindDirection, ReleaseLocation
 import ATP45: MissingInputsException
 import ATP45: Atp45Result
@@ -29,8 +29,8 @@ import ATP45: CircleLike, TriangleLike
 
     @test detailed(windlower, release).zones[2] isa CircleLike
     @test_throws MethodError Detailed(chemical, ReleaseTypeB())(windlower, release)
-    typeBcontB = Detailed(chemical, ReleaseTypeB(), ContainerGroupB())
+    typeBcontB = Detailed(chemical, ReleaseTypeB(), Shell())
     @test typeBcontB(windhigher, release).zones[2] isa TriangleLike
 
-    @test typeC = Detailed(chemical, ReleaseTypeC())
+    # @test typeC = Detailed(chemical, ReleaseTypeC())
 end

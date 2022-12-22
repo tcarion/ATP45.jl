@@ -26,7 +26,7 @@ function __init__()
     add_ids_to_map(AbstractWeapon)
     add_ids_to_map(AbstractReleaseType)
     add_ids_to_map(AbstractContainerType)
-    add_ids_to_map(AbstractContainerGroup)
+    # add_ids_to_map(AbstractContainerGroup)
 end
 
 # include("shapes.jl")

@@ -83,25 +83,25 @@ _calculate_geometry(::Detailed{Tuple{ChemicalWeapon, ReleaseTypeA}}, ::HigherTha
 ####
 #### Type B releases
 ####
-_calculate_geometry(model::Detailed{<:Tuple{ChemicalWeapon, ReleaseTypeB, <:AbstractContainerGroup}}, inputs) = _calculate_geometry(model, checkwind(inputs), inputs)
+_calculate_geometry(model::Detailed{<:Tuple{ChemicalWeapon, ReleaseTypeB, <:AbstractContainerType}}, inputs) = _calculate_geometry(model, checkwind(inputs), inputs)
 
 #####
 ##### Container group B
 #####
-_calculate_geometry(::Detailed{Tuple{ChemicalWeapon, ReleaseTypeB, ContainerGroupB}}, ::LowerThan10, inputs) = _circle_circle(inputs, 1_000, 10_000)
-_calculate_geometry(::Detailed{Tuple{ChemicalWeapon, ReleaseTypeB, ContainerGroupB}}, ::HigherThan10, inputs) = _circle_triangle(inputs, 1_000, 10_000)
+_calculate_geometry(::Detailed{<:Tuple{ChemicalWeapon, ReleaseTypeB, <:ContainerGroupB}}, ::LowerThan10, inputs) = _circle_circle(inputs, 1_000, 10_000)
+_calculate_geometry(::Detailed{<:Tuple{ChemicalWeapon, ReleaseTypeB, <:ContainerGroupB}}, ::HigherThan10, inputs) = _circle_triangle(inputs, 1_000, 10_000)
 
 #####
 ##### Container group C
 #####
-_calculate_geometry(::Detailed{Tuple{ChemicalWeapon, ReleaseTypeB, ContainerGroupC}}, ::LowerThan10, inputs) = _circle_circle(inputs, 2_000, 10_000)
-_calculate_geometry(::Detailed{Tuple{ChemicalWeapon, ReleaseTypeB, ContainerGroupC}}, ::HigherThan10, inputs) = _circle_triangle(inputs, 2_000, 10_000)
+_calculate_geometry(::Detailed{<:Tuple{ChemicalWeapon, ReleaseTypeB, <:ContainerGroupC}}, ::LowerThan10, inputs) = _circle_circle(inputs, 2_000, 10_000)
+_calculate_geometry(::Detailed{<:Tuple{ChemicalWeapon, ReleaseTypeB, <:ContainerGroupC}}, ::HigherThan10, inputs) = _circle_triangle(inputs, 2_000, 10_000)
 
 #####
 ##### Container group D
 #####
-_calculate_geometry(::Detailed{Tuple{ChemicalWeapon, ReleaseTypeB, ContainerGroupD}}, ::LowerThan10, inputs) = error("Not implemented yet. Requires 2 releases")
-_calculate_geometry(::Detailed{Tuple{ChemicalWeapon, ReleaseTypeB, ContainerGroupD}}, ::HigherThan10, inputs) = error("Not implemented yet. Requires 2 releases")
+_calculate_geometry(::Detailed{<:Tuple{ChemicalWeapon, ReleaseTypeB, <:ContainerGroupD}}, ::LowerThan10, inputs) = error("Not implemented yet. Requires 2 releases")
+_calculate_geometry(::Detailed{<:Tuple{ChemicalWeapon, ReleaseTypeB, <:ContainerGroupD}}, ::HigherThan10, inputs) = error("Not implemented yet. Requires 2 releases")
 
 ####
 #### Type C releases

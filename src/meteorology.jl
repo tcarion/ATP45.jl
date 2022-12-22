@@ -12,8 +12,6 @@ struct Stable <: AbstractStability end
 id(::Type{Stable}) = "S"
 longname(::Type{Stable}) = "Stable"
 
-tostab(stab::Symbol) = getproperty(@__MODULE__, stab)
-
 abstract type AbstractWind end
 mutable struct WindVector <: AbstractWind
     u::Real

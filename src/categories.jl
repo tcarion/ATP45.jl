@@ -103,7 +103,7 @@ function containermacro(typ, id, descr)
     end
 end
 
-container_types = (
+const container_types = (
     (:Bomblet, "BML", "Bomblet"),
     (:Bomb, "BOM", "Bomb"),
     (:Shell, "SHL", "Shell"),
@@ -113,56 +113,52 @@ container_types = (
     (:Missile, "MSL", "Missile"),
     (:AirRocket, "ARKT", "Air burst rocket"),
     (:SurfaceRocket, "SRKT", "Surface burst rocket"),
-    (:NotKnown, "NKN", "Not Known"),
+    (:MissilesPayload, "MPL", "Surface burst missiles payload"),
+    (:NotKnown, "NKN", "Unknown munitions"),
 )
 
 for ct in container_types
     eval(containermacro(ct...))
 end
 
-abstract type AbstractContainerGroup <: AbstractCategory end
-description(cg::Type{<:AbstractContainerGroup}) = join([longname(x) for x in content(cg)], ", ")
+const container_groups = (
+    ContainerGroupA = [Bomblet, Bomb, SurfaceRocket, AirRocket, Shell, Mine, NotKnown, Missile],
+    ContainerGroupB = [Bomblet, Shell, Mine, SurfaceRocket, Missile],
+    ContainerGroupC = [Bomb, NotKnown, AirRocket, Missile],
+    ContainerGroupD = [Spray, Generator],
+    ContainerGroupE = [Shell, Bomblet, Mine],
+    ContainerGroupF = [MissilesPayload, Bomb, SurfaceRocket, AirRocket, NotKnown],
+)
 
-struct ContainerGroupA <: AbstractContainerGroup end
-content(::Type{ContainerGroupA}) = (Bomblet, Bomb, SurfaceRocket, AirRocket, Shell, Mine, NotKnown, Missile)
-id(::Type{ContainerGroupA}) = "groupeA"
 
-struct ContainerGroupB <: AbstractContainerGroup end
-content(::Type{ContainerGroupB}) = (Bomblet, Shell, Mine, SurfaceRocket, Missile)
-id(::Type{ContainerGroupB}) = "groupeB"
+function containergroupmacro(name, group)
+    quote
+        const $name = Union{$(group...)}
+    end
+end
 
-struct ContainerGroupC <: AbstractContainerGroup end
-content(::Type{ContainerGroupC}) = (Bomb, NotKnown, AirRocket, Missile)
-id(::Type{ContainerGroupC}) = "groupeC"
+for (k, v) in pairs(container_groups)
+    eval(containergroupmacro(k, v))
+end
 
-struct ContainerGroupD <: AbstractContainerGroup end
-content(::Type{ContainerGroupD}) = (Spray, Generator)
-id(::Type{ContainerGroupD}) = "groupeD"
-
-# nextchoice(args::Vararg{Tuple{<:AbstractCategory}}) = nextchoice(typeof.(args)...)
 nextchoice(args::Vararg{<:AbstractCategory}) = nextchoice(typeof.(args)...)
-# nextchoice(::T...) where {T<:AbstractCategory} = println(T)
-
-# nextchoice(::Type{Simplified}) = [ChemicalWeapon(), BiologicalWeapon()]
-
-# nextchoice(::Type{Simplified}, ::Type{ChemicalWeapon}) = [
-#     CircleLike()
-# ]
 
 nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeA}) = [LowerThan10(), HigherThan10()]
 nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeA}, ::Type{LowerThan10}) = nothing
-nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeA}, ::Type{HigherThan10}) = nothing
+nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeA}, ::Type{HigherThan10}) = [container_groups.ContainerGroupE, container_groups.ContainerGroupF]
+nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeA}, ::Type{HigherThan10}, ::Type{<:ContainerGroupE}) = nothing
+nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeA}, ::Type{HigherThan10}, ::Type{<:ContainerGroupF}) = nothing
 
-nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeB}) = [ContainerGroupB(), ContainerGroupC(), ContainerGroupD()]
-nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeB}, ::Type{ContainerGroupB}) = [LowerThan10(), HigherThan10()]
-nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeB}, ::Type{ContainerGroupC}) = [LowerThan10(), HigherThan10()]
-nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeB}, ::Type{ContainerGroupD}) = [LowerThan10(), HigherThan10()]
+nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeB}) = [container_groups.ContainerGroupB, container_groups.ContainerGroupC, container_groups.ContainerGroupD]
+nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeB}, ::Type{<:ContainerGroupB}) = [LowerThan10(), HigherThan10()]
+nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeB}, ::Type{<:ContainerGroupC}) = [LowerThan10(), HigherThan10()]
+nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeB}, ::Type{<:ContainerGroupD}) = [LowerThan10(), HigherThan10()]
 
-nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeB}, ::Type{ContainerGroupB}, ::Type{LowerThan10}) = nothing
+nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeB}, ::Type{<:ContainerGroupB}, ::Type{LowerThan10}) = nothing
 
 nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeC}) = nothing
 
-categories_order() = [AbstractWeapon, AbstractReleaseType, AbstractContainerGroup]
+categories_order() = [AbstractWeapon, AbstractReleaseType, AbstractContainerType]
 
 function sort_categories(categories)
     order = categories_order()

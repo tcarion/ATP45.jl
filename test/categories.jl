@@ -3,8 +3,9 @@ using ATP45
 import ATP45: AbstractWeapon, ChemicalWeapon
 import ATP45: AbstractCategory, AbstractReleaseType, ReleaseTypeA, ReleaseTypeB, ReleaseTypeC
 import ATP45: AbstractWindCategory, LowerThan10, HigherThan10
-import ATP45: AbstractContainerGroup, ContainerGroupA,ContainerGroupB
-import ATP45: id, description, content, note
+import ATP45: ContainerGroupA,ContainerGroupB
+import ATP45: AbstractContainerType, Shell, Bomb
+import ATP45: id, description, note
 import ATP45: nextchoice, categories_order, sort_categories
 
 @testset "Release categories" begin
@@ -13,23 +14,24 @@ import ATP45: nextchoice, categories_order, sort_categories
 
     lower = LowerThan10()
     higher = HigherThan10()
-    nextchoice(typeA, lower, higher)
-    nextchoice(typeA)
+    @test nextchoice(ChemicalWeapon(), typeA, lower) |> isnothing
+    @test nextchoice(ChemicalWeapon(), typeA) == [lower, higher]
 end
 
-@testset "Containers categories" begin
-    groupA = ContainerGroupA()
-    @test id(groupA) == "groupeA"
-    @test description(ContainerGroupB()) == "Bomblet, Shell" 
-
+@testset "Containers types" begin
+    shell = Shell()
+    @test shell isa ContainerGroupA
+    typeB = ReleaseTypeB()
+    @test nextchoice(ChemicalWeapon(), typeB) isa Vector{<:Vector{<:DataType}}
+    @test nextchoice(ChemicalWeapon(), typeB, shell) == [lower, higher]
 end
 
 @testset "Sort Categories" begin
     order = categories_order()
-    unordered = (ContainerGroupB(), ReleaseTypeA(), ChemicalWeapon())
+    unordered = (Shell(), ReleaseTypeA(), ChemicalWeapon())
     ordered = sort_categories(unordered)
-    @test ordered isa Tuple{<:AbstractWeapon, <:AbstractReleaseType, <:AbstractContainerGroup}
-    unordered2 = (ContainerGroupB(), ChemicalWeapon())
+    @test ordered isa Tuple{<:AbstractWeapon, <:AbstractReleaseType, <:AbstractContainerType}
+    unordered2 = (Shell(), ChemicalWeapon())
     ordered2 = sort_categories(unordered2)
-    @test ordered2 isa Tuple{<:AbstractWeapon, <:AbstractContainerGroup}
+    @test ordered2 isa Tuple{<:AbstractWeapon, <:AbstractContainerType}
 end
