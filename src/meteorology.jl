@@ -1,8 +1,18 @@
-@enum StabilityClass Unstable Neutral Stable
+abstract type AbstractStability end
+
+struct Unstable <: AbstractStability end
+id(::Type{Unstable}) = "U"
+longname(::Type{Unstable}) = "Unstable"
+
+struct Neutral <: AbstractStability end
+id(::Type{Neutral}) = "N"
+longname(::Type{Neutral}) = "Neutral"
+
+struct Stable <: AbstractStability end
+id(::Type{Stable}) = "S"
+longname(::Type{Stable}) = "Stable"
 
 tostab(stab::Symbol) = getproperty(@__MODULE__, stab)
-
-Base.convert(::Type{StabilityClass}, s::Symbol) = tostab(s)
 
 abstract type AbstractWind end
 mutable struct WindVector <: AbstractWind
