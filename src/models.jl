@@ -24,6 +24,7 @@ required_categories(::Type{<:Simplified}) = (AbstractWeapon,)
 required_inputs(::Type{<:Simplified}) = (AbstractReleaseLocation{1, <:Number}, AbstractWind)
 required_inputs(::Type{<:Detailed}) = (AbstractReleaseLocation{1, <:Number}, AbstractWind)
 required_inputs(::Type{<:Detailed{Tuple{ChemicalWeapon, ReleaseTypeC}}}) = (AbstractReleaseLocation{1, <:Number},)
+# required_inputs(::Type{<:Detailed{Tuple{ChemicalWeapon, ReleaseTypeA}}}) = (AbstractReleaseLocation{1, <:Number},)
 
 function (procedure::Simplified{T})(inputs...) where T <: Tuple{Union{RadiologicalWeapon, NuclearWeapon}}
     error("The simplified procedure for radiological and nuclear weapon is not implemented yet.")
@@ -75,10 +76,45 @@ _calculate_geometry(::Simplified{Tuple{T}}, ::HigherThan10, inputs) where T<:Uni
 ####
 #### Type A releases
 ####
-_calculate_geometry(model::Detailed{Tuple{ChemicalWeapon, ReleaseTypeA}}, inputs) = _calculate_geometry(model, checkwind(inputs), inputs)
-_calculate_geometry(::Detailed{Tuple{ChemicalWeapon, ReleaseTypeA}}, ::LowerThan10, inputs) = _circle_circle(inputs, 1_000, 10_000)
-_calculate_geometry(::Detailed{Tuple{ChemicalWeapon, ReleaseTypeA}}, ::HigherThan10, inputs) = error("Not implemented yet. Requires stability classes")
+_calculate_geometry(model::Detailed{<:Tuple{ChemicalWeapon, ReleaseTypeA, Vararg{<:AbstractContainerType}}}, inputs) = _calculate_geometry(model, checkwind(inputs), inputs)
+_calculate_geometry(::Detailed{<:Tuple{ChemicalWeapon, ReleaseTypeA}}, ::LowerThan10, inputs) = _circle_circle(inputs, 1_000, 10_000)
+function _calculate_geometry(
+    model::Detailed{<:Tuple{ChemicalWeapon, ReleaseTypeA, <:AbstractContainerType}}, 
+    wind::HigherThan10, 
+    inputs)
 
+    stability = try
+        get_stability(inputs)
+    catch e
+        if e isa ErrorException
+            throw(MissingInputsException([AbstractStability])) 
+        end
+        throw(e)
+    end
+    _calculate_geometry(model, wind, stability, inputs)
+end
+_calculate_geometry(
+    ::Detailed{<:Tuple{ChemicalWeapon, ReleaseTypeA, <:ContainerGroupE}}, 
+    ::HigherThan10, 
+    stab::AbstractStability, 
+    inputs) = 
+    _circle_triangle(inputs, 1_000, _dhd_group_e(stab))
+
+_calculate_geometry(
+    ::Detailed{<:Tuple{ChemicalWeapon, ReleaseTypeA, <:ContainerGroupF}}, 
+    ::HigherThan10, 
+    stab::AbstractStability, 
+    inputs) = 
+    _circle_triangle(inputs, 1_000, _dhd_group_f(stab))
+
+
+# from Table 3-2 of ATP-45
+_dhd_group_e(::Unstable) = 10_000
+_dhd_group_e(::Neutral) = 30_000
+_dhd_group_e(::Stable) = 50_000
+_dhd_group_f(::Unstable) = 15_000
+_dhd_group_f(::Neutral) = 30_000
+_dhd_group_f(::Stable) = 50_000
 
 ####
 #### Type B releases
@@ -140,3 +176,4 @@ checkwind(inputs) = checkwind(get_wind(inputs))
 
 get_location(inputs) = get_input(inputs, AbstractReleaseLocation)
 get_wind(inputs) = get_input(inputs, AbstractWind)
+get_stability(inputs) = get_input(inputs, AbstractStability)
