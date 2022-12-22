@@ -3,9 +3,8 @@ module ATP45
 using GeoInterface
 using Proj
 using RecipesBase
-using GeoJSON
-import GeoJSON: Feature, FeatureCollection, Polygon
 using InteractiveUtils
+using AbstractTrees
 
 import RecipesBase: @recipe
 
