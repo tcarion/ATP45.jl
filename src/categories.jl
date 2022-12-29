@@ -130,16 +130,27 @@ const container_groups = (
     ContainerGroupF = [MissilesPayload, Bomb, SurfaceRocket, AirRocket, NotKnown],
 )
 
+abstract type AbstractContainerGroup end
+struct ContainerGroup
+    content::Vector{<:AbstractContainerType}
+end
 
 function containergroupmacro(name, group)
     quote
         const $name = Union{$(group...)}
+        $name() = ContainerGroup([ct() for ct in $group])
     end
 end
 
 for (k, v) in pairs(container_groups)
     eval(containergroupmacro(k, v))
 end
+
+
+# function(::Type{Union{<:T}})() where {T <: Tuple{<:AbstractContainerType, Vararg{<:AbstractContainerType}}}
+#     conttypes = [ct() for ct in T]
+#     ContainerGroup(conttypes)
+# end
 
 nextchoice(args::Vararg{<:AbstractCategory}) = nextchoice(typeof.(args)...)
 

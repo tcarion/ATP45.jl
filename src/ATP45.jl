@@ -5,10 +5,12 @@ using Proj
 using RecipesBase
 using InteractiveUtils
 using AbstractTrees
+import AbstractTrees: children, parent, nodevalue
 
 import RecipesBase: @recipe
 
 const GI = GeoInterface
+const AT = AbstractTrees
 
 const EARTH_RADIUS = 6371.0e3
 
@@ -38,6 +40,7 @@ include("categories.jl")
 include("constants.jl")
 include("inputs.jl")
 include("models.jl")
+include("tree.jl")
 # include("atp45_.jl")
 include("recipes.jl")
 

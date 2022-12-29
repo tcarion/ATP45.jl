@@ -1,6 +1,6 @@
 using Test
 using ATP45
-import ATP45: AbstractWeapon, ChemicalWeapon
+import ATP45: AbstractWeapon, ChemicalWeapon, BiologicalWeapon
 import ATP45: AbstractCategory, AbstractReleaseType, ReleaseTypeA, ReleaseTypeB, ReleaseTypeC
 import ATP45: AbstractWindCategory, LowerThan10, HigherThan10
 import ATP45: ContainerGroupA,ContainerGroupB
