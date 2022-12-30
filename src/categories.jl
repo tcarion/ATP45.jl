@@ -130,10 +130,11 @@ const container_groups = (
     ContainerGroupF = [MissilesPayload, Bomb, SurfaceRocket, AirRocket, NotKnown],
 )
 
-abstract type AbstractContainerGroup end
-struct ContainerGroup
+abstract type AbstractContainerGroup <: AbstractCategory end
+struct ContainerGroup <: AbstractContainerGroup
     content::Vector{<:AbstractContainerType}
 end
+Base.in(item::AbstractContainerType, collection::AbstractContainerGroup) = item in collection.content
 
 function containergroupmacro(name, group)
     quote

@@ -31,8 +31,14 @@
 # const DECISION_TREE = Dict(
 const DECISION_TREE = [
     Simplified => [
-        ChemicalWeapon => (:_circle_circle, 2_000, 10_000),
-        BiologicalWeapon => (:_circle_circle, 2_000, 10_000),
+        ChemicalWeapon => [
+            LowerThan10 => (:_circle_circle, 2_000, 10_000),
+            HigherThan10 => (:_circle_triangle, 2_000, 10_000),
+        ],
+        BiologicalWeapon => [
+            LowerThan10 => (:_circle_circle, 2_000, 10_000),
+            HigherThan10 => (:_circle_triangle, 2_000, 10_000),
+        ],
     ],
     Detailed => [
         ChemicalWeapon => [
@@ -56,52 +62,119 @@ const DECISION_TREE = [
     ],
 ]
 
-struct TreeNode
-    value
-    parent
+mutable struct TreeNode{T} <: AT.AbstractNode{T}
+    value::T
+    parent::Union{Nothing, TreeNode}
     children::Vector{TreeNode}
     sequence::Vector{Any}
-    TreeNode(value, parent, children=TreeNode[]) = new(value, parent, children)
+    TreeNode(value::T, parent, children=TreeNode[]) where T = new{T}(value, parent, children)
 end
 AbstractTrees.ParentLinks(::Type{<:TreeNode}) = StoredParents()
 
 # TreeNode(dict::AbstractDict) = TreeNode("root", nothing, [TreeNode(pair, "root") for pair in collect(dict)])
-TreeNode(vec::AbstractVector) = TreeNode("root", nothing, [TreeNode(pair, "root") for pair in vec])
+function TreeNode(vec::AbstractVector)
+    newnode = TreeNode("root", nothing)
+    newnode.children = [TreeNode(pair, newnode) for pair in vec]
+    newnode
+end
 function TreeNode(pair::Pair, parent = nothing)
     k, v = pair
     value = k()
 
     if v isa AbstractVector
+        newnode = TreeNode(value, parent)
         children = map(collect(v)) do child_pair
-            TreeNode(child_pair, value)
+            TreeNode(child_pair, newnode)
         end
-        TreeNode(value, parent, children)
+        newnode.children = children
+        newnode
     else
-        TreeNode(k(), parent, [TreeNode(v, k())])
+        newnode = TreeNode(k(), parent)
+        newnode.children = [TreeNode(v, newnode)]
+        newnode
     end
 end
-# function TreeNode(pair::Pair{T, <:Tuple}) where {T <: Union{UnionAll, DataType, <:Tuple}}
-# function TreeNode(pair::Pair, parent)
-#     k, v = pair
-#     TreeNode(k(), parent, [TreeNode(v, k())])
-# end
-
-
-# TreeNode(model::Type{Simplified}) = TreeNode(model, nothing, [
-#     TreeNode(ChemicalWeapon, model),
-#     TreeNode(BiologicalWeapon, model),
-#     TreeNode(RadiologicalWeapon, model),
-#     TreeNode(NuclearWeapon, model),
-# ])
-
-# TreeNode(weapon::Type{T}, parent::Type{Simplified}) where {T <: AbstractWeapon }= TreeNode(weapon, parent, [
-#     TreeNode(AbstractWind, weapon),
-#     TreeNode(AbstractReleaseLocation, weapon),
-# ])
-# TreeNode(model::Simplified{<:Tuple{ChemicalWeapon}})
-
-# children(node::TreeNode) = [ChemicalWeapon, BiologicalWeapon, RadiologicalWeapon, NuclearWeapon]
 
 children(node::TreeNode) = node.children
 parent(node::TreeNode) = node.parent
 nodevalue(node::TreeNode) = node.value
+
+build_tree() = TreeNode(DECISION_TREE)
+
+function allparents(node::TreeNode)
+    parents = TreeNode[]
+    p = parent(node)
+    while true
+        isnothing(p) && return parents
+        push!(parents, p)
+        node = p
+        p = parent(p)
+    end
+end
+
+function children_value_type(node::TreeNode)
+    vals = nodevalue.(children(node))
+    eltype(vals)
+end
+
+function descend(node::TreeNode, model_params) :: TreeNode
+    node_children = children(node)
+    vals = nodevalue.(node_children)
+    children_type = eltype(vals)
+    ichild = _find_node(children_type, vals, model_params)
+    ichild = isnothing(ichild) ? 1 : ichild
+    node_children[ichild]
+    # _descend_with_find(node, model)
+end
+
+function descendall(node::TreeNode, model_params) :: TreeNode{<:Tuple}
+    next = descend(node, model_params)
+
+    while true
+        next isa TreeNode{<:Tuple} && return next
+        next = descend(next, model_params)
+    end
+end
+
+function _find_node(::Type{<:AbstractModel}, vals, model_params)
+    # findwithtype(model_params, AbstractModel)
+    param = _getisa(model_params, AbstractModel)
+    type_param = typeof(param)
+    # Quite ugly, should find a better solution
+    inode = findisa(vals, eval(type_param.name.name))
+    inode
+end
+
+function _find_node(children_type::Type{<:Union{AbstractCategory, AbstractStability}}, vals, model_params)
+    param = _getisa(model_params, children_type)
+    inode = findisa(vals, param)
+    inode
+end
+
+function _find_node(::Type{<:AbstractWindCategory}, vals, model_params)
+    param = _getisa(model_params, AbstractWind)
+    category = checkwind(param)
+    inode = findisa(vals, category)
+    inode
+end
+
+function _find_node(::Type{<:AbstractContainerGroup}, vals, model_params)
+    param = _getisa(model_params, AbstractContainerType)
+    inode = findfirst(x -> param in x, vals)
+    inode
+end
+
+_find_node(::Type{<:Tuple}, vals, model_params) = nothing
+
+function _descend_with_find(node, tofind)
+    node_children = children(node)
+    vals = nodevalue.(node_children)
+    i = findisa(vals, tofind)
+    node_children[i]
+end
+
+function _getisa(model_params, tofind)
+    iparams = findisa(model_params, tofind)
+    isnothing(iparams) && throw(MissingInputsException([tofind]))
+    model_params[iparams]
+end

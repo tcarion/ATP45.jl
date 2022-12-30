@@ -9,6 +9,7 @@ import ATP45: Unstable, Stable
 import ATP45: MissingInputsException
 import ATP45: Atp45Result
 import ATP45: CircleLike, TriangleLike
+import ATP45: _group_parameters
 
 @testset "Models" begin
     windhigher = WindDirection(5., 45)
@@ -17,6 +18,17 @@ import ATP45: CircleLike, TriangleLike
     stable = Stable()
     release = ReleaseLocation([4., 50.])
     chemical = ChemicalWeapon()
+
+    @testset "group" begin
+        simple = Simplified(chemical)
+        inputs = (windhigher, release)
+        grouped = _group_parameters(simple, inputs)
+        comp = [simple, simple.categories..., inputs...]
+        b = map(enumerate(grouped)) do (i, g) 
+            g == comp[i]
+        end
+        @test all(b)
+    end
 
     @testset "Simplified" begin
         simple = Simplified(chemical)
@@ -41,7 +53,8 @@ import ATP45: CircleLike, TriangleLike
                 @test_throws MethodError typeA(windhigher, release)
                 typeAhigher = Detailed(chemical, ReleaseTypeA(), Shell())
                 @test_throws MissingInputsException typeAhigher(windhigher, release)
-                r = typeAhigher(windhigher, release, unstable)
+                inputs = (windhigher, release, unstable)
+                r = typeAhigher(inputs...)
                 @test r.zones[2] isa TriangleLike
             end
 

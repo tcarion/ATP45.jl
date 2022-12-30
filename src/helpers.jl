@@ -42,3 +42,15 @@ function triangle_coordinates(lon, lat, azimuth, dhd, back_distance)
     push!(coords, horizontal_walk(coords[1][1], coords[1][2], l, azimuth + 30.))
     return coords
 end
+
+function findisa(collection, ::Type{T}) where T
+    findfirst(isa.(collection, Ref(T)))
+end
+
+findisa(collection, concrete) = findisa(collection, typeof(concrete))
+
+function findwithtype(collection, ref_type)
+    iinput = findfirst(isa.(collection, Ref(ref_type)))
+    isnothing(iinput) && error("Element of type $ref_type not found in $collection")
+    collection[iinput]
+end
