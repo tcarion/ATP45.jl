@@ -10,6 +10,12 @@ id(o::T) where T = id(T)
 note(::Type) = ""
 note(o::T) where T = note(T)
 
+paramtype(::Type) = ""
+paramtype(o::T) where T = paramtype(T)
+
+internalname(T::Type) = string(T)
+internalname(o::T) where T = internalname(T)
+
 byid(iid::String) = MAP_IDS[iid]
 
 function add_ids_to_map(abstract_type)

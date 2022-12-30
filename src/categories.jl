@@ -1,5 +1,6 @@
 abstract type AbstractCategory end
 
+paramtype(::Type{<:AbstractCategory}) = "category"
 """
     AbstractWeapon <: AbstractCategory
 Discriminate between the type of weapon (Chemical, Biological, Radiological, Nuclear)

@@ -21,6 +21,8 @@ Determine the type of APT-45 will be run. Each model is a callable object that t
 
 """
 abstract type AbstractModel{T} end
+paramtype(::Type{<:AbstractModel}) = "procedure"
+internalname(T::Type{<:AbstractModel}) = string(_nonparamtype(T()))
 
 required_inputs(o::T) where {T <: AbstractModel} = required_inputs(T) 
 

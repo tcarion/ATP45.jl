@@ -15,5 +15,6 @@ using Test
    @testset "Inputs" begin include("inputs.jl") end
    @testset "Models run" begin include("models.jl") end
    @testset "Tree" begin include("tree.jl") end
+   @testset "Tree" begin include("dict.jl") end
    @testset "Run" begin include("run.jl") end
 end

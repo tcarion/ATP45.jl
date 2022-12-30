@@ -54,3 +54,6 @@ function findwithtype(collection, ref_type)
     isnothing(iinput) && error("Element of type $ref_type not found in $collection")
     collection[iinput]
 end
+
+# Quite ugly way of doing (and naming) thing, but I couldn't find better for now
+_nonparamtype(obj) = eval(typeof(obj).name.name)

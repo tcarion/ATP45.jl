@@ -9,12 +9,14 @@ struct Simplified{T} <: AbstractModel{T}
 end
 # id(::Type{Simplified}) = "simplified"
 # longname(::Type{Simplified}) = "Simplified procedure"
-description(::Type{Simplified}) = "The simplified procedure is primarily used for immediate warning. As soon as possible the detailed procedures must be carried out. A typical situation where simplified procedures will be used is when the substance type and persistency are not known."
+description(::Type{<:Simplified}) = "The simplified procedure is primarily used for immediate warning. As soon as possible the detailed procedures must be carried out. A typical situation where simplified procedures will be used is when the substance type and persistency are not known."
+id(::Type{<:Simplified}) = "simplified"
 Simplified(arg::AbstractCategory) = Simplified(Tuple([arg]))
 
 struct Detailed{T} <: AbstractModel{T}
     categories::T
 end
+id(::Type{<:Detailed}) = "detailed"
 
 Detailed(arg::AbstractCategory) = Detailed(Tuple([arg]))
 # id(::Type{Simplified}) = "detailed"

@@ -1,4 +1,5 @@
 abstract type AbstractStability end
+paramtype(::Type{<:AbstractStability}) = "meteo"
 
 struct Unstable <: AbstractStability end
 id(::Type{Unstable}) = "U"
@@ -13,6 +14,8 @@ id(::Type{Stable}) = "S"
 longname(::Type{Stable}) = "Stable"
 
 abstract type AbstractWind end
+paramtype(::Type{<:AbstractWind}) = "meteo"
+
 mutable struct WindVector <: AbstractWind
     u::Real
     v::Real

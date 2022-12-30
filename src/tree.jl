@@ -193,9 +193,8 @@ end
 function _find_node(::Type{<:AbstractModel}, vals, model_params)
     # findwithtype(model_params, AbstractModel)
     param = _getisa(model_params, AbstractModel)
-    type_param = typeof(param)
     # Quite ugly, should find a better solution
-    inode = findisa(vals, eval(type_param.name.name))
+    inode = findisa(vals, _nonparamtype(param))
     inode
 end
 

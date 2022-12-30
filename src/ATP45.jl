@@ -41,10 +41,21 @@ include("tree.jl")
 
 const ATP45_TREE = build_tree()
 
+include("dict.jl")
+
+const ATP45_VERBOSE_TREE = build_verbose_tree()
+const ATP45_DICT_TREE = tree_to_dict(ATP45_VERBOSE_TREE)
+
 include("run.jl")
 include("recipes.jl")
 
+show_decision_tree(; typedict = false) = typedict ? ATP45_DICT_TREE : ATP45_VERBOSE_TREE
 
-export WindVector, WindDirection
+export WindVector, WindDirection, Stable, Unstable, Neutral, ReleaseLocation
+export Simplified, Detailed
+export ChemicalWeapon, BiologicalWeapon, RadiologicalWeapon, NuclearWeapon
+export ReleaseTypeA, ReleaseTypeB, ReleaseTypeC
+export show_decision_tree
+
 
 end
