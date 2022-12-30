@@ -30,14 +30,11 @@ function __init__()
     # add_ids_to_map(AbstractContainerGroup)
 end
 
-# include("shapes.jl")
-# include("coordinates.jl")
 include("helpers.jl")
 include("methods.jl")
 include("meteorology.jl")
 include("geometries.jl")
 include("categories.jl")
-include("constants.jl")
 include("inputs.jl")
 include("models.jl")
 include("tree.jl")
@@ -45,11 +42,9 @@ include("tree.jl")
 const ATP45_TREE = build_tree()
 
 include("run.jl")
-# include("atp45_.jl")
 include("recipes.jl")
 
 
-export WindVector, WindDirection, Atp45Input
-export run_chem, run_bio
+export WindVector, WindDirection
 
 end
