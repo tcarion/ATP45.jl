@@ -1,27 +1,26 @@
-function (procedure::Simplified{T})(inputs...) where T <: Tuple{Union{RadiologicalWeapon, NuclearWeapon}}
-    error("The simplified procedure for radiological and nuclear weapon is not implemented yet.")
-end
-
 function (procedure::Simplified{T})(inputs...) where T
     mismes = missing_inputs(procedure, inputs...)
     isempty(mismes) || throw(MissingInputsException(mismes)) 
 
-    geometry = _calculate_geometry(procedure, inputs)
-    Atp45Result(geometry |> collect, Dict("tobe" => "designed"))
-end
-
-function (procedure::Detailed{T})(inputs...) where T <: Tuple{Union{BiologicalWeapon, RadiologicalWeapon, NuclearWeapon}}
-    error("The detailed procedure for biological, radiological and nuclear weapon is not implemented yet.")
+    
+    run(_group_parameters(procedure, inputs))
 end
 
 function (procedure::Detailed{T})(inputs...) where T
     mismes = missing_inputs(procedure, inputs...)
     isempty(mismes) || throw(MissingInputsException(mismes)) 
 
-    geometry = _calculate_geometry(procedure, inputs)
-    Atp45Result(geometry |> collect, Dict("tobe" => "designed"))
+    run(_group_parameters(procedure, inputs))
 end
 
+function run(model_parameters)
+    leave = descendall(ATP45_TREE, model_parameters)
+    nodeval = nodevalue(leave)
+    nodeval isa Tuple{<:Nothing} && error("This case has not been implemented yet.")
+    method, args... = nodeval
+    geometry = eval(method)(model_parameters, args...)
+    Atp45Result(geometry |> collect, Dict("tobe" => "designed"))
+end
 #
 # Methods dispatching on the right ATP45 zones parameters according to the given categories and inputs.
 #

@@ -41,9 +41,13 @@ include("constants.jl")
 include("inputs.jl")
 include("models.jl")
 include("tree.jl")
+
+const ATP45_TREE = build_tree()
+
 include("run.jl")
 # include("atp45_.jl")
 include("recipes.jl")
+
 
 export WindVector, WindDirection, Atp45Input
 export run_chem, run_bio

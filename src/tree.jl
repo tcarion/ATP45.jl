@@ -57,8 +57,20 @@ const DECISION_TREE = [
                     ],
                 ],
             ],
+            ReleaseTypeB => [
+                ContainerGroupB => [
+                    LowerThan10 => (:_circle_circle, 1_000, 10_000),
+                    HigherThan10 => (:_circle_triangle, 1_000, 10_000),
+                ],
+                ContainerGroupC => [
+                    LowerThan10 => (:_circle_circle, 2_000, 10_000),
+                    HigherThan10 => (:_circle_triangle, 2_000, 10_000),
+                ],
+                ContainerGroupD => (nothing,)
+            ],
+            ReleaseTypeC => (:_circle, 10_000),
         ],
-        BiologicalWeapon => (:_circle_circle, 2_000, 10_000),
+        BiologicalWeapon => (nothing,),
     ],
 ]
 
@@ -117,6 +129,27 @@ function children_value_type(node::TreeNode)
     eltype(vals)
 end
 
+"""
+    descend(node::TreeNode, model_params) :: TreeNode
+Discriminate between the children of `node` according to the parameters in `model_params`.
+julia> ex = Simplified => [
+               ChemicalWeapon => [
+                   LowerThan10 => (:_circle_circle, 2_000, 10_000),
+                   HigherThan10 => (:_circle_triangle, 2_000, 10_000),
+               ],
+               BiologicalWeapon => [
+                   LowerThan10 => (:_circle_circle, 1_000, 10_000),
+                   HigherThan10 => (:_circle_triangle, 1_000, 10_000),
+               ],
+           ]
+julia> model_params = (BiologicalWeapon(),)
+julia> descend(TreeNode(ex), model_params)
+BiologicalWeapon()
+├─ LowerThan10()
+│  └─ (:_circle_circle, 1000, 10000)
+└─ HigherThan10()
+   └─ (:_circle_triangle, 1000, 10000)
+"""
 function descend(node::TreeNode, model_params) :: TreeNode
     node_children = children(node)
     vals = nodevalue.(node_children)
@@ -127,6 +160,27 @@ function descend(node::TreeNode, model_params) :: TreeNode
     # _descend_with_find(node, model)
 end
 
+"""
+    descendall(node::TreeNode, model_params) :: TreeNode{<:Tuple}
+Browse the tree starting at `node`, choosing the path following what is specified in `model_params`.
+
+# Examples
+```julia-repl
+julia> ex = Simplified => [
+               ChemicalWeapon => [
+                   LowerThan10 => (:_circle_circle, 2_000, 10_000),
+                   HigherThan10 => (:_circle_triangle, 2_000, 10_000),
+               ],
+               BiologicalWeapon => [
+                   LowerThan10 => (:_circle_circle, 1_000, 10_000),
+                   HigherThan10 => (:_circle_triangle, 1_000, 10_000),
+               ],
+           ]
+julia> model_params = (BiologicalWeapon(), WindDirection(45, 2))
+julia> descendall(TreeNode(ex), model_params)
+(:_circle_triangle, 1000, 10000)
+```
+"""
 function descendall(node::TreeNode, model_params) :: TreeNode{<:Tuple}
     next = descend(node, model_params)
 

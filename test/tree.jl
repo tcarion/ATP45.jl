@@ -3,20 +3,55 @@ using ATP45
 using ATP45: _group_parameters
 using ATP45: TreeNode
 import ATP45: children, parent, nodevalue
-import ATP45: DECISION_TREE, build_tree, allparents, children_value_type, descend, descendall, _find_node
-import ATP45: Simplified, Detailed, ChemicalWeapon, BiologicalWeapon, Shell, Bomb, ReleaseTypeA, WindDirection, ReleaseLocation, HigherThan10, Stable
+import ATP45: build_tree, allparents, children_value_type, descend, descendall, _find_node
+import ATP45: Simplified, Detailed, ChemicalWeapon, BiologicalWeapon, Shell, Bomb, ReleaseTypeA, WindDirection, ReleaseLocation, LowerThan10, HigherThan10
+import ATP45: Stable, Unstable, Neutral
+import ATP45: ContainerGroupE, ContainerGroupF
 import ATP45.AbstractTrees: Leaves, getroot
 import ATP45: MissingInputsException
 
+example_tree = [
+    Simplified => [
+        ChemicalWeapon => [
+            LowerThan10 => (:_circle_circle, 2_000, 10_000),
+            HigherThan10 => (:_circle_triangle, 2_000, 10_000),
+        ],
+        BiologicalWeapon => [
+            LowerThan10 => (:_circle_circle, 2_000, 10_000),
+            HigherThan10 => (:_circle_triangle, 2_000, 10_000),
+        ],
+    ],
+    Detailed => [
+        ChemicalWeapon => [
+            ReleaseTypeA => [
+                LowerThan10 => (:_circle_circle, 1_000, 10_000),
+                HigherThan10 => [
+                    ContainerGroupE => [
+                        Unstable => (:_circle_triangle, 1_000, 10_000),
+                        Neutral => (:_circle_triangle, 1_000, 30_000),
+                        Stable => (:_circle_triangle, 1_000, 50_000),
+                    ],
+                    ContainerGroupF => [
+                        Unstable => (:_circle_triangle, 1_000, 15_000),
+                        Neutral => (:_circle_triangle, 1_000, 30_000),
+                        Stable => (:_circle_triangle, 1_000, 50_000),
+                    ],
+                ],
+            ],
+        ],
+        BiologicalWeapon => (:_circle_circle, 2_000, 10_000),
+    ],
+]
+
 @testset "Tree creation" begin
-    tree = TreeNode(DECISION_TREE)
+    tree = TreeNode(example_tree)
     leaves = collect(Leaves(tree))
-    @test length(leaves) == 10
+    @test length(leaves) == 12
     @test nodevalue(getroot(leaves[1])) == "root"
 end
 
 @testset "Tree methods" begin
-    tree = build_tree()
+    tree = TreeNode(example_tree)
     leaves = collect(Leaves(tree))
     leave = leaves[7]
     parents = allparents(leave)
