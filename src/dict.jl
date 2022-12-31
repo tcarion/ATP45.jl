@@ -25,7 +25,7 @@ function tree_to_dict(node)
         return []
     end
 
-    Dict(val..., :children => [tree_to_dict(c) for c in children(node)])
+    OrderedDict(val..., :children => [tree_to_dict(c) for c in children(node)])
 end
 
 build_verbose_tree() = build_verbose_tree(ATP45_TREE)

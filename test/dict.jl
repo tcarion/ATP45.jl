@@ -46,7 +46,7 @@ tree = TreeNode(example_tree)
 @testset "Tree to dict" begin
     newtree = build_verbose_tree(tree)
     dict = tree_to_dict(newtree)
-    @test dict isa Dict
+    @test dict isa AbstractDict
     @test dict[:id] == "root"
     jsonstring = JSON3.write(dict)
     json = JSON3.read(jsonstring)

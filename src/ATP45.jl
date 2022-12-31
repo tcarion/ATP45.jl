@@ -6,6 +6,7 @@ using RecipesBase
 using InteractiveUtils
 using AbstractTrees
 import AbstractTrees: children, parent, nodevalue
+using OrderedCollections: OrderedDict
 
 import RecipesBase: @recipe
 
