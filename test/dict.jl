@@ -49,13 +49,15 @@ tree = TreeNode(example_tree)
     props = properties(ChemicalWeapon())
     @test props.id == "chem"
     @test props == properties("chem")
+    container = properties(ContainerGroupE())
+    @test container.content == ["SHL", "BML", "MNE"]
     dict = tree_to_dict(newtree)
     @test dict isa AbstractDict
     @test dict[:id] == "root"
     jsonstring = JSON3.write(dict)
     json = JSON3.read(jsonstring)
     @test json.children[1].id == "simplified"
-    # open("test.json", "w") do f
-    #     JSON3.write(f, dict)
-    # end
+    open("test.json", "w") do f
+        JSON3.write(f, dict)
+    end
 end

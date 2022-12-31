@@ -1,11 +1,13 @@
 abstract type AbstractCategory end
 
-paramtype(::Type{<:AbstractCategory}) = "category"
+ParamType(::Type{<:AbstractCategory}) = Category()
+
 """
     AbstractWeapon <: AbstractCategory
 Discriminate between the type of weapon (Chemical, Biological, Radiological, Nuclear)
 """
 abstract type AbstractWeapon <: AbstractCategory end
+# ParamType(::Type{<:AbstractWeapon}) = Category()
 
 struct ChemicalWeapon <: AbstractWeapon end
 id(::Type{ChemicalWeapon}) = "chem"
@@ -55,6 +57,7 @@ id(::Type{ReleaseTypeC}) = "typeC"
 
 
 abstract type AbstractWindCategory <: AbstractCategory end
+ParamType(::Type{<:AbstractWindCategory}) = WindChoice()
 
 struct LowerThan10 <: AbstractWindCategory end
 description(::Type{LowerThan10}) = "The wind is <= 10km/h."
@@ -136,6 +139,7 @@ struct ContainerGroup <: AbstractContainerGroup
     content::Vector{<:AbstractContainerType}
 end
 Base.in(item::AbstractContainerType, collection::AbstractContainerGroup) = item in collection.content
+ParamType(::Type{ContainerGroup}) = Group()
 
 function containergroupmacro(name, group)
     quote

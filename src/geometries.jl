@@ -16,6 +16,8 @@ GI.geomtrait(::AbstractReleaseLocation) = MultiPointTrait()
 GI.ngeom(::MultiPointTrait, ::AbstractReleaseLocation{N, T}) where {N, T} = N
 GI.getgeom(::MultiPointTrait, geom::AbstractReleaseLocation, i) = coords(geom)[i]
 
+ParamType(::Type{<:AbstractReleaseLocation}) = Location()
+
 """
     ReleaseLocation{N, T}
 Represents the `N` locations of the release(s).

@@ -4,7 +4,7 @@ Determine the type of APT-45 that will be run. Each model is a callable object t
 
 """
 abstract type AbstractModel end
-paramtype(::Type{<:AbstractModel}) = "procedure"
+ParamType(::Type{<:AbstractModel}) = Procedure()
 internalname(T::Type{<:AbstractModel}) = string(_nonparamtype(T()))
 
 
@@ -45,8 +45,8 @@ function Simplified(arg::Union{ATP45.AbstractCategory, String})
     Simplified(args)
 end
 longname(::Type{Simplified}) = "Simplified procedure"
-description(::Type{<:Simplified}) = "The simplified procedure is primarily used for immediate warning. As soon as possible the detailed procedures must be carried out. A typical situation where simplified procedures will be used is when the substance type and persistency are not known."
-id(::Type{<:Simplified}) = "simplified"
+description(::Type{Simplified}) = "The simplified procedure is primarily used for immediate warning. As soon as possible the detailed procedures must be carried out. A typical situation where simplified procedures will be used is when the substance type and persistency are not known."
+id(::Type{Simplified}) = "simplified"
 
 struct Detailed <: AbstractModel
     categories::Tuple{Vararg{<:AbstractCategory}}
@@ -58,8 +58,8 @@ function Detailed(arg::Union{ATP45.AbstractCategory, String})
     args = sort_categories(cast)
     Detailed(args)
 end
-id(::Type{<:Detailed}) = "detailed"
-longname(::Type{Simplified}) = "Detailed procedure"
+id(::Type{Detailed}) = "detailed"
+longname(::Type{Detailed}) = "Detailed procedure"
 
 #
 # Helper functions to avoid repetition when building the ATP45 zones. 

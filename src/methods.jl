@@ -10,11 +10,28 @@ id(o::T) where T = id(T)
 note(::Type) = ""
 note(o::T) where T = note(T)
 
-paramtype(::Type) = ""
-paramtype(o::T) where T = paramtype(T)
-
 internalname(T::Type) = string(T)
 internalname(o::T) where T = internalname(T)
+
+abstract type ParamType end
+struct Procedure <: ParamType end
+struct Category <: ParamType end
+struct Meteo <: ParamType end
+struct Group <: ParamType end
+struct Location <: ParamType end
+struct WindChoice <: ParamType end
+struct NoParam <: ParamType end
+
+ParamType(o::T) where T = ParamType(T)
+ParamType(::Type) = NoParam()
+
+paramtype(::T) where T <: ParamType = lowercase(string(Symbol(T)))
+paramtype(::NoParam) = ""
+paramtype(o) = paramtype(ParamType(o))
+
+content(o) = content(ParamType(o), o)
+content(::ParamType, o) = ""
+content(::Group, o) = [id(c) for c in o.content]
 
 function byid(iid::String) 
     try

@@ -40,8 +40,8 @@ julia> ATP45.properties(ChemicalWeapon())
 ```
 """
 function properties(obj)
-    to_include = [:id, :longname, :description, :note, :paramtype, :internalname]
-    fs = Pair{Symbol, String}[]
+    to_include = [:id, :longname, :description, :note, :paramtype, :internalname, :content]
+    fs = Pair{Symbol, Any}[]
     for ti in to_include
         val = eval(ti)(obj)
         val !== "" && push!(fs, ti => eval(ti)(obj))
