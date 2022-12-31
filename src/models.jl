@@ -1,3 +1,13 @@
+"""
+    AbstractModel
+Determine the type of APT-45 that will be run. Each model is a callable object that takes the needed inputs as arguments.
+
+"""
+abstract type AbstractModel{T} end
+paramtype(::Type{<:AbstractModel}) = "procedure"
+internalname(T::Type{<:AbstractModel}) = string(_nonparamtype(T()))
+
+required_inputs(o::T) where {T <: AbstractModel} = required_inputs(T) 
 
 function (::Type{T})(args::Vararg{<:Union{AbstractCategory, String}}) where {T<:AbstractModel}
     cast = cast_id.(args)
@@ -18,6 +28,20 @@ function Base.show(io::IO, ::MIME"text/plain", procedure::AbstractModel)
             method(io, " - $(id(c))")
         end
     end
+end
+
+function missing_inputs(model::AbstractModel, inputs...)::Vector{Any}
+    requireds = required_inputs(model)
+    missing_in = []
+    # inputs_supertypes = supertype.(typeof.(inputs))
+    # inputs_type = typeof.(inputs)
+    for required in requireds
+        is_require_in_input = any(isa.(inputs, Ref(required)))
+        if !is_require_in_input
+            push!(missing_in, required)
+        end
+    end
+    missing_in
 end
 
 struct Simplified{T} <: AbstractModel{T}
