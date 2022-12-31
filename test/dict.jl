@@ -5,7 +5,7 @@ import ATP45: children, parent, nodevalue
 import ATP45: LowerThan10, HigherThan10
 import ATP45: ContainerGroupE, ContainerGroupF
 import ATP45: TreeNode
-import ATP45: build_verbose_tree, tree_to_dict
+import ATP45: build_verbose_tree, tree_to_dict, properties
 using JSON3
 
 example_tree = [
@@ -45,6 +45,10 @@ tree = TreeNode(example_tree)
 
 @testset "Tree to dict" begin
     newtree = build_verbose_tree(tree)
+
+    props = properties(ChemicalWeapon())
+    @test (:id => "chem") in props
+    @test props == properties("chem")
     dict = tree_to_dict(newtree)
     @test dict isa AbstractDict
     @test dict[:id] == "root"
