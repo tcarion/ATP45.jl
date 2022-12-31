@@ -4,6 +4,21 @@ function (::Type{T})(args::Vararg{<:Union{AbstractCategory, String}}) where {T<:
     args = sort_categories(cast)
     T(args)
 end
+categories(procedure::AbstractModel) = procedure.categories
+
+function Base.show(io::IO, ::MIME"text/plain", procedure::AbstractModel)
+    print(io, "`$(id(procedure))` procedure with ")
+    cat = categories(procedure)
+    if cat == ()
+        print(io, "no parameters.")
+    else
+        println(io, "parameters:")
+        for (i, c) in enumerate(cat)
+            method = i % length(cat) == 0 ? print : println
+            method(io, " - $(id(c))")
+        end
+    end
+end
 
 struct Simplified{T} <: AbstractModel{T}
     categories::T
