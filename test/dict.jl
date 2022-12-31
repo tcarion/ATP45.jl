@@ -57,7 +57,7 @@ tree = TreeNode(example_tree)
     jsonstring = JSON3.write(dict)
     json = JSON3.read(jsonstring)
     @test json.children[1].id == "simplified"
-    open("test.json", "w") do f
-        JSON3.write(f, dict)
-    end
+    # open("test.json", "w") do f
+    #     JSON3.write(f, dict)
+    # end
 end

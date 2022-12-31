@@ -1,34 +1,3 @@
-
-# # const DECISION_TREE = Dict(
-# const DECISION_TREE = Dict(
-#     Simplified => Dict(
-#         ChemicalWeapon => (:_circle_circle, 2_000, 10_000),
-#         BiologicalWeapon => (:_circle_circle, 2_000, 10_000),
-#     ),
-#     Detailed => Dict(
-#         ChemicalWeapon => Dict(
-#             ReleaseTypeA => Dict(
-#                 LowerThan10 => (:_circle_circle, 1_000, 10_000),
-#                 HigherThan10 => Dict(
-#                     ContainerGroupE => Dict(
-#                         Unstable => (:_circle_triangle, 1_000, 10_000),
-#                         Neutral => (:_circle_triangle, 1_000, 30_000),
-#                         Stable => (:_circle_triangle, 1_000, 50_000),
-#                     ),
-#                     ContainerGroupF => Dict(
-#                         Unstable => (:_circle_triangle, 1_000, 15_000),
-#                         Neutral => (:_circle_triangle, 1_000, 30_000),
-#                         Stable => (:_circle_triangle, 1_000, 50_000),
-#                     ),
-#                 )
-#             )
-#         ),
-#         BiologicalWeapon => (:_circle_circle, 2_000, 10_000),
-#     )
-# )
-
-
-# const DECISION_TREE = Dict(
 const DECISION_TREE = [
     Simplified => [
         ChemicalWeapon => [
@@ -83,7 +52,6 @@ mutable struct TreeNode{T} <: AT.AbstractNode{T}
 end
 AbstractTrees.ParentLinks(::Type{<:TreeNode}) = StoredParents()
 
-# TreeNode(dict::AbstractDict) = TreeNode("root", nothing, [TreeNode(pair, "root") for pair in collect(dict)])
 function TreeNode(vec::AbstractVector)
     newnode = TreeNode("root", nothing)
     newnode.children = [TreeNode(pair, newnode) for pair in vec]
@@ -161,7 +129,6 @@ function descend(node::TreeNode, model_params) :: TreeNode
     ichild = _find_node(children_type, vals, model_params)
     ichild = isnothing(ichild) ? 1 : ichild
     node_children[ichild]
-    # _descend_with_find(node, model)
 end
 
 """
@@ -195,7 +162,6 @@ function descendall(node::TreeNode, model_params) :: TreeNode{<:Tuple}
 end
 
 function _find_node(::Type{<:AbstractModel}, vals, model_params)
-    # findwithtype(model_params, AbstractModel)
     param = _getisa(model_params, AbstractModel)
     # Quite ugly, should find a better solution
     inode = findisa(vals, _nonparamtype(param))

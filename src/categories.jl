@@ -67,38 +67,10 @@ description(::Type{HigherThan10}) = "The wind is > 10km/h."
 
 abstract type AbstractContainerType <: AbstractCategory end
 
-# struct Bomblet <: AbstractContainerType end
-# id(::Type{Bomblet}) = "BML"
-# description(::Type{Bomblet}) = "Bomblet"
-
-# struct Bomb <: AbstractContainerType end
-# id(::Type{Bomb}) = "BOM"
-# description(::Type{Bomb}) = "Bomb"
-
-# struct Shell <: AbstractContainerType end
-# id(::Type{Shell}) = "SHL"
-# description(::Type{Shell}) = "Shell"
-
-# struct Spray <: AbstractContainerType end
-# id(::Type{Spray}) = "SPR"
-# description(::Type{Spray}) = "Spray (tank)"
-
-# struct Generator <: AbstractContainerType end
-# id(::Type{Generator}) = "GEN"
-# description(::Type{Generator}) = "Generator (Aerosol)"
-
-# macro container(typ::String, id::String, descr::String)
 macro container(typ, id, descr)
     containermacro(typ, id, descr)
 end
 
-# function containermacro(typ, id, descr)
-#     quote
-#         Base.@__doc__ struct $(eval(typ)) <: AbstractContainerType end
-#         id(::Type{$(eval(typ))}) = $id
-#         description(::Type{$(eval(typ))}) = $descr
-#     end |> esc
-# end
 function containermacro(typ, id, descr)
     quote
         struct $typ <: AbstractContainerType end
@@ -152,29 +124,6 @@ for (k, v) in pairs(container_groups)
     eval(containergroupmacro(k, v))
 end
 
-
-# function(::Type{Union{<:T}})() where {T <: Tuple{<:AbstractContainerType, Vararg{<:AbstractContainerType}}}
-#     conttypes = [ct() for ct in T]
-#     ContainerGroup(conttypes)
-# end
-
-nextchoice(args::Vararg{<:AbstractCategory}) = nextchoice(typeof.(args)...)
-
-nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeA}) = [LowerThan10(), HigherThan10()]
-nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeA}, ::Type{LowerThan10}) = nothing
-nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeA}, ::Type{HigherThan10}) = [container_groups.ContainerGroupE, container_groups.ContainerGroupF]
-nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeA}, ::Type{HigherThan10}, ::Type{<:ContainerGroupE}) = nothing
-nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeA}, ::Type{HigherThan10}, ::Type{<:ContainerGroupF}) = nothing
-
-nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeB}) = [container_groups.ContainerGroupB, container_groups.ContainerGroupC, container_groups.ContainerGroupD]
-nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeB}, ::Type{<:ContainerGroupB}) = [LowerThan10(), HigherThan10()]
-nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeB}, ::Type{<:ContainerGroupC}) = [LowerThan10(), HigherThan10()]
-nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeB}, ::Type{<:ContainerGroupD}) = [LowerThan10(), HigherThan10()]
-
-nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeB}, ::Type{<:ContainerGroupB}, ::Type{LowerThan10}) = nothing
-
-nextchoice(::Type{ChemicalWeapon}, ::Type{ReleaseTypeC}) = nothing
-
 categories_order() = [AbstractWeapon, AbstractReleaseType, AbstractContainerType]
 
 function sort_categories(categories)
@@ -186,4 +135,3 @@ function sort_categories(categories)
     end
     Tuple(ordered)
 end
-# nextchoice(::Type{ReleaseTypeB}, ::Type{HigherThan10}) = "circle"

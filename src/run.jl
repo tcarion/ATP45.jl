@@ -1,17 +1,10 @@
 function (procedure::Simplified)(inputs...)
     inputs = cast_id.(inputs)
-    # mismes = missing_inputs(procedure, inputs...)
-    # isempty(mismes) || throw(MissingInputsException(mismes)) 
-
-    
     run(_group_parameters(procedure, inputs))
 end
 
 function (procedure::Detailed)(inputs...)
     inputs = cast_id.(inputs)
-    # mismes = missing_inputs(procedure, inputs...)
-    # isempty(mismes) || throw(MissingInputsException(mismes)) 
-
     run(_group_parameters(procedure, inputs))
 end
 
