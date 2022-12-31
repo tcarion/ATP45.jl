@@ -47,7 +47,7 @@ tree = TreeNode(example_tree)
     newtree = build_verbose_tree(tree)
 
     props = properties(ChemicalWeapon())
-    @test (:id => "chem") in props
+    @test props.id == "chem"
     @test props == properties("chem")
     dict = tree_to_dict(newtree)
     @test dict isa AbstractDict

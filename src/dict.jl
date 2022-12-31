@@ -5,7 +5,7 @@ function build_verbose_tree(tree)
     end
 end
 
-_format_node(::TreeNode{<:String}) = [:id => "root"]
+_format_node(::TreeNode{<:String}) = (id = "root",)
 function _format_node(node::TreeNode{<:Union{AbstractCategory, AbstractModel, AbstractStability}})
     val = nodevalue(node)
     properties(val)
@@ -19,7 +19,7 @@ function tree_to_dict(node)
         return nothing
     end
 
-    OrderedDict(val..., :children => [tree_to_dict(c) for c in children(node)])
+    OrderedDict(collect(pairs(val))..., :children => [tree_to_dict(c) for c in children(node)])
 end
 
 build_verbose_tree() = build_verbose_tree(ATP45_TREE)
@@ -39,13 +39,13 @@ julia> ATP45.properties(ChemicalWeapon())
  :internalname => "ChemicalWeapon"
 ```
 """
-function properties(obj) :: Vector{<:Pair{Symbol, String}}
+function properties(obj)
     to_include = [:id, :longname, :description, :note, :paramtype, :internalname]
     fs = Pair{Symbol, String}[]
     for ti in to_include
         val = eval(ti)(obj)
         val !== "" && push!(fs, ti => eval(ti)(obj))
     end
-    fs
+    (; fs...)
 end
-properties(iid::String) :: Vector{<:Pair{Symbol, String}} = properties(MAP_IDS[iid])
+properties(iid::String) = properties(MAP_IDS[iid])
