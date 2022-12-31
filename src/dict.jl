@@ -30,12 +30,14 @@ build_verbose_tree() = build_verbose_tree(ATP45_TREE)
 Give the properties defined on the ATP45 object, given the object itsels `obj` or its id `iid`.
 
 # Examples
+```julia-repl
 julia> ATP45.properties(ChemicalWeapon())
 4-element Vector{Pair{Symbol, String}}:
            :id => "chem"
      :longname => "Chemical"
     :paramtype => "category"
  :internalname => "ChemicalWeapon"
+```
 """
 function properties(obj) :: Vector{<:Pair{Symbol, String}}
     to_include = [:id, :longname, :description, :note, :paramtype, :internalname]

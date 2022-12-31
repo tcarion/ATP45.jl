@@ -134,6 +134,7 @@ end
 Discriminate between the children of `node` according to the parameters in `model_params`.
 
 # Examples
+```julia-repl
 julia> ex = Simplified => [
                ChemicalWeapon => [
                    LowerThan10 => (:_circle_circle, 2_000, 10_000),
@@ -151,6 +152,7 @@ BiologicalWeapon()
 │  └─ (:_circle_circle, 1000, 10000)
 └─ HigherThan10()
    └─ (:_circle_triangle, 1000, 10000)
+```
 """
 function descend(node::TreeNode, model_params) :: TreeNode
     node_children = children(node)

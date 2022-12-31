@@ -17,7 +17,7 @@ end
 
 """
     AbstractModel
-Determine the type of APT-45 will be run. Each model is a callable object that takes the needed inputs as arguments.
+Determine the type of APT-45 that will be run. Each model is a callable object that takes the needed inputs as arguments.
 
 """
 abstract type AbstractModel{T} end
