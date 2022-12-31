@@ -1,6 +1,7 @@
 using Test
 using ATP45
 import ATP45: ATP45_TREE
+import ATP45: cast_id
 import ATP45: Simplified, Detailed
 import ATP45: ChemicalWeapon, BiologicalWeapon, RadiologicalWeapon, NuclearWeapon
 import ATP45: ReleaseTypeA, ReleaseTypeB, ReleaseTypeC
@@ -13,7 +14,11 @@ import ATP45: CircleLike, TriangleLike
 @testset "Run" begin
     model_parameters = (Simplified(), BiologicalWeapon(), WindDirection(45, 4), ReleaseLocation([4., 50.]))
     result = ATP45.run(model_parameters)
-    result isa Atp45Result
+    @test result isa Atp45Result
+    model_parameters_str = ("simplified", "bio", WindDirection(45, 4), ReleaseLocation([4., 50.]))
+    @test cast_id.(model_parameters_str) == model_parameters
+    res2 = ATP45.run(model_parameters_str)
+    @test res2 isa Atp45Result
 end
 
 @testset "Models run" begin
@@ -37,7 +42,8 @@ end
     @testset "Detailed" begin
         detailed = Detailed(chemical, ReleaseTypeC())
         detailed2 = Detailed(ReleaseTypeC(), chemical)
-        @test detailed == detailed2
+        withid = Detailed("chem", "typeC")
+        @test detailed == detailed2 == withid
 
         @testset "Chemical" begin
             chemical = ChemicalWeapon()
@@ -47,6 +53,9 @@ end
                 typeAhigher = Detailed(chemical, ReleaseTypeA(), Shell())
                 @test_throws MissingInputsException typeAhigher(windhigher, release)
                 inputs = (windhigher, release, unstable)
+                r = typeAhigher(inputs...)
+                @test r.zones[2] isa TriangleLike
+                inputs = (windhigher, release, "unstable")
                 r = typeAhigher(inputs...)
                 @test r.zones[2] isa TriangleLike
             end

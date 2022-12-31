@@ -1,5 +1,6 @@
 module ATP45
 
+import Base.==
 using GeoInterface
 using Proj
 using RecipesBase
@@ -24,6 +25,7 @@ function __init__()
     Proj.geod_init(DEFAULT_PROJ, a, f)
     # DEFAULT_PROJ[] = Proj.proj_create("EPSG:4326")
 
+    add_ids_to_map(AbstractModel)
     add_ids_to_map(AbstractStability)
     add_ids_to_map(AbstractWeapon)
     add_ids_to_map(AbstractReleaseType)
@@ -50,13 +52,14 @@ const ATP45_DICT_TREE = tree_to_dict(ATP45_VERBOSE_TREE)
 include("run.jl")
 include("recipes.jl")
 
-show_decision_tree(; typedict = false) = typedict ? ATP45_DICT_TREE : ATP45_VERBOSE_TREE
+decision_tree(; typedict = false) = typedict ? ATP45_DICT_TREE : ATP45_VERBOSE_TREE
+map_ids() = MAP_IDS
 
 export WindVector, WindDirection, Stable, Unstable, Neutral, ReleaseLocation
 export Simplified, Detailed
 export ChemicalWeapon, BiologicalWeapon, RadiologicalWeapon, NuclearWeapon
 export ReleaseTypeA, ReleaseTypeB, ReleaseTypeC
-export show_decision_tree
+export decision_tree
 
 
 end

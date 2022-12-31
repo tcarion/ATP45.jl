@@ -1,6 +1,7 @@
 
-function (::Type{T})(args::Vararg{<:AbstractCategory}) where {T<:AbstractModel}
-    args = sort_categories(args)
+function (::Type{T})(args::Vararg{<:Union{AbstractCategory, String}}) where {T<:AbstractModel}
+    cast = cast_id.(args)
+    args = sort_categories(cast)
     T(args)
 end
 

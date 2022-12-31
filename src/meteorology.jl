@@ -2,15 +2,15 @@ abstract type AbstractStability end
 paramtype(::Type{<:AbstractStability}) = "meteo"
 
 struct Unstable <: AbstractStability end
-id(::Type{Unstable}) = "U"
+id(::Type{Unstable}) = "unstable"
 longname(::Type{Unstable}) = "Unstable"
 
 struct Neutral <: AbstractStability end
-id(::Type{Neutral}) = "N"
+id(::Type{Neutral}) = "neutral"
 longname(::Type{Neutral}) = "Neutral"
 
 struct Stable <: AbstractStability end
-id(::Type{Stable}) = "S"
+id(::Type{Stable}) = "stable"
 longname(::Type{Stable}) = "Stable"
 
 abstract type AbstractWind end
@@ -20,11 +20,13 @@ mutable struct WindVector <: AbstractWind
     u::Real
     v::Real
 end
+==(w1::WindVector, w2::WindVector) = w1.u == w2.u && w1.v == w2.v
 
 mutable struct WindDirection <: AbstractWind
     speed::Real
     direction::Real
 end
+==(w1::WindDirection, w2::WindDirection) = w1.speed == w2.speed && w1.direction == w2.direction
 
 """
     _2windvector(wind)

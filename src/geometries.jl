@@ -34,7 +34,7 @@ ReleaseLocation{2, Float64}(((6.0, 49.0), (6.0, 51.0)))
 struct ReleaseLocation{N, T} <: AbstractReleaseLocation{N, T}
     coords::NTuple{N, NTuple{2, T}}
 end
-
+==(r1::ReleaseLocation, r2::ReleaseLocation) = coords(r1) == coords(r2)
 """
     ZoneBoundary{N, T}
 Represents the border for a ATP45 zone. `N` is the number of vertices defining the zone.
