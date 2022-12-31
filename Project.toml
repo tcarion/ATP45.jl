@@ -12,6 +12,8 @@ Proj = "c94c279d-25a6-4763-9509-64d165bea63e"
 RecipesBase = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
 
 [compat]
+AbstractTrees = "0.4"
+OrderedCollections = "0, 1"
 GeoInterface = "1.0"
 Proj = "1"
 RecipesBase = "1.2"

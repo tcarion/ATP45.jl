@@ -1,5 +1,8 @@
 using ATP45
 using Test
+# using Aqua
+
+# Aqua.test_all(ATP45; ambiguities = false)
 
 @testset "ATP45.jl" begin
     @testset "Horizontal walk with azimuth and distance" begin
