@@ -5,7 +5,6 @@ import ATP45: ChemicalWeapon, BiologicalWeapon, RadiologicalWeapon, NuclearWeapo
 import ATP45: ReleaseTypeA, ReleaseTypeB, ReleaseTypeC
 import ATP45: Shell
 import ATP45: WindDirection, ReleaseLocation
-import ATP45: Unstable, Stable
 import ATP45: _group_parameters
 
 @testset "Models" begin

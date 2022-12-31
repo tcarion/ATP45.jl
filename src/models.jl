@@ -3,17 +3,21 @@
 Determine the type of APT-45 that will be run. Each model is a callable object that takes the needed inputs as arguments.
 
 """
-abstract type AbstractModel{T} end
+abstract type AbstractModel end
 paramtype(::Type{<:AbstractModel}) = "procedure"
 internalname(T::Type{<:AbstractModel}) = string(_nonparamtype(T()))
 
-required_inputs(o::T) where {T <: AbstractModel} = required_inputs(T) 
 
+# I'm not very satisfied with this implementation, but that's the price I had to pay to make the instanciation
+# of these types kind of user friendly. This way, Simplified("chem"), Simplified("chem", ReleaseTypeA()) and
+# Simplified((ReleaseTypeA(), ChemicalWeapon())) all work. Maybe there's a clever way to implement this though.
 function (::Type{T})(args::Vararg{<:Union{AbstractCategory, String}}) where {T<:AbstractModel}
     cast = cast_id.(args)
     args = sort_categories(cast)
     T(args)
 end
+(::Type{T})(args::Tuple{Vararg{<:AbstractCategory}}) where {T<:AbstractModel} = T(args)
+
 categories(procedure::AbstractModel) = procedure.categories
 
 function Base.show(io::IO, ::MIME"text/plain", procedure::AbstractModel)
@@ -30,43 +34,32 @@ function Base.show(io::IO, ::MIME"text/plain", procedure::AbstractModel)
     end
 end
 
-function missing_inputs(model::AbstractModel, inputs...)::Vector{Any}
-    requireds = required_inputs(model)
-    missing_in = []
-    # inputs_supertypes = supertype.(typeof.(inputs))
-    # inputs_type = typeof.(inputs)
-    for required in requireds
-        is_require_in_input = any(isa.(inputs, Ref(required)))
-        if !is_require_in_input
-            push!(missing_in, required)
-        end
-    end
-    missing_in
+struct Simplified <: AbstractModel
+    categories::Tuple{Vararg{<:AbstractCategory}}
 end
-
-struct Simplified{T} <: AbstractModel{T}
-    categories::T
+Simplified() = Simplified(())
+function Simplified(arg::Union{ATP45.AbstractCategory, String})
+    args = Tuple([arg])
+    cast = cast_id.(args)
+    args = sort_categories(cast)
+    Simplified(args)
 end
-# id(::Type{Simplified}) = "simplified"
-# longname(::Type{Simplified}) = "Simplified procedure"
+longname(::Type{Simplified}) = "Simplified procedure"
 description(::Type{<:Simplified}) = "The simplified procedure is primarily used for immediate warning. As soon as possible the detailed procedures must be carried out. A typical situation where simplified procedures will be used is when the substance type and persistency are not known."
 id(::Type{<:Simplified}) = "simplified"
-Simplified(arg::AbstractCategory) = Simplified(Tuple([arg]))
 
-struct Detailed{T} <: AbstractModel{T}
-    categories::T
+struct Detailed <: AbstractModel
+    categories::Tuple{Vararg{<:AbstractCategory}}
+end
+Detailed() = Detailed(())
+function Detailed(arg::Union{ATP45.AbstractCategory, String})
+    args = Tuple([arg])
+    cast = cast_id.(args)
+    args = sort_categories(cast)
+    Detailed(args)
 end
 id(::Type{<:Detailed}) = "detailed"
-
-Detailed(arg::AbstractCategory) = Detailed(Tuple([arg]))
-# id(::Type{Simplified}) = "detailed"
-# longname(::Type{Simplified}) = "Detailed procedure"
-
-required_categories(::Type{<:Simplified}) = (AbstractWeapon,)
-required_inputs(::Type{<:Simplified}) = (AbstractReleaseLocation{1, <:Number}, AbstractWind)
-required_inputs(::Type{<:Detailed}) = (AbstractReleaseLocation{1, <:Number}, AbstractWind)
-required_inputs(::Type{<:Detailed{Tuple{ChemicalWeapon, ReleaseTypeC}}}) = (AbstractReleaseLocation{1, <:Number},)
-# required_inputs(::Type{<:Detailed{Tuple{ChemicalWeapon, ReleaseTypeA}}}) = (AbstractReleaseLocation{1, <:Number},)
+longname(::Type{Simplified}) = "Detailed procedure"
 
 #
 # Helper functions to avoid repetition when building the ATP45 zones. 

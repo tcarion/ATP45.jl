@@ -1,16 +1,16 @@
-function (procedure::Simplified{T})(inputs...) where T
+function (procedure::Simplified)(inputs...)
     inputs = cast_id.(inputs)
-    mismes = missing_inputs(procedure, inputs...)
-    isempty(mismes) || throw(MissingInputsException(mismes)) 
+    # mismes = missing_inputs(procedure, inputs...)
+    # isempty(mismes) || throw(MissingInputsException(mismes)) 
 
     
     run(_group_parameters(procedure, inputs))
 end
 
-function (procedure::Detailed{T})(inputs...) where T
+function (procedure::Detailed)(inputs...)
     inputs = cast_id.(inputs)
-    mismes = missing_inputs(procedure, inputs...)
-    isempty(mismes) || throw(MissingInputsException(mismes)) 
+    # mismes = missing_inputs(procedure, inputs...)
+    # isempty(mismes) || throw(MissingInputsException(mismes)) 
 
     run(_group_parameters(procedure, inputs))
 end
