@@ -61,9 +61,11 @@ ParamType(::Type{<:AbstractWindCategory}) = WindChoice()
 
 struct LowerThan10 <: AbstractWindCategory end
 description(::Type{LowerThan10}) = "The wind is <= 10km/h."
+id(::Type{LowerThan10}) = "windlowerthan10"
 
 struct HigherThan10 <: AbstractWindCategory end
 description(::Type{HigherThan10}) = "The wind is > 10km/h."
+id(::Type{HigherThan10}) = "windhigherthan10"
 
 abstract type AbstractContainerType <: AbstractCategory end
 
