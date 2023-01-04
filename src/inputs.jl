@@ -16,8 +16,8 @@ function Base.showerror(io::IO, e::MissingInputsException)
 end
 
 # Info messages displayed when certain input types are missing.
-missing_message(::Type{AbstractReleaseLocation{N, <:Number}}) where N = "The model requires $N release(s) location(s)."
-missing_example(::Type{AbstractReleaseLocation{N, <:Number}}) where N = "Example: `ReleaseLocation([4., 50.]).`"
+missing_message(::Type{<:ReleaseLocation{N}}) where N = "The model requires $N release(s) location(s)."
+missing_example(::Type{<:ReleaseLocation}) = "Example: `ReleaseLocation([4., 50.]).`"
 missing_message(::Type{AbstractWind}) = "The model requires the wind speed and direction."
 missing_example(::Type{AbstractWind}) = "Example: `WindDirection(11., 45.)`."
 missing_message(::Type{AbstractWeapon}) = "The model requires the weapon category."

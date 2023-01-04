@@ -11,33 +11,44 @@ using JSON3
 example_tree = [
     Simplified => [
         ChemicalWeapon => [
-            LowerThan10 => (:_circle_circle, 2_000, 10_000),
-            HigherThan10 => (:_circle_triangle, 2_000, 10_000),
+            LowerThan10 => Leaf(ReleaseLocation{1}, :_circle_circle, 2_000, 10_000),
+            HigherThan10 => Leaf(ReleaseLocation{1}, :_circle_triangle, 2_000, 10_000),
         ],
         BiologicalWeapon => [
-            LowerThan10 => (:_circle_circle, 2_000, 10_000),
-            HigherThan10 => (:_circle_triangle, 2_000, 10_000),
+            LowerThan10 => Leaf(ReleaseLocation{1}, :_circle_circle, 2_000, 10_000),
+            HigherThan10 => Leaf(ReleaseLocation{1}, :_circle_triangle, 2_000, 10_000),
         ],
     ],
     Detailed => [
         ChemicalWeapon => [
             ReleaseTypeA => [
-                LowerThan10 => (:_circle_circle, 1_000, 10_000),
+                LowerThan10 => Leaf(ReleaseLocation{1}, :_circle_circle, 1_000, 10_000),
                 HigherThan10 => [
                     ContainerGroupE => [
-                        Unstable => (:_circle_triangle, 1_000, 10_000),
-                        Neutral => (:_circle_triangle, 1_000, 30_000),
-                        Stable => (:_circle_triangle, 1_000, 50_000),
+                        Unstable => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 10_000),
+                        Neutral => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 30_000),
+                        Stable => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 50_000),
                     ],
                     ContainerGroupF => [
-                        Unstable => (:_circle_triangle, 1_000, 15_000),
-                        Neutral => (:_circle_triangle, 1_000, 30_000),
-                        Stable => (:_circle_triangle, 1_000, 50_000),
+                        Unstable => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 15_000),
+                        Neutral => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 30_000),
+                        Stable => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 50_000),
                     ],
                 ],
             ],
+            ReleaseTypeB => [
+                ContainerGroupB => [
+                    LowerThan10 => Leaf(ReleaseLocation{1}, :_circle_circle, 1_000, 10_000),
+                    HigherThan10 => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 10_000),
+                ],
+                ContainerGroupC => [
+                    LowerThan10 => Leaf(ReleaseLocation{1}, :_circle_circle, 2_000, 10_000),
+                    HigherThan10 => Leaf(ReleaseLocation{1}, :_circle_triangle, 2_000, 10_000),
+                ],
+            ],
+            ReleaseTypeC => Leaf(ReleaseLocation{1}, :_circle, 10_000),
         ],
-        BiologicalWeapon => (:_circle_circle, 2_000, 10_000),
+        BiologicalWeapon => (nothing,),
     ],
 ]
 

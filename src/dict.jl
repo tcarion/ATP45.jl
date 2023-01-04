@@ -12,6 +12,7 @@ function _format_node(node::TreeNode{<:Union{AbstractCategory, AbstractModel, Ab
 end
 
 _format_node(::TreeNode{<:Tuple}) = nothing
+_format_node(::TreeNode{<:Leaf}) = nothing
 
 function tree_to_dict(node)
     val = nodevalue(node)

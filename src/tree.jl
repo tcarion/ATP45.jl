@@ -1,43 +1,50 @@
+struct Leaf{N}
+    locationtype::Type{ReleaseLocation{N}}
+    fname::Symbol
+    args::Tuple{Vararg{Any}}
+end
+Leaf(d, fname::Symbol, args::Vararg{Any}) = Leaf(d, fname, Tuple(args))
+
 const DECISION_TREE = [
     Simplified => [
         ChemicalWeapon => [
-            LowerThan10 => (:_circle_circle, 2_000, 10_000),
-            HigherThan10 => (:_circle_triangle, 2_000, 10_000),
+            LowerThan10 => Leaf(ReleaseLocation{1}, :_circle_circle, 2_000, 10_000),
+            HigherThan10 => Leaf(ReleaseLocation{1}, :_circle_triangle, 2_000, 10_000),
         ],
         BiologicalWeapon => [
-            LowerThan10 => (:_circle_circle, 2_000, 10_000),
-            HigherThan10 => (:_circle_triangle, 2_000, 10_000),
+            LowerThan10 => Leaf(ReleaseLocation{1}, :_circle_circle, 2_000, 10_000),
+            HigherThan10 => Leaf(ReleaseLocation{1}, :_circle_triangle, 2_000, 10_000),
         ],
     ],
     Detailed => [
         ChemicalWeapon => [
             ReleaseTypeA => [
-                LowerThan10 => (:_circle_circle, 1_000, 10_000),
+                LowerThan10 => Leaf(ReleaseLocation{1}, :_circle_circle, 1_000, 10_000),
                 HigherThan10 => [
                     ContainerGroupE => [
-                        Unstable => (:_circle_triangle, 1_000, 10_000),
-                        Neutral => (:_circle_triangle, 1_000, 30_000),
-                        Stable => (:_circle_triangle, 1_000, 50_000),
+                        Unstable => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 10_000),
+                        Neutral => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 30_000),
+                        Stable => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 50_000),
                     ],
                     ContainerGroupF => [
-                        Unstable => (:_circle_triangle, 1_000, 15_000),
-                        Neutral => (:_circle_triangle, 1_000, 30_000),
-                        Stable => (:_circle_triangle, 1_000, 50_000),
+                        Unstable => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 15_000),
+                        Neutral => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 30_000),
+                        Stable => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 50_000),
                     ],
                 ],
             ],
             ReleaseTypeB => [
                 ContainerGroupB => [
-                    LowerThan10 => (:_circle_circle, 1_000, 10_000),
-                    HigherThan10 => (:_circle_triangle, 1_000, 10_000),
+                    LowerThan10 => Leaf(ReleaseLocation{1}, :_circle_circle, 1_000, 10_000),
+                    HigherThan10 => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 10_000),
                 ],
                 ContainerGroupC => [
-                    LowerThan10 => (:_circle_circle, 2_000, 10_000),
-                    HigherThan10 => (:_circle_triangle, 2_000, 10_000),
+                    LowerThan10 => Leaf(ReleaseLocation{1}, :_circle_circle, 2_000, 10_000),
+                    HigherThan10 => Leaf(ReleaseLocation{1}, :_circle_triangle, 2_000, 10_000),
                 ],
                 ContainerGroupD => (nothing,)
             ],
-            ReleaseTypeC => (:_circle, 10_000),
+            ReleaseTypeC => Leaf(ReleaseLocation{1}, :_circle, 10_000),
         ],
         BiologicalWeapon => (nothing,),
     ],
@@ -47,7 +54,6 @@ mutable struct TreeNode{T} <: AT.AbstractNode{T}
     value::T
     parent::Union{Nothing, TreeNode}
     children::Vector{TreeNode}
-    sequence::Vector{Any}
     TreeNode(value::T, parent, children=TreeNode[]) where T = new{T}(value, parent, children)
 end
 AbstractTrees.ParentLinks(::Type{<:TreeNode}) = StoredParents()
@@ -152,11 +158,11 @@ julia> descendall(TreeNode(ex), model_params)
 (:_circle_triangle, 1000, 10000)
 ```
 """
-function descendall(node::TreeNode, model_params) :: TreeNode{<:Tuple}
+function descendall(node::TreeNode, model_params) :: TreeNode{<:Leaf}
     next = descend(node, model_params)
 
     while true
-        next isa TreeNode{<:Tuple} && return next
+        next isa TreeNode{<:Leaf} && return next
         next = descend(next, model_params)
     end
 end
@@ -187,7 +193,17 @@ function _find_node(::Type{<:AbstractContainerGroup}, vals, model_params)
     inode
 end
 
-_find_node(::Type{<:Tuple}, vals, model_params) = nothing
+function _find_node(::Type{<:Leaf{N}}, vals, model_params) where N 
+    input_loc = try 
+        get_location(model_params)
+    catch e
+        e isa ErrorException && throw(MissingInputsException([ReleaseLocation{N}]))
+    end
+    input_loc isa ReleaseLocation{N} || error("Wrong number of input release locations: required: $N.")
+    nothing
+end
+
+_find_node(::Type{<:Tuple}, vals, model_params) = error("This case has not been implemented yet.")
 
 function _descend_with_find(node, tofind)
     node_children = children(node)
