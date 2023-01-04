@@ -6,13 +6,15 @@ function build_verbose_tree(tree)
 end
 
 _format_node(::TreeNode{<:String}) = (id = "root",)
-function _format_node(node::TreeNode{<:Union{AbstractCategory, AbstractModel, AbstractStability}})
+function _format_node(node::TreeNode{<:Union{AbstractCategory, AbstractModel, AbstractStability, <:Leaf}})
     val = nodevalue(node)
     properties(val)
 end
 
 _format_node(::TreeNode{<:Tuple}) = nothing
-_format_node(::TreeNode{<:Leaf}) = nothing
+function _format_node(::TreeNode{<:Leaf{N}}) where N
+    (id = "leaf", description = string(N), note = "number of required release locations") 
+end
 
 function tree_to_dict(node)
     val = nodevalue(node)

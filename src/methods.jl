@@ -38,7 +38,7 @@ function byid(iid::String)
         MAP_IDS[iid]
     catch e
         if e isa KeyError
-            error("The id you provided does not exist. You can use `map_ids()` to see the existing and which object they correspond to. You can
+            error("The id you provided does not exist. You can use `map_ids()` to see the existing ids and which object they correspond to. You can
             also have more information by looking at the decision tree with `decision_tree()`")
         else
             rethrow()

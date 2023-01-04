@@ -3,8 +3,8 @@ using ATP45
 import ATP45: id, description
 import ATP45: children, parent, nodevalue
 import ATP45: LowerThan10, HigherThan10
-import ATP45: ContainerGroupE, ContainerGroupF
-import ATP45: TreeNode
+import ATP45: ContainerGroupE, ContainerGroupF, ContainerGroupB,ContainerGroupC
+import ATP45: TreeNode, Leaf
 import ATP45: build_verbose_tree, tree_to_dict, properties
 using JSON3
 
@@ -46,7 +46,7 @@ example_tree = [
                     HigherThan10 => Leaf(ReleaseLocation{1}, :_circle_triangle, 2_000, 10_000),
                 ],
             ],
-            ReleaseTypeC => Leaf(ReleaseLocation{1}, :_circle, 10_000),
+            ReleaseTypeC => Leaf(ReleaseLocation{2}, :_circle, 10_000),
         ],
         BiologicalWeapon => (nothing,),
     ],
