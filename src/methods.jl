@@ -4,9 +4,6 @@ description(o::T) where T = description(T)
 longname(::Type) = ""
 longname(o::T) where T = longname(T)
 
-id(::Type) = ""
-id(o::T) where T = id(T)
-
 note(::Type) = ""
 note(o::T) where T = note(T)
 
@@ -37,6 +34,10 @@ paramtype(o) = paramtype(ParamType(o))
 content(o) = content(ParamType(o), o)
 content(::ParamType, o) = ""
 content(::Group, o) = [id(c) for c in o.content]
+
+id(o) = id(ParamType(o), o)
+id(::ParamType, o) = id(typeof(o))
+id(::Group, o) = id(o)
 
 function byid(iid::String) 
     try

@@ -110,21 +110,27 @@ const container_groups = (
 
 abstract type AbstractContainerGroup <: AbstractCategory end
 struct ContainerGroup <: AbstractContainerGroup
+    name::Symbol
     content::Vector{<:AbstractContainerType}
 end
 Base.in(item::AbstractContainerType, collection::AbstractContainerGroup) = item in collection.content
 ParamType(::Type{ContainerGroup}) = Group()
+id(group::ContainerGroup) = (lowercase ∘ string)(group.name)
 
 function containergroupmacro(name, group)
     quote
         const $name = Union{$(group...)}
-        $name() = ContainerGroup([ct() for ct in $group])
+        $name() = ContainerGroup($(Expr(:quote, name)), [ct() for ct in $group])
     end
 end
 
+# Create the ContainerGroups methods and add the categories to the MAP_IDS
 for (k, v) in pairs(container_groups)
     eval(containergroupmacro(k, v))
+    instantiated_group = eval(k)()
+    push!(MAP_IDS, id(instantiated_group) => instantiated_group)
 end
+
 
 categories_order() = [AbstractWeapon, AbstractReleaseType, AbstractContainerType]
 
