@@ -64,6 +64,11 @@ end
                 @test_throws MissingInputsException Detailed(chemical, ReleaseTypeB())(windlower, release)
                 typeBcontB = Detailed(chemical, ReleaseTypeB(), Shell())
                 @test typeBcontB(windhigher, release).zones[2] isa TriangleLike
+
+                @testset "with ContainerGroup" begin
+                    withgroup = Detailed("chem", "typeB", "containergroupb")
+                    @test withgroup(windhigher, release).zones[2] isa TriangleLike
+                end
             end
 
             @testset "Release C" begin

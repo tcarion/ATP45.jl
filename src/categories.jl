@@ -132,7 +132,7 @@ for (k, v) in pairs(container_groups)
 end
 
 
-categories_order() = [AbstractWeapon, AbstractReleaseType, AbstractContainerType]
+categories_order() = [AbstractWeapon, AbstractReleaseType, AbstractContainerGroup, AbstractContainerType]
 
 function sort_categories(categories)
     order = categories_order()

@@ -188,8 +188,23 @@ function _find_node(::Type{<:AbstractWindCategory}, vals, model_params)
 end
 
 function _find_node(::Type{<:AbstractContainerGroup}, vals, model_params)
-    param = _getisa(model_params, AbstractContainerType)
-    inode = findfirst(x -> param in x, vals)
+    # First tries to find the ContainerGroup, then tries with the ContainerType
+    inode = try 
+        param = _getisa(model_params, AbstractContainerGroup)
+        findisa(vals, param)
+    catch e
+        if e isa MissingInputsException
+            nothing
+        else
+            rethrow()
+        end
+    end
+
+    inode = if isnothing(inode)
+        param = _getisa(model_params, AbstractContainerType)
+        findfirst(x -> param in x, vals)
+    end
+
     inode
 end
 
