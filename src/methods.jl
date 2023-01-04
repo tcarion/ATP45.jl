@@ -25,7 +25,12 @@ struct NoParam <: ParamType end
 ParamType(o::T) where T = ParamType(T)
 ParamType(::Type) = NoParam()
 
-paramtype(::T) where T <: ParamType = lowercase(string(Symbol(T)))
+paramtype(::T) where T <: ParamType = begin
+    str = string(Symbol(T))
+    spl = split(str, ".")
+    str = spl[end]
+    lowercase(str)
+end
 paramtype(::NoParam) = ""
 paramtype(o) = paramtype(ParamType(o))
 
