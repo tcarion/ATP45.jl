@@ -17,31 +17,36 @@ end
     end
 end
 
-@recipe function f(zoneb::ZoneBoundary)
-    gcoords = GI.coordinates(zoneb)
-    @series begin
-        seriestype := :line
-        Tuple.(gcoords)
-    end
-end
+# @recipe function f(zoneb::ZoneBoundary)
+#     gcoords = GI.coordinates(zoneb)
+#     @series begin
+#         seriestype := :line
+#         Tuple.(gcoords)
+#     end
+# end
 
 @recipe function f(zone::Zone)
-    gcoords = GI.coordinates(zone)
-    # tuple = Tuple.(gcoords[1])
-    # tuple = tuple[1] !== tuple[end] ? vcat(tuple..., tuple[1]) : tuple
-    # println(tuple)
+    coordinates = _format_coords(ATP45.coords(zone))
     @series begin
-        seriestype := :line
-        gcoords
+        seriestype := :path
+        coordinates[:, 1], coordinates[:, 2]
     end
 end
 
 @recipe function f(feat::AbstractZoneFeature)
     props = properties(feat)
     @series begin
-        seriestype := :line
+        seriestype := :path
         label := get(props, "type", "")
         geometry(feat)
+    end
+end
+
+@recipe function f(collection::Atp45Result)
+    for feat in zonecollection(collection)
+        @series begin
+            feat
+        end
     end
 end
 
@@ -70,3 +75,5 @@ end
     #     end
     # end
 end
+
+_format_coords(coordinates) = permutedims(reshape(vcat((collect.(collect(coordinates)))...), (2, length(coordinates))))

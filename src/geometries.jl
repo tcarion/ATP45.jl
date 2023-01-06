@@ -81,6 +81,10 @@ struct Zone{N, T} <: AbstractZone{N, T}
     geometry::ZoneBoundary{N, T}
 end
 geometry(zone::Zone) = zone.geometry
+function coords(zone::AbstractZone) 
+    coordinates = coords(geometry(zone))
+    (coordinates..., coordinates[1])
+end
 Zone(vec::VectorCoordsType) = Zone(ZoneBoundary(vec))
 Zone(args...) = Zone(ZoneBoundary(args...))
 
@@ -106,6 +110,7 @@ function TriangleLike(releaselocation::ReleaseLocation{1, T}, wind::AbstractWind
     TriangleLike{T}(Zone(triangle_coords), props)
 end
 geometry(triangle::TriangleLike) = triangle.geometry
+coords(triangle::TriangleLike) = coords(geometry(triangle))
 GI.geometry(triangle::TriangleLike) = geometry(triangle)
 
 struct CircleLike{N, T} <: AbstractZoneFeature{N, T}
@@ -117,11 +122,11 @@ end
 function CircleLike(releaselocation::ReleaseLocation{1, T}, radius::Number, props = Dict(); numpoint = 100) where {T}
     CircleLike{numpoint, T}(releaselocation, radius, props)
 end
-function geometry(circle::CircleLike{N, T}) where {N, T}
+function coords(circle::CircleLike{N, T}) where {N, T} 
     center = coords(circle.center)[1]
-    circle_coords = circle_coordinates(center..., circle.radius; res = N)
-    Zone(circle_coords)
+    circle_coordinates(center..., circle.radius; res = N)
 end
+geometry(circle::CircleLike) = Zone(coords(circle))
 GI.geometry(circle::CircleLike) = geometry(circle) 
 
 abstract type AbstractAtp45Result end

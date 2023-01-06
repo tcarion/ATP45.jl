@@ -11,17 +11,17 @@ using ATP45.GeoInterface
 using GeoJSON
 
 @testset "Release locations" begin
-    coords = [
+    init_coords = [
         [6., 49.],
         [6., 51.],
     ]
-    location = ReleaseLocation(coords)
+    location = ReleaseLocation(init_coords)
     @test GI.testgeometry(location)
     @test GI.geomtrait(location) == MultiPointTrait()
     @test GI.ngeom(location) == 2
     @test GI.npoint(location) == 2
-    @test GI.coordinates(location) == coords
-    @test GI.getgeom(location, 1) == Tuple(coords[1])
+    @test GI.coordinates(location) == init_coords
+    @test GI.getgeom(location, 1) == Tuple(init_coords[1])
     @test_throws BoundsError GI.getgeom(location, 3) 
     @test GeoJSON.write(location) == "{\"type\":\"MultiPoint\",\"coordinates\":[[6.0,49.0],[6.0,51.0]]}"
 
@@ -35,19 +35,19 @@ using GeoJSON
 end
 
 @testset "Zone boundary" begin
-    coords = [
+    init_coords = [
         [6., 49.],
         [5., 50.],
         [4., 49.],
     ]
-    border = ZoneBoundary(coords)
+    border = ZoneBoundary(init_coords)
     @test GI.testgeometry(border)
     @test GI.npoint(border) == 4
     @test GI.isring(border)
-    @test GI.coordinates(border)[1:3] == coords
+    @test GI.coordinates(border)[1:3] == init_coords
     @test GI.coordinates(border)[1] == GI.coordinates(border)[end]
 
-    border2 = ZoneBoundary(coords[1], coords[2], coords[3])
+    border2 = ZoneBoundary(init_coords[1], init_coords[2], init_coords[3])
     @test border == border2
 
     @test GeoJSON.write(border) == "{\"type\":\"LineString\",\"coordinates\":[[6.0,49.0],[5.0,50.0],[4.0,49.0],[6.0,49.0]]}"
@@ -55,26 +55,26 @@ end
 end
 
 @testset "Zone" begin
-    coords = [
+    init_coords = [
         [6., 49.],
         [6., 51.],
         [5., 50.],
         [4., 49.],
     ]
-    zone = Zone(coords)
+    zone = Zone(init_coords)
     @test GI.testgeometry(zone)
     @test GI.geomtrait(zone) == PolygonTrait()
     @test GI.ngeom(zone) == 1
-    @test GI.coordinates(zone) == [[coords; [coords[1]]]]
-    @test GI.getgeom(zone, 1) == ZoneBoundary(coords)
+    @test GI.coordinates(zone) == [[init_coords; [init_coords[1]]]]
+    @test GI.getgeom(zone, 1) == ZoneBoundary(init_coords)
     @test GeoJSON.write(zone) == "{\"type\":\"Polygon\",\"coordinates\":[[[6.0,49.0],[6.0,51.0],[5.0,50.0],[4.0,49.0],[6.0,49.0]]]}"
 end
 
 @testset "CircleLike" begin
-    coords = [
+    init_coords = [
         [6., 51.],
     ]
-    location = ReleaseLocation(coords)
+    location = ReleaseLocation(init_coords)
     radius = 10000
     circle = CircleLike(location, radius, Dict("type" => "release"))
     @test GI.testfeature(circle)
@@ -83,10 +83,10 @@ end
 end
 
 @testset "TriangeLike" begin
-    coords = [
+    init_coords = [
         [6., 51.],
     ]
-    location = ReleaseLocation(coords)
+    location = ReleaseLocation(init_coords)
     radius = 2000
     wind = WindDirection(11, 45.)
     dhd = 10000
@@ -97,10 +97,10 @@ end
 end
 
 @testset "Atp45 result" begin
-    coords = [
+    init_coords = [
         [6., 51.],
     ]
-    location = ReleaseLocation(coords)
+    location = ReleaseLocation(init_coords)
     radius = 2000
     wind = WindDirection(11, 45.)
     dhd = 10000
