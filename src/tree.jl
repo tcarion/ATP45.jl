@@ -104,6 +104,36 @@ function children_value_type(node::TreeNode)
 end
 
 """
+    descendall(node::TreeNode, model_params) :: TreeNode{<:Tuple}
+Browse the tree starting at `node`, choosing the path following what is specified in `model_params`.
+
+# Examples
+```julia-repl
+julia> ex = Simplified => [
+               ChemicalWeapon => [
+                   LowerThan10 => (:_circle_circle, 2_000, 10_000),
+                   HigherThan10 => (:_circle_triangle, 2_000, 10_000),
+               ],
+               BiologicalWeapon => [
+                   LowerThan10 => (:_circle_circle, 1_000, 10_000),
+                   HigherThan10 => (:_circle_triangle, 1_000, 10_000),
+               ],
+           ]
+julia> model_params = (BiologicalWeapon(), WindDirection(45, 2))
+julia> descendall(TreeNode(ex), model_params)
+(:_circle_triangle, 1000, 10000)
+```
+"""
+function descendall(node::TreeNode, model_params) :: TreeNode{<:Leaf}
+    next = descend(node, model_params)
+
+    while true
+        next isa TreeNode{<:Leaf} && return next
+        next = descend(next, model_params)
+    end
+end
+
+"""
     descend(node::TreeNode, model_params) :: TreeNode
 Discriminate between the children of `node` according to the parameters in `model_params`.
 
@@ -137,36 +167,6 @@ function descend(node::TreeNode, model_params) :: TreeNode
     node_children[ichild]
 end
 
-"""
-    descendall(node::TreeNode, model_params) :: TreeNode{<:Tuple}
-Browse the tree starting at `node`, choosing the path following what is specified in `model_params`.
-
-# Examples
-```julia-repl
-julia> ex = Simplified => [
-               ChemicalWeapon => [
-                   LowerThan10 => (:_circle_circle, 2_000, 10_000),
-                   HigherThan10 => (:_circle_triangle, 2_000, 10_000),
-               ],
-               BiologicalWeapon => [
-                   LowerThan10 => (:_circle_circle, 1_000, 10_000),
-                   HigherThan10 => (:_circle_triangle, 1_000, 10_000),
-               ],
-           ]
-julia> model_params = (BiologicalWeapon(), WindDirection(45, 2))
-julia> descendall(TreeNode(ex), model_params)
-(:_circle_triangle, 1000, 10000)
-```
-"""
-function descendall(node::TreeNode, model_params) :: TreeNode{<:Leaf}
-    next = descend(node, model_params)
-
-    while true
-        next isa TreeNode{<:Leaf} && return next
-        next = descend(next, model_params)
-    end
-end
-
 function _find_node(::Type{<:AbstractModel}, vals, model_params)
     param = _getisa(model_params, AbstractModel)
     # Quite ugly, should find a better solution
@@ -191,7 +191,7 @@ function _find_node(::Type{<:AbstractContainerGroup}, vals, model_params)
     # First tries to find the ContainerGroup, then tries with the ContainerType
     inode = try 
         param = _getisa(model_params, AbstractContainerGroup)
-        findisa(vals, param)
+        findfirst(x -> x == param, vals)
     catch e
         if e isa MissingInputsException
             nothing
@@ -203,6 +203,8 @@ function _find_node(::Type{<:AbstractContainerGroup}, vals, model_params)
     inode = if isnothing(inode)
         param = _getisa(model_params, AbstractContainerType)
         findfirst(x -> param in x, vals)
+    else
+        inode
     end
 
     inode

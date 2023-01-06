@@ -73,6 +73,7 @@ end
         windlower = WindDirection(2., 45)
         release = ReleaseLocation([4., 50.])
         inputs = (windhigher, release)
+        inputs_stab = (inputs..., Stable())
 
         @testset "Not implemented" begin
             model = Detailed(BiologicalWeapon())
@@ -98,7 +99,6 @@ end
         @testset "Detailed" begin
             conttype = Bomb()
             model = Detailed(ChemicalWeapon(), ReleaseTypeA(), conttype)
-            inputs_stab = (inputs..., Stable())
             model_params = _group_parameters(model, inputs_stab)
             next = descend(tree, model_params)
             @test next isa TreeNode{<:Detailed}
@@ -136,6 +136,15 @@ end
             # wrong number of releases
             model_params_wrong = _group_parameters(Detailed(ChemicalWeapon(), ReleaseTypeC()), inputs)
             @test_throws ErrorException descendall(tree, model_params_wrong)
+
+            @testset "Discriminate between groups" begin
+                model_params_e = (Detailed(), ChemicalWeapon(), ReleaseTypeA(), ContainerGroupE(), inputs..., Unstable())
+                final_node = descendall(tree, model_params_e)
+                @test nodevalue(final_node).args == (1000, 10000)
+                model_params_f = (Detailed(), ChemicalWeapon(), ReleaseTypeA(), ContainerGroupF(), inputs..., Unstable())
+                final_node = descendall(tree, model_params_f)
+                @test nodevalue(final_node).args == (1000, 15000)
+            end
         end
     end
 end

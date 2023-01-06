@@ -116,6 +116,7 @@ end
 Base.in(item::AbstractContainerType, collection::AbstractContainerGroup) = item in collection.content
 ParamType(::Type{ContainerGroup}) = Group()
 id(group::ContainerGroup) = (lowercase ∘ string)(group.name)
+==(a::T, b::T) where T <: AbstractContainerGroup = a.name == b.name
 
 function containergroupmacro(name, group)
     quote
