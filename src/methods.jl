@@ -59,15 +59,3 @@ function add_ids_to_map(abstract_type)
 end
 
 cast_id(param) = param isa AbstractString ? byid(param) : param
-
-# function cast_ids(model_parameters)
-#     formated_params = []
-#     for param in model_parameters
-#         if param isa AbstractString
-#             push!(formated_params, byid(param))
-#         else
-#             push!(formated_params, param)
-#         end
-#     end
-#     formated_params
-# end

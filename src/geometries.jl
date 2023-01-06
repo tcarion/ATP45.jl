@@ -90,7 +90,6 @@ An ATP-45 [`Zone{N, T}`](@ref) with some properties related to it (typically the
 It implements the `GeoInterface.Feature` trait.
 """
 abstract type AbstractZoneFeature{N, T} end
-# geometry(zonefeature::AbstractZoneFeature) = zonefeature.geometry
 properties(zonefeature::AbstractZoneFeature) = zonefeature.properties
 GI.isfeature(::Type{<:AbstractZoneFeature}) = true
 GI.trait(::AbstractZoneFeature) = FeatureTrait()
@@ -99,10 +98,6 @@ GI.properties(zonefeature::AbstractZoneFeature) = properties(zonefeature)
 struct TriangleLike{T} <: AbstractZoneFeature{3, T}
     geometry::Zone{3, T}
     properties::Dict{String, String}
-    # function TriangleLike(x::Vector{<:Vector{<:T}}, y) where T<:Number
-    #     push!(x, x[1])
-    #     new(x, y)
-    # end
 end
 function TriangleLike(releaselocation::ReleaseLocation{1, T}, wind::AbstractWind, dhd, back_distance, props = Dict()) where T
     azimuth = wind_azimuth(wind)
@@ -136,7 +131,6 @@ GI.trait(::AbstractAtp45Result) = FeatureCollectionTrait()
 GI.nfeature(::FeatureCollectionTrait, result::AbstractAtp45Result) = length(zonecollection(result))
 GI.getfeature(::FeatureCollectionTrait, result::AbstractAtp45Result) = zonecollection(result)
 GI.getfeature(::FeatureCollectionTrait, result::AbstractAtp45Result, i::Integer) = zonecollection(result)[i]
-# GI.properties(result::AbstractAtp45Result) = properties(result)
 
 """
     Atp45Result

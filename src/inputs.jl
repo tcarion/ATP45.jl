@@ -27,10 +27,6 @@ missing_example(::Type{AbstractContainerType}) = "Example: `Bomblet()`"
 missing_message(::Type{AbstractStability}) = "The model requires a stability class."
 missing_example(::Type{AbstractStability}) = "Example: `Unstable()`"
 
-# function (procedure::T)(args::Int) where {T <: AbstractModel}
-#     println(args)
-# end
-
 function get_input(inputs, input_type)
     iinput = findfirst(isa.(inputs, Ref(input_type)))
     isnothing(iinput) && error("Element of type $input_type not found in $inputs")
