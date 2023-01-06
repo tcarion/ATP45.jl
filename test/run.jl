@@ -10,6 +10,7 @@ import ATP45: WindDirection, ReleaseLocation
 import ATP45: Unstable, Stable
 import ATP45: Atp45Result
 import ATP45: CircleLike, TriangleLike
+import ATP45: MissingInputsException
 
 @testset "Run" begin
     model_parameters = (Simplified(), BiologicalWeapon(), WindDirection(45, 4), ReleaseLocation([4., 50.]))
@@ -19,6 +20,8 @@ import ATP45: CircleLike, TriangleLike
     @test cast_id.(model_parameters_str) == model_parameters
     res2 = ATP45.run(model_parameters_str)
     @test res2 isa Atp45Result
+    res3 = ATP45.run("simplified", "chem", WindDirection(2, 5), ReleaseLocation([4, 50]))
+    @test res3 isa Atp45Result
 end
 
 @testset "Models run" begin
