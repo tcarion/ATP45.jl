@@ -56,7 +56,7 @@ decision_tree(; typedict = false) = typedict ? ATP45_DICT_TREE : ATP45_VERBOSE_T
 map_ids() = MAP_IDS
 
 export WindVector, WindDirection, Stable, Unstable, Neutral, ReleaseLocation
-export Simplified, Detailed
+export Simplified, Detailed, run_atp
 export ChemicalWeapon, BiologicalWeapon, RadiologicalWeapon, NuclearWeapon
 export ReleaseTypeA, ReleaseTypeB, ReleaseTypeC
 export decision_tree

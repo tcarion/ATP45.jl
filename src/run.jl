@@ -1,9 +1,13 @@
 function (procedure::AbstractModel)(inputs...)
     inputs = cast_id.(inputs)
-    run(_group_parameters(procedure, inputs)...)
+    run_atp(_group_parameters(procedure, inputs)...)
 end
 
-function run(model_parameters::Tuple)
+"""
+    run_atp(model_parameters)
+
+"""
+function run_atp(model_parameters::Tuple)
     model_parameters = cast_id.(model_parameters)
     leave = descendall(ATP45_TREE, model_parameters)
     nodeval = nodevalue(leave)
@@ -11,4 +15,4 @@ function run(model_parameters::Tuple)
     geometry = eval(method)(model_parameters, args...)
     Atp45Result(geometry |> collect, Dict("tobe" => "designed"))
 end
-run(args...) = run(Tuple(args))
+run_atp(args...) = run_atp(Tuple(args))
