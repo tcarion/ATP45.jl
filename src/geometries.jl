@@ -144,6 +144,14 @@ It implements the `GeoInterface.FeatureCollection` trait.
 """
 struct Atp45Result <: AbstractAtp45Result
     zones::Vector{AbstractZoneFeature}
-    properties::Dict{String, String}
+    properties::AbstractDict
 end
 zonecollection(result::Atp45Result) = result.zones
+properties(result::Atp45Result) = result.properties
+
+Base.getindex(result::Atp45Result, name::Symbol) = getindex(properties(result), name)
+
+function Base.show(io::IO, mime::MIME"text/plain", result::Atp45Result)
+    println(io, "Atp45Result with $(length(zonecollection(result))) zones and properties:")
+    show(io, mime, properties(result))
+end

@@ -14,13 +14,13 @@ import ATP45: MissingInputsException
 
 @testset "Run" begin
     model_parameters = (Simplified(), BiologicalWeapon(), WindDirection(45, 4), ReleaseLocation([4., 50.]))
-    result = ATP45.run_atp(model_parameters)
+    result = run_atp(model_parameters)
     @test result isa Atp45Result
     model_parameters_str = ("simplified", "bio", WindDirection(45, 4), ReleaseLocation([4., 50.]))
     @test cast_id.(model_parameters_str) == model_parameters
-    res2 = ATP45.run_atp(model_parameters_str)
+    res2 = run_atp(model_parameters_str)
     @test res2 isa Atp45Result
-    res3 = ATP45.run_atp("simplified", "chem", WindDirection(2, 5), ReleaseLocation([4, 50]))
+    res3 = run_atp("simplified", "chem", WindDirection(2, 5), ReleaseLocation([4, 50]))
     @test res3 isa Atp45Result
 end
 
@@ -79,5 +79,12 @@ end
                 @test typeC(windlower, release).zones[1] isa CircleLike
             end
         end
+
+    end
+    @testset "Results" begin
+        result = run_atp("detailed", "chem", "typeA", Shell(), release, windhigher, stable)
+        @test result[:locations] == release
+        @test result[:categories] == (ChemicalWeapon(), ReleaseTypeA(), Shell())
+        @test result[:weather] == (windhigher, stable)
     end
 end

@@ -44,6 +44,11 @@ function run_atp(model_parameters::Tuple)
     nodeval = nodevalue(leave)
     method, args = nodeval.fname, nodeval.args
     geometry = eval(method)(model_parameters, args...)
-    Atp45Result(geometry |> collect, Dict("tobe" => "designed"))
+    props = Dict(
+        :locations => get_location(model_parameters),
+        :weather => filter_paramtype(model_parameters, Meteo()),
+        :categories => (filter_paramtype(model_parameters, Category())..., filter_paramtype(model_parameters, Group())...),
+    )
+    Atp45Result(geometry |> collect, props)
 end
 run_atp(args...) = run_atp(Tuple(args))
