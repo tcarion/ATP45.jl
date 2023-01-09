@@ -53,6 +53,23 @@ include("run.jl")
 include("recipes.jl")
 
 decision_tree(; typedict = false) = typedict ? ATP45_DICT_TREE : ATP45_VERBOSE_TREE
+
+"""
+    map_ids()
+Dictionnary mapping the existing id's to the `ATP45.jl` categories.
+
+# Examples:
+```julia-repl
+julia> ATP45.map_ids()
+Dict{String, Any} with 29 entries:
+  "MPL"             => MissilesPayload()
+  "MSL"             => Missile()
+  "chem"            => ChemicalWeapon()
+  "typeC"           => ReleaseTypeC()
+  "MNE"             => Mine()
+  ⋮                 => ⋮
+```
+"""
 map_ids() = MAP_IDS
 
 export WindVector, WindDirection, Stable, Unstable, Neutral, ReleaseLocation
