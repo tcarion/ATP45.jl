@@ -16,12 +16,20 @@ longname(::Type{Stable}) = "Stable"
 abstract type AbstractWind end
 ParamType(::Type{<:AbstractWind}) = Meteo()
 
+"""
+    WindVector(u, v) <: AbstractWind
+Defines the wind with its horizontal coordinates. `u` is W-E and `v` is S-N.
+"""
 mutable struct WindVector <: AbstractWind
     u::Real
     v::Real
 end
 ==(w1::WindVector, w2::WindVector) = w1.u == w2.u && w1.v == w2.v
 
+"""
+    WindDirection(speed, azimuth) <: AbstractWind
+Defines the wind with its `speed` in m/s and its `azimuth` in degrees (with North as reference).
+"""
 mutable struct WindDirection <: AbstractWind
     speed::Real
     direction::Real

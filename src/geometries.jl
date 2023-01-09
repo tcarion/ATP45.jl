@@ -24,7 +24,6 @@ Represents the `N` locations of the release(s).
 
 # Examples
 ```julia-repl
-# We create a triangle like border (3 vertices):
 julia> coords = [
     [6., 49.],
     [6., 51.],
