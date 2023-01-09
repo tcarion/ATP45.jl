@@ -1,9 +1,4 @@
-function (procedure::Simplified)(inputs...)
-    inputs = cast_id.(inputs)
-    run(_group_parameters(procedure, inputs)...)
-end
-
-function (procedure::Detailed)(inputs...)
+function (procedure::AbstractModel)(inputs...)
     inputs = cast_id.(inputs)
     run(_group_parameters(procedure, inputs)...)
 end
