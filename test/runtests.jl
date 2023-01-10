@@ -14,6 +14,7 @@ using Test
    end
 
 #    @testset "ATP45 simple" begin include("atp45_simple.jl") end
+   @testset "Traits" begin include("traits.jl") end
    @testset "Geometries" begin include("geometries.jl") end
    @testset "Inputs" begin include("inputs.jl") end
    @testset "Models run" begin include("models.jl") end

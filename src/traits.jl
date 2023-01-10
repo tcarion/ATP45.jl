@@ -52,7 +52,7 @@ function byid(iid::String)
     end
 end
 
-function add_ids_to_map(abstract_type)
+function add_ids_to_map!(abstract_type)
     for ttype in subtypes(abstract_type)
         id(ttype) !== "" && push!(MAP_IDS, id(ttype) => ttype())
     end
