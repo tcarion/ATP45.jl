@@ -7,7 +7,7 @@
 
 ATP45.jl provides a flexible API to run the NATO ATP-45 impact assessment model for CBRN-type incidents.
 
-The results of the model implement the [GeoInterface.jl](https://github.com/JuliaGeo/GeoInterface.jl) so it can easily interoperate with other geospatial softwares.
+The results of the model implement the [GeoInterface.jl](https://github.com/JuliaGeo/GeoInterface.jl) interface so it can easily interoperate with other geospatial softwares.
 
 ## Installation:
 The package is not registered, so you need to install it with:
@@ -29,7 +29,7 @@ plot(result)
 ![Simplified procedure for chemical release](https://tcarion.github.io/ATP45.jl/dev/example.png)
 
 ## Documentation:
-Please see the [Documentation](https://tcarion.github.io/ATP45.jl/dev/) for more detailed example and description of the package features.
+Please see the [Documentation](https://tcarion.github.io/ATP45.jl/dev/) for more detailed examples and description of the package features.
 
 ## Caveat:
 Every ATP-45 have not been implemented yet. You might get an error if you try to run cases that are currently missing.
