@@ -58,6 +58,7 @@ function add_ids_to_map(abstract_type)
     end
 end
 
-cast_id(param) = param isa AbstractString ? byid(param) : param
+cast_id(param::AbstractString) = byid(param)
+cast_id(param) = param
 
 filter_paramtype(parameters, p::ParamType) = filter(x -> ParamType(x) == p, parameters)

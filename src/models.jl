@@ -11,12 +11,12 @@ internalname(T::Type{<:AbstractModel}) = string(_nonparamtype(T()))
 # I'm not very satisfied with this implementation, but that's the price I had to pay to make the instanciation
 # of these types kind of user friendly. This way, Simplified("chem"), Simplified("chem", ReleaseTypeA()) and
 # Simplified((ReleaseTypeA(), ChemicalWeapon())) all work. Maybe there's a clever way to implement this though.
-function (::Type{T})(args::Vararg{<:Union{AbstractCategory, String}}) where {T<:AbstractModel}
+function (::Type{T})(args::Vararg{Union{AbstractCategory, String}}) where {T<:AbstractModel}
     cast = cast_id.(args)
     args = sort_categories(cast)
     T(args)
 end
-(::Type{T})(args::Tuple{Vararg{<:AbstractCategory}}) where {T<:AbstractModel} = T(args)
+(::Type{T})(args::Tuple{Vararg{AbstractCategory}}) where {T<:AbstractModel} = T(args)
 
 categories(procedure::AbstractModel) = procedure.categories
 
@@ -35,7 +35,7 @@ function Base.show(io::IO, ::MIME"text/plain", procedure::AbstractModel)
 end
 
 struct Simplified <: AbstractModel
-    categories::Tuple{Vararg{<:AbstractCategory}}
+    categories::Tuple{Vararg{AbstractCategory}}
 end
 Simplified() = Simplified(())
 function Simplified(arg::Union{ATP45.AbstractCategory, String})
@@ -49,7 +49,7 @@ description(::Type{Simplified}) = "The simplified procedure is primarily used fo
 id(::Type{Simplified}) = "simplified"
 
 struct Detailed <: AbstractModel
-    categories::Tuple{Vararg{<:AbstractCategory}}
+    categories::Tuple{Vararg{AbstractCategory}}
 end
 Detailed() = Detailed(())
 function Detailed(arg::Union{ATP45.AbstractCategory, String})
