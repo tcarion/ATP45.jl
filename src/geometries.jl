@@ -80,10 +80,7 @@ struct Zone{N, T} <: AbstractZone{N, T}
     geometry::ZoneBoundary{N, T}
 end
 geometry(zone::Zone) = zone.geometry
-function coords(zone::AbstractZone) 
-    coordinates = coords(geometry(zone))
-    (coordinates..., coordinates[1])
-end
+coords(zone::AbstractZone) = coords(geometry(zone))
 Zone(vec::VectorCoordsType) = Zone(ZoneBoundary(vec))
 Zone(args...) = Zone(ZoneBoundary(args...))
 

@@ -76,9 +76,11 @@ end
     ]
     location = ReleaseLocation(init_coords)
     radius = 10000
-    circle = CircleLike(location, radius, Dict("type" => "release"))
+    circle = CircleLike(location, radius, Dict("type" => "release"); numpoint = 10)
     @test GI.testfeature(circle)
-    @test GI.geometry(circle) isa Zone
+    @test GI.geometry(circle) isa Zone{10}
+    @test length(GI.coordinates(circle)[1]) == 11
+    @test length(ATP45.coords(circle)) == 10
     @test GI.properties(circle) isa Dict
 end
 
@@ -92,7 +94,9 @@ end
     dhd = 10000
     triangle = TriangleLike(location, wind, dhd, 2*radius, Dict("type" => "release"))
     @test GI.testfeature(triangle)
-    @test GI.geometry(triangle) isa Zone
+    @test GI.geometry(triangle) isa Zone{3}
+    @test length(GI.coordinates(triangle)[1]) == 4
+    @test length(ATP45.coords(triangle)) == 3
     @test GI.properties(triangle) isa Dict
 end
 

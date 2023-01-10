@@ -26,7 +26,7 @@ end
 # end
 
 @recipe function f(zone::Zone)
-    coordinates = _format_coords(ATP45.coords(zone))
+    coordinates = _format_coords(GI.coordinates(zone)[1])
     @series begin
         seriestype := :path
         coordinates[:, 1], coordinates[:, 2]
@@ -38,7 +38,7 @@ end
     @series begin
         seriestype := :path
         label := get(props, "type", "")
-        geometry(feat)
+        GI.geometry(feat)
     end
 end
 
@@ -48,32 +48,6 @@ end
             feat
         end
     end
-end
-
-@userplot ResultPlot
-
-@recipe function f(h::ResultPlot)
-    result = first(h.args)
-    coll = result.collection
-    legend --> false
-    for coll in result.collection
-        coords = GI.coordinates(coll)[1]
-        # tuple = Tuple.(push!(copy(coords), coords[1]))
-        tuple = Tuple.(coords)
-        @series begin
-            label := GI.properties(coll)["type"] * " area"
-            tuple
-        end
-    end
-
-    # for loc in result.input.locations
-    #     @series begin
-    #         color := :red
-    #         seriestype := :scatter
-    #         label := "release point"
-    #         [Tuple(loc)]
-    #     end
-    # end
 end
 
 _format_coords(coordinates) = permutedims(reshape(vcat((collect.(collect(coordinates)))...), (2, length(coordinates))))

@@ -18,7 +18,7 @@ horizontal_walk(lon::Number, lat::Number, distance::Number, azimuth::Number) = h
 Calculate the coordinates of a circle like zone given the center (`lon`, `lat`) and the `radius` in meters. `res` is the number of points on the circle.
 """
 function circle_coordinates(lon::Number, lat::Number, radius::Number; res = 360)
-    map(range(0., 360., length = res)) do azimuth
+    map(range(0., 360., length = res+1)[1:end-1]) do azimuth
         horizontal_walk(lon, lat, radius, azimuth)
     end
 end
