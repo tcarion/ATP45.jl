@@ -6,7 +6,7 @@ import ATP45: CircleLikeZone, TriangleLikeZone
 import ATP45: HazardZone, ReleaseZone
 import ATP45: Atp45Result
 import ATP45: WindDirection
-import ATP45: GI
+import ATP45: GI, convexhull
 using ATP45.GeoInterface
 
 using GeoJSON
@@ -118,6 +118,14 @@ end
     @test GI.testfeature(release)
     @test GI.geometry(release) isa ATP45.AbstractZone{10}
     @test GI.properties(release).type == "release"
+end
+
+@testset "Geometries operation" begin
+    locations = ReleaseLocation([[4., 50.], [4.2, 50.]])
+    zone1 = CircleLikeZone(ATP45.coords(locations)[1], 1_000; numpoint = 10)
+    zone2 = CircleLikeZone(ATP45.coords(locations)[2], 1_000; numpoint = 10)
+    hull = convexhull(zone1, zone2)
+    @test hull isa ATP45.AbstractZone
 end
 
 @testset "Atp45 result" begin

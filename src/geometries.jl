@@ -73,6 +73,13 @@ GI.geomtrait(::AbstractZone) = PolygonTrait()
 GI.ngeom(::PolygonTrait, ::AbstractZone) = 1
 GI.getgeom(::PolygonTrait, zone::AbstractZone, i) = boundaries(zone)
 
+_tolibgeos(geom) = LG.readgeom(convert(String, getwkt(geom)))
+function convexhull(zone1::AbstractZone, zone2::AbstractZone)
+    lgz1, lgz2 = _tolibgeos(zone1), _tolibgeos(zone2)  
+    uunion = GI.union(lgz1, lgz2)
+    lghull = GI.convexhull(uunion)
+    Zone(GI.coordinates(lghull)[1])
+end
 """
     Zone{N, T} <: AbstractZone{N, T}
 Defines a closed polygon with `N` vertices for representing a ATP-45 zone.
@@ -92,6 +99,7 @@ function TriangleLikeZone(releaselocation::ReleaseLocation{1, T}, wind::Abstract
     triangle_coords = triangle_coordinates(center..., T(azimuth), T(dhd), T(back_distance))
     TriangleLikeZone{T}(ZoneBoundary(triangle_coords))
 end
+TriangleLikeZone(vec, wind::AbstractWind, dhd, back_distance) = TriangleLikeZone(ReleaseLocation(collect(vec)), wind, dhd, back_distance)
 
 struct CircleLikeZone{N, T} <: AbstractZone{N, T}
     center::ReleaseLocation{1, T}
@@ -101,6 +109,8 @@ end
 function CircleLikeZone(releaselocation::ReleaseLocation{1, T}, radius::Number; numpoint = 100) where {T}
     CircleLikeZone{numpoint, T}(releaselocation, radius)
 end
+CircleLikeZone(vec, radius::Number; numpoint = 100) = CircleLikeZone(ReleaseLocation(collect(vec)), radius; numpoint)
+
 function coords(circle::CircleLikeZone{N, T}) where {N, T} 
     center = coords(circle.center)[1]
     circle_coordinates(center..., circle.radius; res = N)

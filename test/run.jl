@@ -3,6 +3,7 @@ using ATP45
 import ATP45: ATP45_TREE
 import ATP45: cast_id
 import ATP45: Simplified, Detailed
+import ATP45: _circle, _circle_circle, _circle_triangle, _two_circles, _two_circle_triangle
 import ATP45: ChemicalWeapon, BiologicalWeapon, RadiologicalWeapon, NuclearWeapon
 import ATP45: ReleaseTypeA, ReleaseTypeB, ReleaseTypeC
 import ATP45: Shell
@@ -11,6 +12,30 @@ import ATP45: Unstable, Stable
 import ATP45: Atp45Result
 import ATP45: HazardZone, ReleaseZone
 import ATP45: MissingInputsException
+
+@testset "zones generator methods" begin
+    one_release = ReleaseLocation([4., 50.])
+    wind = WindDirection(5., 130.)
+    circ = _circle(one_release, 1_000)
+    @test circ[1] isa ReleaseZone
+
+    circcirc = _circle_circle(one_release, 1_000, 10_000)
+    @test circcirc[1] isa ReleaseZone
+    @test circcirc[2] isa HazardZone
+
+    circtri = _circle_triangle(one_release, wind, 1_000, 10_000)
+    @test circtri[1] isa ReleaseZone
+    @test circtri[2] isa HazardZone
+
+    two_releases = ReleaseLocation([4., 50.], [4.15, 50.03])
+    twocirc = _two_circles(two_releases, 1_000, 10_000)
+    @test twocirc[1] isa ReleaseZone
+    @test twocirc[2] isa HazardZone
+
+    twotri = _two_circle_triangle(two_releases, wind, 1_000, 10_000)
+    @test twocirc[1] isa ReleaseZone
+    @test twocirc[2] isa HazardZone
+end
 
 @testset "Run" begin
     model_parameters = (Simplified(), BiologicalWeapon(), WindDirection(45, 4), ReleaseLocation([4., 50.]))
@@ -30,6 +55,7 @@ end
     unstable = Unstable()
     stable = Stable()
     release = ReleaseLocation([4., 50.])
+    two_releases = ReleaseLocation([4., 50.], [4.15, 50.03])
     chemical = ChemicalWeapon()
 
     @testset "Simplified" begin
@@ -71,6 +97,12 @@ end
                 @testset "with ContainerGroup" begin
                     withgroup = Detailed("chem", "typeB", "containergroupb")
                     @test withgroup(windhigher, release).zones[2] isa HazardZone
+                end
+
+                @testset "two releases case" begin
+                    tworel_res = run_atp("detailed", "chem", "typeB", "SPR", windlower, two_releases)
+                    @test tworel_res.zones[2] isa HazardZone 
+                    @test_throws ErrorException run_atp("detailed", "chem", "typeB", "SPR", windlower, release)
                 end
             end
 

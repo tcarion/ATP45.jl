@@ -25,7 +25,7 @@ end
 #     end
 # end
 
-@recipe function f(zone::Zone)
+@recipe function f(zone::AbstractZone)
     coordinates = _format_coords(GI.coordinates(zone)[1])
     @series begin
         seriestype := :path
@@ -37,7 +37,7 @@ end
     props = properties(feat)
     @series begin
         seriestype := :path
-        label := get(props, "type", "")
+        label := get(props, :type, "")
         GI.geometry(feat)
     end
 end

@@ -2,6 +2,8 @@ module ATP45
 
 import Base.==
 using GeoInterface
+using LibGEOS
+using WellKnownGeometry: getwkt
 using Proj
 using RecipesBase
 using InteractiveUtils
@@ -13,6 +15,7 @@ import RecipesBase: @recipe
 
 const GI = GeoInterface
 const AT = AbstractTrees
+const LG = LibGEOS
 
 const EARTH_RADIUS = 6371.0e3
 

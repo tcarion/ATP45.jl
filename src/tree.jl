@@ -42,7 +42,10 @@ const DECISION_TREE = [
                     LowerThan10 => Leaf(ReleaseLocation{1}, :_circle_circle, 2_000, 10_000),
                     HigherThan10 => Leaf(ReleaseLocation{1}, :_circle_triangle, 2_000, 10_000),
                 ],
-                ContainerGroupD => (nothing,)
+                ContainerGroupD => [
+                    LowerThan10 => Leaf(ReleaseLocation{2}, :_two_circles, 1_000, 10_000),
+                    HigherThan10 => Leaf(ReleaseLocation{2}, :_two_circle_triangle, 1_000, 10_000),
+                ]
             ],
             ReleaseTypeC => Leaf(ReleaseLocation{1}, :_circle, 10_000),
         ],
