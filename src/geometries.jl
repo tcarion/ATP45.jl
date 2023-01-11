@@ -65,11 +65,13 @@ GI.getgeom(::LinearRingTrait, geom::ZoneBoundary{N, T}, i) where {N, T} = coords
 
 
 abstract type AbstractZone{N, T} end
+coords(zone::AbstractZone) = coords(boundaries(zone))
+boundaries(zone::AbstractZone) = zone.boundaries
 
 GI.isgeometry(geom::AbstractZone)::Bool = true
 GI.geomtrait(::AbstractZone) = PolygonTrait()
 GI.ngeom(::PolygonTrait, ::AbstractZone) = 1
-GI.getgeom(::PolygonTrait, zone::AbstractZone, i) = geometry(zone)
+GI.getgeom(::PolygonTrait, zone::AbstractZone, i) = boundaries(zone)
 
 """
     Zone{N, T} <: AbstractZone{N, T}
@@ -77,12 +79,33 @@ Defines a closed polygon with `N` vertices for representing a ATP-45 zone.
 It implements the `GeoInterface.Polygon` trait.
 """
 struct Zone{N, T} <: AbstractZone{N, T}
-    geometry::ZoneBoundary{N, T}
+    boundaries::ZoneBoundary{N, T}
 end
-geometry(zone::Zone) = zone.geometry
-coords(zone::AbstractZone) = coords(geometry(zone))
-Zone(vec::VectorCoordsType) = Zone(ZoneBoundary(vec))
 Zone(args...) = Zone(ZoneBoundary(args...))
+
+struct TriangleLikeZone{T} <: AbstractZone{3, T}
+    boundaries::ZoneBoundary{3, T}
+end
+function TriangleLikeZone(releaselocation::ReleaseLocation{1, T}, wind::AbstractWind, dhd, back_distance) where T
+    azimuth = wind_azimuth(wind)
+    center = coords(releaselocation)[1]
+    triangle_coords = triangle_coordinates(center..., T(azimuth), T(dhd), T(back_distance))
+    TriangleLikeZone{T}(ZoneBoundary(triangle_coords))
+end
+
+struct CircleLikeZone{N, T} <: AbstractZone{N, T}
+    center::ReleaseLocation{1, T}
+    radius::T
+end
+
+function CircleLikeZone(releaselocation::ReleaseLocation{1, T}, radius::Number; numpoint = 100) where {T}
+    CircleLikeZone{numpoint, T}(releaselocation, radius)
+end
+function coords(circle::CircleLikeZone{N, T}) where {N, T} 
+    center = coords(circle.center)[1]
+    circle_coordinates(center..., circle.radius; res = N)
+end
+boundaries(circle::CircleLikeZone) = ZoneBoundary(coords(circle))
 
 """
     AbstractZoneFeature{N, T}
@@ -90,40 +113,23 @@ An ATP-45 [`Zone{N, T}`](@ref) with some properties related to it (typically the
 It implements the `GeoInterface.Feature` trait.
 """
 abstract type AbstractZoneFeature{N, T} end
-properties(zonefeature::AbstractZoneFeature) = zonefeature.properties
+geometry(zonefeature::AbstractZoneFeature) = zonefeature.geometry
 GI.isfeature(::Type{<:AbstractZoneFeature}) = true
 GI.trait(::AbstractZoneFeature) = FeatureTrait()
 GI.properties(zonefeature::AbstractZoneFeature) = properties(zonefeature)
+GI.geometry(zonefeature::AbstractZoneFeature) = geometry(zonefeature)
 
-struct TriangleLike{T} <: AbstractZoneFeature{3, T}
-    geometry::Zone{3, T}
-    properties::Dict{String, String}
+struct HazardZone{N, T} <: AbstractZoneFeature{T, N}
+    geometry::AbstractZone{N, T}
 end
-function TriangleLike(releaselocation::ReleaseLocation{1, T}, wind::AbstractWind, dhd, back_distance, props = Dict()) where T
-    azimuth = wind_azimuth(wind)
-    center = coords(releaselocation)[1]
-    triangle_coords = triangle_coordinates(center..., T(azimuth), T(dhd), T(back_distance))
-    TriangleLike{T}(Zone(triangle_coords), props)
-end
-geometry(triangle::TriangleLike) = triangle.geometry
-coords(triangle::TriangleLike) = coords(geometry(triangle))
-GI.geometry(triangle::TriangleLike) = geometry(triangle)
+properties(::HazardZone) = (type="hazard",)
+HazardZone(vec::VectorCoordsType) = HazardZone(Zone(vec))
 
-struct CircleLike{N, T} <: AbstractZoneFeature{N, T}
-    center::ReleaseLocation{1, T}
-    radius::T
-    properties::Dict{String, String}
+struct ReleaseZone{N, T} <: AbstractZoneFeature{T, N}
+    geometry::AbstractZone{N, T}
 end
-
-function CircleLike(releaselocation::ReleaseLocation{1, T}, radius::Number, props = Dict(); numpoint = 100) where {T}
-    CircleLike{numpoint, T}(releaselocation, radius, props)
-end
-function coords(circle::CircleLike{N, T}) where {N, T} 
-    center = coords(circle.center)[1]
-    circle_coordinates(center..., circle.radius; res = N)
-end
-geometry(circle::CircleLike) = Zone(coords(circle))
-GI.geometry(circle::CircleLike) = geometry(circle) 
+properties(::ReleaseZone) = (type="release",)
+ReleaseZone(vec::VectorCoordsType) = ReleaseZone(Zone(vec))
 
 abstract type AbstractAtp45Result end
 properties(result::AbstractAtp45Result) = result.properties

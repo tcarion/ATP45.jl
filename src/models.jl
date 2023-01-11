@@ -64,19 +64,19 @@ longname(::Type{Detailed}) = "Detailed procedure"
 #
 # Helper functions to avoid repetition when building the ATP45 zones. 
 #
-_circle(location::AbstractReleaseLocation, inner_radius) = (CircleLike(location, inner_radius, Dict("type" => "release")), )
+_circle(location::AbstractReleaseLocation, inner_radius) = (ReleaseZone(CircleLikeZone(location, inner_radius)), )
 
 _circle(inputs, inner_radius) = _circle(get_location(inputs), inner_radius)
 
 
 _circle_circle(location::AbstractReleaseLocation, inner_radius, outer_radius) = 
-    CircleLike(location, inner_radius, Dict("type" => "release")), CircleLike(location, outer_radius, Dict("type" => "hazard"))
+    ReleaseZone(CircleLikeZone(location, inner_radius)), HazardZone(CircleLikeZone(location, outer_radius))
 
 _circle_circle(inputs, inner_radius, outer_radius) = _circle_circle(get_location(inputs), inner_radius, outer_radius)
 
 
 _circle_triangle(location::AbstractReleaseLocation, wind, inner_radius, dhd) = 
-    CircleLike(location, inner_radius, Dict("type" => "release")), TriangleLike(location, wind, dhd, 2*inner_radius, Dict("type" => "hazard"))
+    ReleaseZone(CircleLikeZone(location, inner_radius)), HazardZone(TriangleLikeZone(location, wind, dhd, 2*inner_radius))
 
 _circle_triangle(inputs, inner_radius, dhd) = _circle_triangle(get_location(inputs), get_wind(inputs), inner_radius, dhd)
 

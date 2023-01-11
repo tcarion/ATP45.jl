@@ -9,7 +9,7 @@ import ATP45: Shell
 import ATP45: WindDirection, ReleaseLocation
 import ATP45: Unstable, Stable
 import ATP45: Atp45Result
-import ATP45: CircleLike, TriangleLike
+import ATP45: HazardZone, ReleaseZone
 import ATP45: MissingInputsException
 
 @testset "Run" begin
@@ -57,26 +57,26 @@ end
                 @test_throws MissingInputsException typeAhigher(windhigher, release)
                 inputs = (windhigher, release, unstable)
                 r = typeAhigher(inputs...)
-                @test r.zones[2] isa TriangleLike
+                @test r.zones[2] isa HazardZone
                 inputs = (windhigher, release, "unstable")
                 r = typeAhigher(inputs...)
-                @test r.zones[2] isa TriangleLike
+                @test r.zones[2] isa HazardZone
             end
 
             @testset "Release B" begin
                 @test_throws MissingInputsException Detailed(chemical, ReleaseTypeB())(windlower, release)
                 typeBcontB = Detailed(chemical, ReleaseTypeB(), Shell())
-                @test typeBcontB(windhigher, release).zones[2] isa TriangleLike
+                @test typeBcontB(windhigher, release).zones[2] isa HazardZone
 
                 @testset "with ContainerGroup" begin
                     withgroup = Detailed("chem", "typeB", "containergroupb")
-                    @test withgroup(windhigher, release).zones[2] isa TriangleLike
+                    @test withgroup(windhigher, release).zones[2] isa HazardZone
                 end
             end
 
             @testset "Release C" begin
                 typeC = Detailed(chemical, ReleaseTypeC())
-                @test typeC(windlower, release).zones[1] isa CircleLike
+                @test typeC(windlower, release).zones[1] isa ReleaseZone
             end
         end
 
