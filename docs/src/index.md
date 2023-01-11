@@ -8,6 +8,16 @@ CurrentModule = ATP45
 
 # Getting started
 
+```@setup generate_readme
+using ATP45
+using Plots
+detailed_chem = Detailed(ChemicalWeapon(), ReleaseTypeB(), "SPR")
+releases = ReleaseLocation([4., 50.], [4.15, 50.03])
+wind = WindDirection(2., 45.)
+result = detailed_chem(releases, wind)
+plot(result)
+savefig("example.png")
+```
 ### Run with callable objects:
 The package provides a simple and flexible API to run the proper ATP-45 case, according to the parameters and inputs provided by the user.
 For example, setting up the simplified ATP-45 model in case of chemical weapons goes like this:
@@ -31,10 +41,10 @@ The result can be easily plotted with [Plots.jl](https://github.com/JuliaPlots/P
 ```@example getstarted
 using Plots
 plot(result)
-savefig("example.png"); nothing # hide
+savefig("simplified_example.png"); nothing # hide
 ```
 
-![](example.png)
+![](simplified_example.png)
 
 
 ### Run with `run_atp`
@@ -62,6 +72,9 @@ ATP45.properties("typeA")
 If some categories or some inputs are missing, you should get an explanatory error about what's missing:
 ```@repl getstarted
 run_atp("detailed", "chem", "typeA", ATP45.Shell(), wind, release)
+```
+
+```
 ```
 
 ### Implementation of [GeoInterface.jl](https://github.com/JuliaGeo/GeoInterface.jl)

@@ -15,14 +15,15 @@ The package is not registered, so you need to install it with:
 using Pkg; Pkg.add(url="https://github.com/tcarion/ATP45.jl")
 ```
 ## Example:
-The following snippet runs the simplified version of ATP-45 for a chemical incident and some release and weather conditions and plots the results:
+The following snippet runs the detailed version of ATP-45 for a chemical incident with a persistent agent contained in a spray tank, with a wind of 2m/s:
 
 ```julia
 using ATP45
-simple_chem = Simplified(ChemicalWeapon())
-release = ReleaseLocation([4., 50.])
-wind = WindDirection(5., 45.)
-result = simple_chem(release, wind)
+using Plots
+detailed_chem = Detailed(ChemicalWeapon(), ReleaseTypeB(), "SPR")
+releases = ReleaseLocation([4., 50.], [4.15, 50.03])
+wind = WindDirection(2., 45.)
+result = detailed_chem(releases, wind)
 plot(result)
 ```
 
