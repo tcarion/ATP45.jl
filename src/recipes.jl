@@ -43,6 +43,9 @@ end
 end
 
 @recipe function f(collection::Atp45Result)
+    xlabel --> "Longitude (°)"
+    ylabel --> "Latitude (°)"
+    aspect_ratio --> :equal
     for feat in zonecollection(collection)
         @series begin
             feat
