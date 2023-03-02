@@ -64,28 +64,28 @@ longname(::Type{Detailed}) = "Detailed procedure"
 #
 # Helper functions to avoid repetition when building the ATP45 zones. 
 #
-_circle(location::AbstractReleaseLocation, inner_radius) = (ReleaseZone(CircleLikeZone(location, inner_radius)), )
+_circle(location::AbstractReleaseLocations, inner_radius) = (ReleaseZone(CircleLikeZone(location, inner_radius)), )
 
 _circle(inputs, inner_radius) = _circle(get_location(inputs), inner_radius)
 
 
-_circle_circle(location::AbstractReleaseLocation, inner_radius, outer_radius) = 
+_circle_circle(location::AbstractReleaseLocations, inner_radius, outer_radius) = 
     ReleaseZone(CircleLikeZone(location, inner_radius)), HazardZone(CircleLikeZone(location, outer_radius))
 
 _circle_circle(inputs, inner_radius, outer_radius) = _circle_circle(get_location(inputs), inner_radius, outer_radius)
 
 
-_circle_triangle(location::AbstractReleaseLocation, wind, inner_radius, dhd) = 
+_circle_triangle(location::AbstractReleaseLocations, wind, inner_radius, dhd) = 
     ReleaseZone(CircleLikeZone(location, inner_radius)), HazardZone(TriangleLikeZone(location, wind, dhd, 2*inner_radius))
 
 _circle_triangle(inputs, inner_radius, dhd) = _circle_triangle(get_location(inputs), get_wind(inputs), inner_radius, dhd)
 
-_two_circles(locations::AbstractReleaseLocation{2}, inner_radius, outer_radius) =
+_two_circles(locations::AbstractReleaseLocations{2}, inner_radius, outer_radius) =
     ReleaseZone(_circle_hull(locations, inner_radius)), HazardZone(_circle_hull(locations, outer_radius))
 
 _two_circles(inputs, inner_radius, outer_radius) = _two_circles(get_location(inputs), inner_radius, outer_radius)
 
-_two_circle_triangle(locations::AbstractReleaseLocation{2}, wind, inner_radius, dhd) =
+_two_circle_triangle(locations::AbstractReleaseLocations{2}, wind, inner_radius, dhd) =
     ReleaseZone(_circle_hull(locations, inner_radius)), HazardZone(_triangle_hull(locations, wind, inner_radius, dhd))
 
 _two_circle_triangle(inputs, inner_radius, dhd) = _two_circle_triangle(get_location(inputs), get_wind(inputs), inner_radius, dhd)
@@ -111,7 +111,7 @@ function checkwind(wind::AbstractWind) ::AbstractWindCategory
 end
 checkwind(inputs) = checkwind(get_wind(inputs))
 
-get_location(inputs) = get_input(inputs, AbstractReleaseLocation)
+get_location(inputs) = get_input(inputs, AbstractReleaseLocations)
 get_wind(inputs) = get_input(inputs, AbstractWind)
 get_stability(inputs) = get_input(inputs, AbstractStability)
 

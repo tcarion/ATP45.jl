@@ -7,14 +7,14 @@ import ATP45: _circle, _circle_circle, _circle_triangle, _two_circles, _two_circ
 import ATP45: ChemicalWeapon, BiologicalWeapon, RadiologicalWeapon, NuclearWeapon
 import ATP45: ReleaseTypeA, ReleaseTypeB, ReleaseTypeC
 import ATP45: Shell
-import ATP45: WindDirection, ReleaseLocation
+import ATP45: WindDirection, ReleaseLocations
 import ATP45: Unstable, Stable
 import ATP45: Atp45Result
 import ATP45: HazardZone, ReleaseZone
 import ATP45: MissingInputsException
 
 @testset "zones generator methods" begin
-    one_release = ReleaseLocation([4., 50.])
+    one_release = ReleaseLocations([4., 50.])
     wind = WindDirection(5., 130.)
     circ = _circle(one_release, 1_000)
     @test circ[1] isa ReleaseZone
@@ -27,7 +27,7 @@ import ATP45: MissingInputsException
     @test circtri[1] isa ReleaseZone
     @test circtri[2] isa HazardZone
 
-    two_releases = ReleaseLocation([4., 50.], [4.15, 50.03])
+    two_releases = ReleaseLocations([4., 50.], [4.15, 50.03])
     twocirc = _two_circles(two_releases, 1_000, 10_000)
     @test twocirc[1] isa ReleaseZone
     @test twocirc[2] isa HazardZone
@@ -38,14 +38,14 @@ import ATP45: MissingInputsException
 end
 
 @testset "Run" begin
-    model_parameters = (Simplified(), BiologicalWeapon(), WindDirection(45, 4), ReleaseLocation([4., 50.]))
+    model_parameters = (Simplified(), BiologicalWeapon(), WindDirection(45, 4), ReleaseLocations([4., 50.]))
     result = run_atp(model_parameters)
     @test result isa Atp45Result
-    model_parameters_str = ("simplified", "bio", WindDirection(45, 4), ReleaseLocation([4., 50.]))
+    model_parameters_str = ("simplified", "bio", WindDirection(45, 4), ReleaseLocations([4., 50.]))
     @test cast_id.(model_parameters_str) == model_parameters
     res2 = run_atp(model_parameters_str)
     @test res2 isa Atp45Result
-    res3 = run_atp("simplified", "chem", WindDirection(2, 5), ReleaseLocation([4, 50]))
+    res3 = run_atp("simplified", "chem", WindDirection(2, 5), ReleaseLocations([4, 50]))
     @test res3 isa Atp45Result
 end
 
@@ -54,8 +54,8 @@ end
     windlower = WindDirection(2., 45)
     unstable = Unstable()
     stable = Stable()
-    release = ReleaseLocation([4., 50.])
-    two_releases = ReleaseLocation([4., 50.], [4.15, 50.03])
+    release = ReleaseLocations([4., 50.])
+    two_releases = ReleaseLocations([4., 50.], [4.15, 50.03])
     chemical = ChemicalWeapon()
 
     @testset "Simplified" begin

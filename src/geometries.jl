@@ -10,16 +10,16 @@ abstract type PointsSeries{N, T} end
 
 coords(ps::PointsSeries) = ps.coords
 
-abstract type AbstractReleaseLocation{N, T} <: PointsSeries{N, T} end
-GI.isgeometry(geom::AbstractReleaseLocation)::Bool = true
-GI.geomtrait(::AbstractReleaseLocation) = MultiPointTrait()
-GI.ngeom(::MultiPointTrait, ::AbstractReleaseLocation{N, T}) where {N, T} = N
-GI.getgeom(::MultiPointTrait, geom::AbstractReleaseLocation, i) = coords(geom)[i]
+abstract type AbstractReleaseLocations{N, T} <: PointsSeries{N, T} end
+GI.isgeometry(geom::AbstractReleaseLocations)::Bool = true
+GI.geomtrait(::AbstractReleaseLocations) = MultiPointTrait()
+GI.ngeom(::MultiPointTrait, ::AbstractReleaseLocations{N, T}) where {N, T} = N
+GI.getgeom(::MultiPointTrait, geom::AbstractReleaseLocations, i) = coords(geom)[i]
 
-ParamType(::Type{<:AbstractReleaseLocation}) = Location()
+ParamType(::Type{<:AbstractReleaseLocations}) = Location()
 
 """
-    ReleaseLocation{N, T}
+    ReleaseLocations{N, T}
 Represents the `N` locations of the release(s).
 
 # Examples
@@ -28,14 +28,14 @@ julia> coords = [
     [6., 49.],
     [6., 51.],
 ]
-julia> ReleaseLocation(coords)
-ReleaseLocation{2, Float64}(((6.0, 49.0), (6.0, 51.0)))
+julia> ReleaseLocations(coords)
+ReleaseLocations{2, Float64}(((6.0, 49.0), (6.0, 51.0)))
 ```
 """
-struct ReleaseLocation{N, T} <: AbstractReleaseLocation{N, T}
+struct ReleaseLocations{N, T} <: AbstractReleaseLocations{N, T}
     coords::NTuple{N, NTuple{2, T}}
 end
-==(r1::ReleaseLocation, r2::ReleaseLocation) = coords(r1) == coords(r2)
+==(r1::ReleaseLocations, r2::ReleaseLocations) = coords(r1) == coords(r2)
 """
     ZoneBoundary{N, T}
 Represents the border for a ATP45 zone. `N` is the number of vertices defining the zone.
@@ -93,23 +93,23 @@ Zone(args...) = Zone(ZoneBoundary(args...))
 struct TriangleLikeZone{T} <: AbstractZone{3, T}
     boundaries::ZoneBoundary{3, T}
 end
-function TriangleLikeZone(releaselocation::ReleaseLocation{1, T}, wind::AbstractWind, dhd, back_distance) where T
+function TriangleLikeZone(ReleaseLocations::ReleaseLocations{1, T}, wind::AbstractWind, dhd, back_distance) where T
     azimuth = wind_azimuth(wind)
-    center = coords(releaselocation)[1]
+    center = coords(ReleaseLocations)[1]
     triangle_coords = triangle_coordinates(center..., T(azimuth), T(dhd), T(back_distance))
     TriangleLikeZone{T}(ZoneBoundary(triangle_coords))
 end
-TriangleLikeZone(vec, wind::AbstractWind, dhd, back_distance) = TriangleLikeZone(ReleaseLocation(collect(vec)), wind, dhd, back_distance)
+TriangleLikeZone(vec, wind::AbstractWind, dhd, back_distance) = TriangleLikeZone(ReleaseLocations(collect(vec)), wind, dhd, back_distance)
 
 struct CircleLikeZone{N, T} <: AbstractZone{N, T}
-    center::ReleaseLocation{1, T}
+    center::ReleaseLocations{1, T}
     radius::T
 end
 
-function CircleLikeZone(releaselocation::ReleaseLocation{1, T}, radius::Number; numpoint = 100) where {T}
-    CircleLikeZone{numpoint, T}(releaselocation, radius)
+function CircleLikeZone(ReleaseLocations::ReleaseLocations{1, T}, radius::Number; numpoint = 100) where {T}
+    CircleLikeZone{numpoint, T}(ReleaseLocations, radius)
 end
-CircleLikeZone(vec, radius::Number; numpoint = 100) = CircleLikeZone(ReleaseLocation(collect(vec)), radius; numpoint)
+CircleLikeZone(vec, radius::Number; numpoint = 100) = CircleLikeZone(ReleaseLocations(collect(vec)), radius; numpoint)
 
 function coords(circle::CircleLikeZone{N, T}) where {N, T} 
     center = coords(circle.center)[1]

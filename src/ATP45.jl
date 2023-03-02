@@ -75,7 +75,7 @@ Dict{String, Any} with 29 entries:
 """
 map_ids() = MAP_IDS
 
-export WindVector, WindDirection, Stable, Unstable, Neutral, ReleaseLocation
+export WindVector, WindDirection, Stable, Unstable, Neutral, ReleaseLocations
 export Simplified, Detailed, run_atp
 export ChemicalWeapon, BiologicalWeapon, RadiologicalWeapon, NuclearWeapon
 export ReleaseTypeA, ReleaseTypeB, ReleaseTypeC

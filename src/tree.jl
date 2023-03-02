@@ -1,5 +1,5 @@
 struct Leaf{N}
-    locationtype::Type{ReleaseLocation{N}}
+    locationtype::Type{ReleaseLocations{N}}
     fname::Symbol
     args::Tuple{Vararg{Any}}
 end
@@ -8,46 +8,46 @@ Leaf(d, fname::Symbol, args::Vararg{Any}) = Leaf(d, fname, Tuple(args))
 const DECISION_TREE = [
     Simplified => [
         ChemicalWeapon => [
-            LowerThan10 => Leaf(ReleaseLocation{1}, :_circle_circle, 2_000, 10_000),
-            HigherThan10 => Leaf(ReleaseLocation{1}, :_circle_triangle, 2_000, 10_000),
+            LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 2_000, 10_000),
+            HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 2_000, 10_000),
         ],
         BiologicalWeapon => [
-            LowerThan10 => Leaf(ReleaseLocation{1}, :_circle_circle, 2_000, 10_000),
-            HigherThan10 => Leaf(ReleaseLocation{1}, :_circle_triangle, 2_000, 10_000),
+            LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 2_000, 10_000),
+            HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 2_000, 10_000),
         ],
     ],
     Detailed => [
         ChemicalWeapon => [
             ReleaseTypeA => [
-                LowerThan10 => Leaf(ReleaseLocation{1}, :_circle_circle, 1_000, 10_000),
+                LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 1_000, 10_000),
                 HigherThan10 => [
                     ContainerGroupE => [
-                        Unstable => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 10_000),
-                        Neutral => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 30_000),
-                        Stable => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 50_000),
+                        Unstable => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 10_000),
+                        Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 30_000),
+                        Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 50_000),
                     ],
                     ContainerGroupF => [
-                        Unstable => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 15_000),
-                        Neutral => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 30_000),
-                        Stable => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 50_000),
+                        Unstable => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 15_000),
+                        Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 30_000),
+                        Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 50_000),
                     ],
                 ],
             ],
             ReleaseTypeB => [
                 ContainerGroupB => [
-                    LowerThan10 => Leaf(ReleaseLocation{1}, :_circle_circle, 1_000, 10_000),
-                    HigherThan10 => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 10_000),
+                    LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 1_000, 10_000),
+                    HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 10_000),
                 ],
                 ContainerGroupC => [
-                    LowerThan10 => Leaf(ReleaseLocation{1}, :_circle_circle, 2_000, 10_000),
-                    HigherThan10 => Leaf(ReleaseLocation{1}, :_circle_triangle, 2_000, 10_000),
+                    LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 2_000, 10_000),
+                    HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 2_000, 10_000),
                 ],
                 ContainerGroupD => [
-                    LowerThan10 => Leaf(ReleaseLocation{2}, :_two_circles, 1_000, 10_000),
-                    HigherThan10 => Leaf(ReleaseLocation{2}, :_two_circle_triangle, 1_000, 10_000),
+                    LowerThan10 => Leaf(ReleaseLocations{2}, :_two_circles, 1_000, 10_000),
+                    HigherThan10 => Leaf(ReleaseLocations{2}, :_two_circle_triangle, 1_000, 10_000),
                 ]
             ],
-            ReleaseTypeC => Leaf(ReleaseLocation{1}, :_circle, 10_000),
+            ReleaseTypeC => Leaf(ReleaseLocations{1}, :_circle, 10_000),
         ],
         BiologicalWeapon => (nothing,),
     ],
@@ -217,9 +217,9 @@ function _find_node(::Type{<:Leaf{N}}, vals, model_params) where N
     input_loc = try 
         get_location(model_params)
     catch e
-        e isa ErrorException && throw(MissingInputsException([ReleaseLocation{N}]))
+        e isa ErrorException && throw(MissingInputsException([ReleaseLocations{N}]))
     end
-    input_loc isa ReleaseLocation{N} || error("Wrong number of input release locations: required: $N.")
+    input_loc isa ReleaseLocations{N} || error("Wrong number of input release locations: required: $N.")
     nothing
 end
 

@@ -4,7 +4,7 @@ using ATP45: _group_parameters
 using ATP45: TreeNode, Leaf
 import ATP45: children, parent, nodevalue
 import ATP45: build_tree, allparents, children_value_type, descend, descendall, _find_node
-import ATP45: Simplified, Detailed, ChemicalWeapon, BiologicalWeapon, Shell, Bomb, ReleaseTypeA, WindDirection, ReleaseLocation, LowerThan10, HigherThan10
+import ATP45: Simplified, Detailed, ChemicalWeapon, BiologicalWeapon, Shell, Bomb, ReleaseTypeA, WindDirection, ReleaseLocations, LowerThan10, HigherThan10
 import ATP45: Stable, Unstable, Neutral
 import ATP45: ContainerGroupE, ContainerGroupF, ContainerGroupB, ContainerGroupC
 import ATP45.AbstractTrees: Leaves, getroot
@@ -13,42 +13,42 @@ import ATP45: MissingInputsException
 example_tree = [
     Simplified => [
         ChemicalWeapon => [
-            LowerThan10 => Leaf(ReleaseLocation{1}, :_circle_circle, 2_000, 10_000),
-            HigherThan10 => Leaf(ReleaseLocation{1}, :_circle_triangle, 2_000, 10_000),
+            LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 2_000, 10_000),
+            HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 2_000, 10_000),
         ],
         BiologicalWeapon => [
-            LowerThan10 => Leaf(ReleaseLocation{1}, :_circle_circle, 2_000, 10_000),
-            HigherThan10 => Leaf(ReleaseLocation{1}, :_circle_triangle, 2_000, 10_000),
+            LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 2_000, 10_000),
+            HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 2_000, 10_000),
         ],
     ],
     Detailed => [
         ChemicalWeapon => [
             ReleaseTypeA => [
-                LowerThan10 => Leaf(ReleaseLocation{1}, :_circle_circle, 1_000, 10_000),
+                LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 1_000, 10_000),
                 HigherThan10 => [
                     ContainerGroupE => [
-                        Unstable => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 10_000),
-                        Neutral => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 30_000),
-                        Stable => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 50_000),
+                        Unstable => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 10_000),
+                        Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 30_000),
+                        Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 50_000),
                     ],
                     ContainerGroupF => [
-                        Unstable => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 15_000),
-                        Neutral => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 30_000),
-                        Stable => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 50_000),
+                        Unstable => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 15_000),
+                        Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 30_000),
+                        Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 50_000),
                     ],
                 ],
             ],
             ReleaseTypeB => [
                 ContainerGroupB => [
-                    LowerThan10 => Leaf(ReleaseLocation{1}, :_circle_circle, 1_000, 10_000),
-                    HigherThan10 => Leaf(ReleaseLocation{1}, :_circle_triangle, 1_000, 10_000),
+                    LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 1_000, 10_000),
+                    HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 10_000),
                 ],
                 ContainerGroupC => [
-                    LowerThan10 => Leaf(ReleaseLocation{1}, :_circle_circle, 2_000, 10_000),
-                    HigherThan10 => Leaf(ReleaseLocation{1}, :_circle_triangle, 2_000, 10_000),
+                    LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 2_000, 10_000),
+                    HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 2_000, 10_000),
                 ],
             ],
-            ReleaseTypeC => Leaf(ReleaseLocation{2}, :_circle, 10_000),
+            ReleaseTypeC => Leaf(ReleaseLocations{2}, :_circle, 10_000),
         ],
         BiologicalWeapon => (nothing,),
     ],
@@ -71,7 +71,7 @@ end
     @testset "Descending " begin
         windhigher = WindDirection(5., 45)
         windlower = WindDirection(2., 45)
-        release = ReleaseLocation([4., 50.])
+        release = ReleaseLocations([4., 50.])
         inputs = (windhigher, release)
         inputs_stab = (inputs..., Stable())
 
@@ -121,7 +121,7 @@ end
             next = descend(node, model_params)
             @test nodevalue(descendall(tree, model_params)) == nodevalue(next)
 
-            # missing ReleaseLocation
+            # missing ReleaseLocations
             model_params_norel = _group_parameters(model, (windhigher,))
             @test_throws MissingInputsException descendall(tree, model_params_norel)
 

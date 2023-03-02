@@ -12,7 +12,7 @@ CurrentModule = ATP45
 using ATP45
 using Plots
 detailed_chem = Detailed(ChemicalWeapon(), ReleaseTypeB(), "SPR")
-releases = ReleaseLocation([4., 50.], [4.15, 50.03])
+releases = ReleaseLocations([4., 50.], [4.15, 50.03])
 wind = WindDirection(2., 45.)
 result = detailed_chem(releases, wind)
 plot(result)
@@ -28,7 +28,7 @@ simple_chem = Simplified(ChemicalWeapon())
 
 `simple_chem` is a callable object for which we can pass the release conditions. We define the location of the release at longitude 4.0 and latitude 50.0, as well as a wind of speed 5.0 m/s and pointing 45° from North.
 ```@example getstarted
-release = ReleaseLocation([4., 50.]);
+release = ReleaseLocations([4., 50.]);
 wind = WindDirection(5., 45.);
 nothing # hide
 ```
@@ -94,7 +94,7 @@ GeoJSON.write(result)
 # Documentation
 ```@docs
 run_atp
-ReleaseLocation
+ReleaseLocations
 WindDirection
 WindVector
 Atp45Result
