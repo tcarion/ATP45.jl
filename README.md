@@ -20,10 +20,10 @@ The following snippet runs the detailed version of ATP-45 for a chemical inciden
 ```julia
 using ATP45
 using Plots
-detailed_chem = Detailed(ChemicalWeapon(), ReleaseTypeB(), "SPR")
+detailed_chem = (ChemicalWeapon(), Detailed(), ReleaseTypeB(), "SPR")
 releases = ReleaseLocations([4., 50.], [4.15, 50.03])
 wind = WindAzimuth(2., 45.)
-result = detailed_chem(releases, wind)
+result = run_atp(detailed_chem..., releases, wind)
 plot(result)
 ```
 
