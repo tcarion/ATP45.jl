@@ -11,30 +11,30 @@ CurrentModule = ATP45
 ```@setup generate_readme
 using ATP45
 using Plots
-detailed_chem = Detailed(ChemicalWeapon(), ReleaseTypeB(), "SPR")
-releases = ReleaseLocation([4., 50.], [4.15, 50.03])
-wind = WindDirection(2., 45.)
-result = detailed_chem(releases, wind)
+detailed_chem = (ChemicalWeapon(), Detailed(), ReleaseTypeB(), "SPR")
+releases = ReleaseLocations([4., 50.], [4.15, 50.03])
+wind = WindAzimuth(2., 45.)
+result = run_atp(detailed_chem..., releases, wind)
 plot(result)
 savefig("example.png")
 ```
-### Run with callable objects:
+### Run ATP-45:
 The package provides a simple and flexible API to run the proper ATP-45 case, according to the parameters and inputs provided by the user.
-For example, setting up the simplified ATP-45 model in case of chemical weapons goes like this:
+Setting up the simplified ATP-45 model in case of chemical weapons goes like this:
 ```@example getstarted
 using ATP45
-simple_chem = Simplified(ChemicalWeapon()) 
+simple_chem = (ChemicalWeapon(), Simplified()) 
 ```
 
-`simple_chem` is a callable object for which we can pass the release conditions. We define the location of the release at longitude 4.0 and latitude 50.0, as well as a wind of speed 5.0 m/s and pointing 45° from North.
+After defining the desired categories of ATP-45, we define the location of the release at longitude 4.0 and latitude 50.0, as well as a wind of speed 5.0 m/s and pointing 45° from North:
 ```@example getstarted
-release = ReleaseLocation([4., 50.]);
-wind = WindDirection(5., 45.);
+release = ReleaseLocations([4., 50.]);
+wind = WindAzimuth(5., 45.);
 nothing # hide
 ```
-We finally pass these as arguments to the callable object:
+We finally pass these as arguments to the [`run_atp`](@ref run_atp) function. This function takes as arguments an arbitrary number of categories and inputs, so the splat operator (`...`) needs to be used on the `simple_chem` tuple. 
 ```@example getstarted
-result = simple_chem(release, wind)
+result = run_atp(simple_chem..., release, wind)
 ```
 
 The result can be easily plotted with [Plots.jl](https://github.com/JuliaPlots/Plots.jl):
@@ -46,12 +46,6 @@ savefig("simplified_example.png"); nothing # hide
 
 ![](simplified_example.png)
 
-
-### Run with `run_atp`
-Alternatively, ATP45 can be run with the [`run_atp`](@ref run_atp) function. The following code gives the same `result` as above:
-```@example getstarted
-run_atp(Simplified(), ChemicalWeapon(), wind, release)
-```
 
 We can also use the string id's corresponding to the categories instead of the Julia objects:
 ```@example getstarted
@@ -81,7 +75,7 @@ run_atp("detailed", "chem", "typeA", ATP45.Shell(), wind, release)
 The `Atp45Result` type implements the [GeoInterface.jl](https://github.com/JuliaGeo/GeoInterface.jl) interface, which means that the coordinates of the ATP-45 zones can be accessed with the `GeoInterface.jl` methods:
 ```@example getstarted
 using GeoInterface
-result = Simplified("chem")(wind, release)
+result = run_atp("chem", "simplified", wind, release)
 GeoInterface.coordinates(result)
 ```
 
@@ -94,8 +88,8 @@ GeoJSON.write(result)
 # Documentation
 ```@docs
 run_atp
-ReleaseLocation
-WindDirection
+ReleaseLocations
+WindAzimuth
 WindVector
 Atp45Result
 ATP45.map_ids

@@ -26,6 +26,24 @@ id(::Type{NuclearWeapon}) = "nuclear"
 longname(::Type{NuclearWeapon}) = "Nuclear"
 
 """
+    AbstractModel
+Determine the type of APT-45 that will be run (simplified or detailed).
+
+"""
+abstract type AbstractModel <: AbstractCategory end
+ParamType(::Type{<:AbstractModel}) = Procedure()
+internalname(T::Type{<:AbstractModel}) = string(_nonparamtype(T()))
+
+struct Simplified <: AbstractModel end
+longname(::Type{Simplified}) = "Simplified procedure"
+description(::Type{Simplified}) = "The simplified procedure is primarily used for immediate warning. As soon as possible the detailed procedures must be carried out. A typical situation where simplified procedures will be used is when the substance type and persistency are not known."
+id(::Type{Simplified}) = "simplified"
+
+struct Detailed <: AbstractModel end
+id(::Type{Detailed}) = "detailed"
+longname(::Type{Detailed}) = "Detailed procedure"
+
+"""
     AbstractReleaseType <: AbstractCategory
 Discriminate between the release type (ex: Air Contaminating Attack, Ground Contaminating Attacks)
 """

@@ -1,8 +1,3 @@
-function (procedure::AbstractModel)(inputs...)
-    inputs = cast_id.(inputs)
-    run_atp(_group_parameters(procedure, inputs)...)
-end
-
 """
     run_atp(args...)
 High level function to run the ATP-45 procedure. The arguments `args` can be pretty flexible. They can be expressed as
@@ -10,8 +5,8 @@ High level function to run the ATP-45 procedure. The arguments `args` can be pre
 
 - categories and input types from `ATP45.jl`
 ```julia
-locations = ReleaseLocations([4., 50.])
-wind = WindDirection(2.5, 45.)
+locations = ReleaseLocationss([4., 50.])
+wind = WindAzimuth(2.5, 45.)
 run_atp(Simplified(), ChemicalWeapon(), locations, wind)
 ```
 
@@ -31,10 +26,11 @@ function run_atp(model_parameters::Tuple)
     nodeval = nodevalue(leave)
     method, args = nodeval.fname, nodeval.args
     geometry = eval(method)(model_parameters, args...)
+    categories = (filter_paramtype(model_parameters, Category())..., filter_paramtype(model_parameters, Group())..., filter_paramtype(model_parameters, Procedure())...)
     props = Dict(
         :locations => get_location(model_parameters),
         :weather => filter_paramtype(model_parameters, Meteo()),
-        :categories => (filter_paramtype(model_parameters, Category())..., filter_paramtype(model_parameters, Group())...),
+        :categories => categories,
     )
     Atp45Result(geometry |> collect, props)
 end

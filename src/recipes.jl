@@ -10,7 +10,7 @@
     [w_origin[1]], [w_origin[2]]
 end
 
-@recipe function f(ps::ReleaseLocation)
+@recipe function f(ps::ReleaseLocations)
     @series begin
         seriestype := :scatter
         collect(GI.coordinates(ps))

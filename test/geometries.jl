@@ -1,11 +1,11 @@
 using Test
 using ATP45
-import ATP45: ReleaseLocation
+import ATP45: ReleaseLocations
 import ATP45: ZoneBoundary, Zone
 import ATP45: CircleLikeZone, TriangleLikeZone
 import ATP45: HazardZone, ReleaseZone
 import ATP45: Atp45Result
-import ATP45: WindDirection
+import ATP45: WindAzimuth
 import ATP45: GI, convexhull
 using ATP45.GeoInterface
 
@@ -16,7 +16,7 @@ using GeoJSON
         [6., 49.],
         [6., 51.],
     ]
-    location = ReleaseLocation(init_coords)
+    location = ReleaseLocations(init_coords)
     @test GI.testgeometry(location)
     @test GI.geomtrait(location) == MultiPointTrait()
     @test GI.ngeom(location) == 2
@@ -26,7 +26,7 @@ using GeoJSON
     @test_throws BoundsError GI.getgeom(location, 3) 
     @test GeoJSON.write(location) == "{\"type\":\"MultiPoint\",\"coordinates\":[[6.0,49.0],[6.0,51.0]]}"
 
-    location = ReleaseLocation([4., 50.])
+    location = ReleaseLocations([4., 50.])
     @test GI.testgeometry(location)
     @test GI.geomtrait(location) == MultiPointTrait()
     @test GI.ngeom(location) == 1
@@ -76,7 +76,7 @@ end
     init_coords = [
         [6., 51.],
     ]
-    location = ReleaseLocation(init_coords)
+    location = ReleaseLocations(init_coords)
     radius = 10000
     circle = CircleLikeZone(location, radius; numpoint = 10)
     @test ATP45.boundaries(circle) isa ZoneBoundary{10}
@@ -89,9 +89,9 @@ end
     init_coords = [
         [6., 51.],
     ]
-    location = ReleaseLocation(init_coords)
+    location = ReleaseLocations(init_coords)
     radius = 2000
-    wind = WindDirection(11, 45.)
+    wind = WindAzimuth(11, 45.)
     dhd = 10000
     triangle = TriangleLikeZone(location, wind, dhd, 2*radius)
     @test ATP45.boundaries(triangle) isa ZoneBoundary{3}
@@ -113,7 +113,7 @@ end
     @test GI.coordinates(hazard)[1] |> length == 5
     @test GI.properties(hazard).type == "hazard"
 
-    circle = CircleLikeZone(ReleaseLocation([4.,50.]), 10000.; numpoint = 10)
+    circle = CircleLikeZone(ReleaseLocations([4.,50.]), 10000.; numpoint = 10)
     release = ReleaseZone(circle)
     @test GI.testfeature(release)
     @test GI.geometry(release) isa ATP45.AbstractZone{10}
@@ -121,7 +121,7 @@ end
 end
 
 @testset "Geometries operation" begin
-    locations = ReleaseLocation([[4., 50.], [4.2, 50.]])
+    locations = ReleaseLocations([[4., 50.], [4.2, 50.]])
     zone1 = CircleLikeZone(ATP45.coords(locations)[1], 1_000; numpoint = 10)
     zone2 = CircleLikeZone(ATP45.coords(locations)[2], 1_000; numpoint = 10)
     hull = convexhull(zone1, zone2)
@@ -132,9 +132,9 @@ end
     init_coords = [
         [6., 51.],
     ]
-    location = ReleaseLocation(init_coords)
+    location = ReleaseLocations(init_coords)
     radius = 2000
-    wind = WindDirection(11, 45.)
+    wind = WindAzimuth(11, 45.)
     dhd = 10000
     triangle = TriangleLikeZone(location, wind, dhd, 2*radius)
     circle = CircleLikeZone(location, radius)
