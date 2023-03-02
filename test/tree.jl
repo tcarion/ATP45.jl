@@ -1,6 +1,5 @@
 using Test
 using ATP45
-using ATP45: _group_parameters
 using ATP45: TreeNode, Leaf
 import ATP45: children, parent, nodevalue
 import ATP45: build_tree, allparents, children_value_type, descend, descendall, _find_node
@@ -76,13 +75,13 @@ end
         inputs_stab = (inputs..., Stable())
 
         @testset "Not implemented" begin
-            model = Detailed(BiologicalWeapon())
-            @test_throws ErrorException descendall(tree, _group_parameters(model, inputs))
+            categories = (BiologicalWeapon(), Detailed())
+            @test_throws ErrorException descendall(tree, (categories..., inputs...))
         end
 
         @testset "Simplified" begin
-            model = Simplified(BiologicalWeapon())
-            model_params = _group_parameters(model, inputs)
+            model = (BiologicalWeapon(), Simplified())
+            model_params = (model..., inputs...)
             next = descend(tree, model_params)
             @test next isa TreeNode{<:Simplified}
             node = next
@@ -98,8 +97,8 @@ end
 
         @testset "Detailed" begin
             conttype = Bomb()
-            model = Detailed(ChemicalWeapon(), ReleaseTypeA(), conttype)
-            model_params = _group_parameters(model, inputs_stab)
+            categories = (ChemicalWeapon(), ReleaseTypeA(), Detailed(),conttype)
+            model_params = (categories..., inputs_stab...)
             next = descend(tree, model_params)
             @test next isa TreeNode{<:Detailed}
             node = next
@@ -122,19 +121,19 @@ end
             @test nodevalue(descendall(tree, model_params)) == nodevalue(next)
 
             # missing ReleaseLocations
-            model_params_norel = _group_parameters(model, (windhigher,))
+            model_params_norel = (categories..., windhigher)
             @test_throws MissingInputsException descendall(tree, model_params_norel)
 
             # missing stability
-            model_params_wrong = _group_parameters(model, inputs)
+            model_params_wrong = (categories..., inputs)
             @test_throws MissingInputsException descendall(tree, model_params_wrong)
 
             # missing container type
-            model_params_wrong = _group_parameters(Detailed(ChemicalWeapon(), ReleaseTypeA()), inputs)
+            model_params_wrong = (Detailed(), ChemicalWeapon(), ReleaseTypeA(), inputs...)
             @test_throws MissingInputsException descendall(tree, model_params_wrong)
 
             # wrong number of releases
-            model_params_wrong = _group_parameters(Detailed(ChemicalWeapon(), ReleaseTypeC()), inputs)
+            model_params_wrong = (Detailed(), ChemicalWeapon(), ReleaseTypeC(), inputs...)
             @test_throws ErrorException descendall(tree, model_params_wrong)
 
             @testset "Discriminate between groups" begin

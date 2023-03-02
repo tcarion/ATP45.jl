@@ -6,18 +6,12 @@ end
 Leaf(d, fname::Symbol, args::Vararg{Any}) = Leaf(d, fname, Tuple(args))
 
 const DECISION_TREE = [
-    Simplified => [
-        ChemicalWeapon => [
+    ChemicalWeapon => [
+        Simplified => [
             LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 2_000, 10_000),
             HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 2_000, 10_000),
         ],
-        BiologicalWeapon => [
-            LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 2_000, 10_000),
-            HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 2_000, 10_000),
-        ],
-    ],
-    Detailed => [
-        ChemicalWeapon => [
+        Detailed => [
             ReleaseTypeA => [
                 LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 1_000, 10_000),
                 HigherThan10 => [
@@ -49,7 +43,15 @@ const DECISION_TREE = [
             ],
             ReleaseTypeC => Leaf(ReleaseLocations{1}, :_circle, 10_000),
         ],
-        BiologicalWeapon => (nothing,),
+    ],
+    BiologicalWeapon => [
+        Simplified => [
+            LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 2_000, 10_000),
+            HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 2_000, 10_000),
+        ],
+        Detailed => [
+            BiologicalWeapon => (nothing,),
+        ]
     ],
 ]
 
@@ -170,12 +172,12 @@ function descend(node::TreeNode, model_params) :: TreeNode
     node_children[ichild]
 end
 
-function _find_node(::Type{<:AbstractModel}, vals, model_params)
-    param = _getisa(model_params, AbstractModel)
-    # Quite ugly, should find a better solution
-    inode = findisa(vals, _nonparamtype(param))
-    inode
-end
+# function _find_node(::Type{<:AbstractModel}, vals, model_params)
+#     param = _getisa(model_params, AbstractModel)
+#     # Quite ugly, should find a better solution
+#     inode = findisa(vals, _nonparamtype(param))
+#     inode
+# end
 
 function _find_node(children_type::Type{<:Union{AbstractCategory, AbstractStability}}, vals, model_params)
     param = _getisa(model_params, children_type)
