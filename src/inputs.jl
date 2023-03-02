@@ -19,7 +19,7 @@ end
 missing_message(::Type{<:ReleaseLocations{N}}) where N = "The model requires $N release(s) location(s)."
 missing_example(::Type{<:ReleaseLocations}) = "Example: `ReleaseLocations([4., 50.]).`"
 missing_message(::Type{AbstractWind}) = "The model requires the wind speed and direction."
-missing_example(::Type{AbstractWind}) = "Example: `WindDirection(11., 45.)`."
+missing_example(::Type{AbstractWind}) = "Example: `WindAzimuth(11., 45.)`."
 missing_message(::Type{AbstractWeapon}) = "The model requires the weapon category."
 missing_example(::Type{AbstractWeapon}) = "Example: `ChemicalWeapon()`"
 missing_message(cat::Type{<:AbstractCategory}) = "The model requires the category $(cat)."

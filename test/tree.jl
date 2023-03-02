@@ -4,7 +4,7 @@ using ATP45: _group_parameters
 using ATP45: TreeNode, Leaf
 import ATP45: children, parent, nodevalue
 import ATP45: build_tree, allparents, children_value_type, descend, descendall, _find_node
-import ATP45: Simplified, Detailed, ChemicalWeapon, BiologicalWeapon, Shell, Bomb, ReleaseTypeA, WindDirection, ReleaseLocations, LowerThan10, HigherThan10
+import ATP45: Simplified, Detailed, ChemicalWeapon, BiologicalWeapon, Shell, Bomb, ReleaseTypeA, WindAzimuth, ReleaseLocations, LowerThan10, HigherThan10
 import ATP45: Stable, Unstable, Neutral
 import ATP45: ContainerGroupE, ContainerGroupF, ContainerGroupB, ContainerGroupC
 import ATP45.AbstractTrees: Leaves, getroot
@@ -69,8 +69,8 @@ end
     @test length(parents) == 7
 
     @testset "Descending " begin
-        windhigher = WindDirection(5., 45)
-        windlower = WindDirection(2., 45)
+        windhigher = WindAzimuth(5., 45)
+        windlower = WindAzimuth(2., 45)
         release = ReleaseLocations([4., 50.])
         inputs = (windhigher, release)
         inputs_stab = (inputs..., Stable())

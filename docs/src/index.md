@@ -13,7 +13,7 @@ using ATP45
 using Plots
 detailed_chem = Detailed(ChemicalWeapon(), ReleaseTypeB(), "SPR")
 releases = ReleaseLocations([4., 50.], [4.15, 50.03])
-wind = WindDirection(2., 45.)
+wind = WindAzimuth(2., 45.)
 result = detailed_chem(releases, wind)
 plot(result)
 savefig("example.png")
@@ -29,7 +29,7 @@ simple_chem = Simplified(ChemicalWeapon())
 `simple_chem` is a callable object for which we can pass the release conditions. We define the location of the release at longitude 4.0 and latitude 50.0, as well as a wind of speed 5.0 m/s and pointing 45° from North.
 ```@example getstarted
 release = ReleaseLocations([4., 50.]);
-wind = WindDirection(5., 45.);
+wind = WindAzimuth(5., 45.);
 nothing # hide
 ```
 We finally pass these as arguments to the callable object:
@@ -95,7 +95,7 @@ GeoJSON.write(result)
 ```@docs
 run_atp
 ReleaseLocations
-WindDirection
+WindAzimuth
 WindVector
 Atp45Result
 ATP45.map_ids

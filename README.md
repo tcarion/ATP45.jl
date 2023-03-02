@@ -22,7 +22,7 @@ using ATP45
 using Plots
 detailed_chem = Detailed(ChemicalWeapon(), ReleaseTypeB(), "SPR")
 releases = ReleaseLocations([4., 50.], [4.15, 50.03])
-wind = WindDirection(2., 45.)
+wind = WindAzimuth(2., 45.)
 result = detailed_chem(releases, wind)
 plot(result)
 ```

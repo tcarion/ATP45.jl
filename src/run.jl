@@ -11,7 +11,7 @@ High level function to run the ATP-45 procedure. The arguments `args` can be pre
 - categories and input types from `ATP45.jl`
 ```julia
 locations = ReleaseLocationss([4., 50.])
-wind = WindDirection(2.5, 45.)
+wind = WindAzimuth(2.5, 45.)
 run_atp(Simplified(), ChemicalWeapon(), locations, wind)
 ```
 

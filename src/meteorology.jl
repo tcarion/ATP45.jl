@@ -27,18 +27,18 @@ end
 ==(w1::WindVector, w2::WindVector) = w1.u == w2.u && w1.v == w2.v
 
 """
-    WindDirection(speed, azimuth) <: AbstractWind
+    WindAzimuth(speed, azimuth) <: AbstractWind
 Defines the wind with its `speed` in m/s and its `azimuth` in degrees (with North as reference).
 """
-mutable struct WindDirection <: AbstractWind
+mutable struct WindAzimuth <: AbstractWind
     speed::Real
-    direction::Real
+    azimuth::Real
 end
-==(w1::WindDirection, w2::WindDirection) = w1.speed == w2.speed && w1.direction == w2.direction
+==(w1::WindAzimuth, w2::WindAzimuth) = w1.speed == w2.speed && w1.azimuth == w2.azimuth
 
-function _2windvector(wind::WindDirection)
-    u = wind.speed*cosd(90 - wind.direction)
-    v = wind.speed*sind(90 - wind.direction)
+function _2windvector(wind::WindAzimuth)
+    u = wind.speed*cosd(90 - wind.azimuth)
+    v = wind.speed*sind(90 - wind.azimuth)
     return u, v
 end
 
@@ -53,7 +53,7 @@ function wind_speed(Vx, Vy)
 end
 
 wind_speed(wind::WindVector) = wind_speed(wind.u, wind.v)
-function wind_speed(wind::WindDirection)
+function wind_speed(wind::WindAzimuth)
     WindVector = _2windvector(wind)
     wind_speed(WindVector[1], WindVector[2])
 end
@@ -68,13 +68,13 @@ function wind_azimuth(lon1, lat1, lon2, lat2)
     return 2*atand(y/(sqrt(x^2 + y^2) + x))
 end
 
-wind_azimuth(wind::WindVector) = convert(WindDirection, wind).direction
-wind_azimuth(wind::WindDirection) = wind.direction
+wind_azimuth(wind::WindVector) = convert(WindAzimuth, wind).azimuth
+wind_azimuth(wind::WindAzimuth) = wind.azimuth
 
-function Base.convert(::Type{WindDirection}, w::WindVector)
-    WindDirection(_2winddir(w)...)
+function Base.convert(::Type{WindAzimuth}, w::WindVector)
+    WindAzimuth(_2winddir(w)...)
 end
 
-function Base.convert(::Type{WindVector}, w::WindDirection)
+function Base.convert(::Type{WindVector}, w::WindAzimuth)
     WindVector(_2windvector(w)...)
 end

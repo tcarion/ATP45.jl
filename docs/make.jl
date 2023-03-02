@@ -4,7 +4,7 @@ ENV["GKSwstype"] = "100"
 
 # Plots warnings are brWarn doctests. They dont warn the second time.
 function flush_info_and_warnings()
-    r = run_atp("simplified", "chem", ReleaseLocations([4.,50.]), WindDirection(2., 45.))
+    r = run_atp("simplified", "chem", ReleaseLocations([4.,50.]), WindAzimuth(2., 45.))
     plot(r)
 end
 flush_info_and_warnings()

@@ -122,7 +122,7 @@ julia> ex = Simplified => [
                    HigherThan10 => (:_circle_triangle, 1_000, 10_000),
                ],
            ]
-julia> model_params = (BiologicalWeapon(), WindDirection(45, 2))
+julia> model_params = (BiologicalWeapon(), WindAzimuth(45, 2))
 julia> descendall(TreeNode(ex), model_params)
 (:_circle_triangle, 1000, 10000)
 ```

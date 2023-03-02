@@ -7,7 +7,7 @@ import ATP45: _circle, _circle_circle, _circle_triangle, _two_circles, _two_circ
 import ATP45: ChemicalWeapon, BiologicalWeapon, RadiologicalWeapon, NuclearWeapon
 import ATP45: ReleaseTypeA, ReleaseTypeB, ReleaseTypeC
 import ATP45: Shell
-import ATP45: WindDirection, ReleaseLocations
+import ATP45: WindAzimuth, ReleaseLocations
 import ATP45: Unstable, Stable
 import ATP45: Atp45Result
 import ATP45: HazardZone, ReleaseZone
@@ -15,7 +15,7 @@ import ATP45: MissingInputsException
 
 @testset "zones generator methods" begin
     one_release = ReleaseLocations([4., 50.])
-    wind = WindDirection(5., 130.)
+    wind = WindAzimuth(5., 130.)
     circ = _circle(one_release, 1_000)
     @test circ[1] isa ReleaseZone
 
@@ -38,20 +38,20 @@ import ATP45: MissingInputsException
 end
 
 @testset "Run" begin
-    model_parameters = (Simplified(), BiologicalWeapon(), WindDirection(45, 4), ReleaseLocations([4., 50.]))
+    model_parameters = (Simplified(), BiologicalWeapon(), WindAzimuth(45, 4), ReleaseLocations([4., 50.]))
     result = run_atp(model_parameters)
     @test result isa Atp45Result
-    model_parameters_str = ("simplified", "bio", WindDirection(45, 4), ReleaseLocations([4., 50.]))
+    model_parameters_str = ("simplified", "bio", WindAzimuth(45, 4), ReleaseLocations([4., 50.]))
     @test cast_id.(model_parameters_str) == model_parameters
     res2 = run_atp(model_parameters_str)
     @test res2 isa Atp45Result
-    res3 = run_atp("simplified", "chem", WindDirection(2, 5), ReleaseLocations([4, 50]))
+    res3 = run_atp("simplified", "chem", WindAzimuth(2, 5), ReleaseLocations([4, 50]))
     @test res3 isa Atp45Result
 end
 
 @testset "Models run" begin
-    windhigher = WindDirection(5., 45)
-    windlower = WindDirection(2., 45)
+    windhigher = WindAzimuth(5., 45)
+    windlower = WindAzimuth(2., 45)
     unstable = Unstable()
     stable = Stable()
     release = ReleaseLocations([4., 50.])

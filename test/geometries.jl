@@ -5,7 +5,7 @@ import ATP45: ZoneBoundary, Zone
 import ATP45: CircleLikeZone, TriangleLikeZone
 import ATP45: HazardZone, ReleaseZone
 import ATP45: Atp45Result
-import ATP45: WindDirection
+import ATP45: WindAzimuth
 import ATP45: GI, convexhull
 using ATP45.GeoInterface
 
@@ -91,7 +91,7 @@ end
     ]
     location = ReleaseLocations(init_coords)
     radius = 2000
-    wind = WindDirection(11, 45.)
+    wind = WindAzimuth(11, 45.)
     dhd = 10000
     triangle = TriangleLikeZone(location, wind, dhd, 2*radius)
     @test ATP45.boundaries(triangle) isa ZoneBoundary{3}
@@ -134,7 +134,7 @@ end
     ]
     location = ReleaseLocations(init_coords)
     radius = 2000
-    wind = WindDirection(11, 45.)
+    wind = WindAzimuth(11, 45.)
     dhd = 10000
     triangle = TriangleLikeZone(location, wind, dhd, 2*radius)
     circle = CircleLikeZone(location, radius)
