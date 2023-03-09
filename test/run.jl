@@ -114,12 +114,18 @@ end
             @test bioresult isa Atp45Result
         end
     end
+end
 
-    @testset "Results" begin
-        categories = ("detailed", "chem", "typeA", Shell())
-        result = run_atp(categories..., release, windhigher, stable)
-        @test result[:locations] == release
-        @test result[:categories] == (ChemicalWeapon(), ReleaseTypeA(), Shell(), Detailed())
-        @test result[:weather] == (windhigher, stable)
-    end
+@testset "Atp45Result" begin
+    release = ReleaseLocations([4., 50.])
+    wind = WindAzimuth(5., 45)
+
+    categories = ("detailed", "chem", "typeA", Shell())
+    result = run_atp(categories..., release, wind, Stable())
+    @test result[:locations] == release
+    @test result[:categories] == (ChemicalWeapon(), ReleaseTypeA(), Shell(), Detailed())
+    @test result[:weather] == (wind, Stable())
+
+    release_zones = get_zones(result, "release")
+    @test release_zones[1] isa ATP45.ReleaseZone
 end

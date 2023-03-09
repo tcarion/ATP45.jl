@@ -152,7 +152,29 @@ GI.getfeature(::FeatureCollectionTrait, result::AbstractAtp45Result, i::Integer)
 """
     Atp45Result
 Collection of zones representing the result of an ATP-45 procedure result. Also contains relevant information about the input conditions.
-It implements the `GeoInterface.FeatureCollection` trait.
+It implements the `GeoInterface.FeatureCollection` trait. The properties can be accessed with [`ATP45.properties`](@ref).
+
+# Examples
+This is the output type of [`run_atp`](@ref):
+```jldoctest atp45result
+result = run_atp("chem", "simplified", WindAzimuth(2., 90.), ReleaseLocations([4., 50.]))
+
+# output
+Atp45Result with 2 zones and properties:
+Dict{Symbol, Any} with 3 entries:
+  :locations  => ReleaseLocations{1, Float64}(((4.0, 50.0),))
+  :categories => (ChemicalWeapon(), Simplified())
+  :weather    => (WindAzimuth(2.0, 90.0),)
+```
+
+Specific zones can be access with the [`get_zones`](@ref) function:
+```jldoctest atp45result
+get_zones(result, "release")
+
+# output
+1-element Vector{ATP45.AbstractZoneFeature}:
+ ReleaseZone{100, Float64}(ATP45.CircleLikeZone{100, Float64}(ReleaseLocations{1, Float64}(((4.0, 50.0),)), 2000.0))
+```
 """
 struct Atp45Result <: AbstractAtp45Result
     zones::Vector{AbstractZoneFeature}
@@ -162,6 +184,23 @@ zonecollection(result::Atp45Result) = result.zones
 properties(result::Atp45Result) = result.properties
 
 Base.getindex(result::Atp45Result, name::Symbol) = getindex(properties(result), name)
+
+"""
+    get_zones(result::Atp45Result, type::String)
+Get the zones in the ATP45Result `result` from reading the type propertie of the zones.
+See [`ATP45.Atp45Result`]
+"""
+function get_zones(result::Atp45Result, type::String)
+    zones = result.zones
+    fzones = AbstractZoneFeature[]
+
+    for zone in zones
+        if properties(zone)[:type] == type
+            push!(fzones, zone)
+        end
+    end
+    return fzones
+end
 
 function Base.show(io::IO, mime::MIME"text/plain", result::Atp45Result)
     println(io, "Atp45Result with $(length(zonecollection(result))) zones and properties:")

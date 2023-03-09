@@ -80,6 +80,7 @@ export Simplified, Detailed, run_atp
 export ChemicalWeapon, BiologicalWeapon, RadiologicalWeapon, NuclearWeapon
 export ReleaseTypeA, ReleaseTypeB, ReleaseTypeC
 export decision_tree
+export get_zones
 
 
 end
