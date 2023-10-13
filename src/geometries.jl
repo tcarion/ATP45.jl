@@ -15,6 +15,7 @@ GI.isgeometry(geom::AbstractReleaseLocations)::Bool = true
 GI.geomtrait(::AbstractReleaseLocations) = MultiPointTrait()
 GI.ngeom(::MultiPointTrait, ::AbstractReleaseLocations{N, T}) where {N, T} = N
 GI.getgeom(::MultiPointTrait, geom::AbstractReleaseLocations, i) = coords(geom)[i]
+GI.ncoord(::MultiPointTrait, geom::AbstractReleaseLocations) = 2
 
 ParamType(::Type{<:AbstractReleaseLocations}) = Location()
 
@@ -62,6 +63,7 @@ GI.geomtrait(::ZoneBoundary) = LinearRingTrait()
 # We add the first point add the end to make it a closed shape.
 GI.ngeom(::LinearRingTrait, geom::ZoneBoundary{N, T}) where {N, T} = N + 1
 GI.getgeom(::LinearRingTrait, geom::ZoneBoundary{N, T}, i) where {N, T} = coords(geom)[(i-1)%N + 1]
+GI.ncoord(::LinearRingTrait, geom::ZoneBoundary) = 2
 
 
 abstract type AbstractZone{N, T} end
@@ -72,6 +74,7 @@ GI.isgeometry(geom::AbstractZone)::Bool = true
 GI.geomtrait(::AbstractZone) = PolygonTrait()
 GI.ngeom(::PolygonTrait, ::AbstractZone) = 1
 GI.getgeom(::PolygonTrait, zone::AbstractZone, i) = boundaries(zone)
+GI.ncoord(::PolygonTrait, geom::AbstractZone) = 2
 
 _tolibgeos(geom) = LG.readgeom(convert(String, getwkt(geom)))
 function convexhull(zone1::AbstractZone, zone2::AbstractZone)
