@@ -4,7 +4,7 @@ CurrentModule = ATP45
 
 # ATP45
 
-[ATP45](https://github.com/tcarion/ATP45.jl) implements the NATO ATP-45 impact assessment model for CBRN-type incidents.
+[ATP45](https://github.com/PaulPerezRMA/ATP45.jl) implements the NATO ATP-45 impact assessment model for CBRN-type incidents.
 
 # Getting started
 
