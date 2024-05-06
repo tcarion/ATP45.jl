@@ -25,7 +25,7 @@ function tree_to_dict(node)
     OrderedDict(collect(pairs(val))..., :children => [tree_to_dict(c) for c in children(node)])
 end
 
-build_verbose_tree() = build_verbose_tree(ATP45_TREE)
+build_verbose_tree(wind::AbstractWind) = build_verbose_tree(ATP45_TREE(wind))
 
 """
     properties(iid::String)
@@ -36,8 +36,8 @@ Give the properties defined on the ATP45 object, given the object itsels `obj` o
 ```julia-repl
 julia> ATP45.properties(ChemicalWeapon())
 4-element Vector{Pair{Symbol, String}}:
-           :id => "chem"
-     :longname => "Chemical"
+           :id => "chem_weapon"
+     :longname => "Chemical Weapon"
     :paramtype => "category"
  :internalname => "ChemicalWeapon"
 ```
