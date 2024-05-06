@@ -166,7 +166,7 @@ result = run_atp("chem", "simplified", WindAzimuth(2., 90.), ReleaseLocations([4
 Atp45Result with 2 zones and properties:
 Dict{Symbol, Any} with 3 entries:
   :locations  => ReleaseLocations{1, Float64}(((4.0, 50.0),))
-  :categories => (ChemicalWeapon(), Simplified())
+  :categories => (ChemicalAgent(), ChemicalWeapon(), Simplified())
   :weather    => (WindAzimuth(2.0, 90.0),)
 ```
 
