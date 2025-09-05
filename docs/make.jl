@@ -14,7 +14,7 @@ DocMeta.setdocmeta!(ATP45, :DocTestSetup, :(using ATP45); recursive=true)
 makedocs(;
     modules=[ATP45],
     authors="tcarion <tristancarion@gmail.com> and contributors",
-    repo="https://github.com/PaulPerezRMA/ATP45.jl/blob/{commit}{path}#{line}",
+    repo="https://github.com/tcarion/ATP45.jl/blob/{commit}{path}#{line}",
     sitename="ATP45.jl",
     format=Documenter.HTML(;
         prettyurls=get(ENV, "CI", "false") == "true",
@@ -29,6 +29,6 @@ makedocs(;
 )
 
 deploydocs(;
-    repo="github.com/PaulPerezRMA/ATP45.jl",
+    repo="github.com/tcarion/ATP45.jl",
     devbranch="main",
 )

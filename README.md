@@ -12,7 +12,7 @@ The results of the model implement the [GeoInterface.jl](https://github.com/Juli
 ## Installation:
 The package is not registered, so you need to install it with:
 ```julia
-using Pkg; Pkg.add(url="https://github.com/PaulPerezRMA/ATP45.jl")
+using Pkg; Pkg.add(url="https://github.com/tcarion/ATP45.jl")
 ```
 ## Example:
 The following snippet runs the detailed version of ATP-45 for a chemical incident with a persistent agent contained in a spray tank, with a wind of 2m/s:
