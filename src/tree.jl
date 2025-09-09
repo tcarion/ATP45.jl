@@ -245,16 +245,16 @@ Browse the tree starting at `node`, choosing the path following what is specifie
 # Examples
 ```julia-repl
 julia> ex = Simplified => [
-               ChemicalWeapon => [
+               ChemicalAgent => [
                    LowerThan10 => (:_circle_circle, 2_000, 10_000),
                    HigherThan10 => (:_circle_triangle, 2_000, 10_000),
                ],
-               BiologicalWeapon => [
+               BiologicalAgent => [
                    LowerThan10 => (:_circle_circle, 1_000, 10_000),
                    HigherThan10 => (:_circle_triangle, 1_000, 10_000),
                ],
            ]
-julia> model_params = (BiologicalWeapon(), WindAzimuth(45, 2))
+julia> model_params = (BiologicalAgent(), WindAzimuth(45, 2))
 julia> descendall(TreeNode(ex), model_params)
 (:_circle_triangle, 1000, 10000)
 ```
@@ -275,18 +275,18 @@ Discriminate between the children of `node` according to the parameters in `mode
 # Examples
 ```julia-repl
 julia> ex = Simplified => [
-               ChemicalWeapon => [
+               ChemicalAgent => [
                    LowerThan10 => (:_circle_circle, 2_000, 10_000),
                    HigherThan10 => (:_circle_triangle, 2_000, 10_000),
                ],
-               BiologicalWeapon => [
+               BiologicalAgent => [
                    LowerThan10 => (:_circle_circle, 1_000, 10_000),
                    HigherThan10 => (:_circle_triangle, 1_000, 10_000),
                ],
            ]
-julia> model_params = (BiologicalWeapon(),)
+julia> model_params = (BiologicalAgent(),)
 julia> descend(TreeNode(ex), model_params)
-BiologicalWeapon()
+BiologicalAgent()
 ├─ LowerThan10()
 │  └─ (:_circle_circle, 1000, 10000)
 └─ HigherThan10()

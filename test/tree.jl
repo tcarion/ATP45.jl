@@ -3,7 +3,7 @@ using ATP45
 using ATP45: TreeNode, Leaf
 import ATP45: children, parent, nodevalue
 import ATP45: build_tree, allparents, children_value_type, descend, descendall, _find_node
-import ATP45: Simplified, Detailed, ChemicalWeapon, BiologicalWeapon, Shell, Bomb, ReleaseTypeA, WindAzimuth, ReleaseLocations, LowerThan10, HigherThan10
+import ATP45: Simplified, Detailed, ChemicalWeapon, BiologicalAgent, Shell, Bomb, ReleaseTypeA, WindAzimuth, ReleaseLocations, LowerThan10, HigherThan10
 import ATP45: Stable, Unstable, Neutral
 import ATP45: ContainerGroupE, ContainerGroupF, ContainerGroupB, ContainerGroupC
 import ATP45.AbstractTrees: Leaves, getroot
@@ -15,7 +15,7 @@ example_tree = [
             LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 2_000, 10_000),
             HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 2_000, 10_000),
         ],
-        BiologicalWeapon => [
+        BiologicalAgent => [
             LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 2_000, 10_000),
             HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 2_000, 10_000),
         ],
@@ -49,7 +49,7 @@ example_tree = [
             ],
             ReleaseTypeC => Leaf(ReleaseLocations{2}, :_circle, 10_000),
         ],
-        BiologicalWeapon => (nothing,),
+        BiologicalAgent => (nothing,),
     ],
 ]
 
@@ -75,18 +75,18 @@ end
         inputs_stab = (inputs..., Stable())
 
         @testset "Not implemented" begin
-            categories = (BiologicalWeapon(), Detailed())
+            categories = (BiologicalAgent(), Detailed())
             @test_throws ErrorException descendall(tree, (categories..., inputs...))
         end
 
         @testset "Simplified" begin
-            model = (BiologicalWeapon(), Simplified())
+            model = (BiologicalAgent(), Simplified())
             model_params = (model..., inputs...)
             next = descend(tree, model_params)
             @test next isa TreeNode{<:Simplified}
             node = next
             next = descend(node, model_params)
-            @test next isa TreeNode{<:BiologicalWeapon}
+            @test next isa TreeNode{<:BiologicalAgent}
             node = next
             next = descend(node, model_params)
             @test next isa TreeNode{<:HigherThan10}

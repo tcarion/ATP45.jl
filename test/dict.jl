@@ -14,7 +14,7 @@ example_tree = [
             LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 2_000, 10_000),
             HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 2_000, 10_000),
         ],
-        BiologicalWeapon => [
+        BiologicalAgent => [
             LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 2_000, 10_000),
             HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 2_000, 10_000),
         ],
@@ -48,7 +48,7 @@ example_tree = [
             ],
             ReleaseTypeC => Leaf(ReleaseLocations{2}, :_circle, 10_000),
         ],
-        BiologicalWeapon => (nothing,),
+        BiologicalAgent => (nothing,),
     ],
 ]
 
@@ -58,8 +58,8 @@ tree = TreeNode(example_tree)
     newtree = build_verbose_tree(tree)
 
     props = properties(ChemicalWeapon())
-    @test props.id == "chem"
-    @test props == properties("chem")
+    @test props.id == "chem_weapon"
+    @test props == properties("chem_weapon")
     container = properties(ContainerGroupE())
     @test container.content == ["SHL", "BML", "MNE"]
     dict = tree_to_dict(newtree)
