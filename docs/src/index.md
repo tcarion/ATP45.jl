@@ -86,7 +86,7 @@ GeoJSON.write(result)
 ```
 
 # Documentation
-```@docs
+```@docs; canonical=false
 run_atp
 ReleaseLocations
 WindAzimuth
