@@ -15,8 +15,8 @@ WellKnownGeometry = "0f680547-7be7-4555-8820-bb198eeb646b"
 
 [compat]
 AbstractTrees = "0.4"
-GeoInterface = "1.0"
-LibGEOS = "0.7"
+GeoInterface = "1.5"
+LibGEOS = "0.9"
 OrderedCollections = "0, 1"
 Proj = "1"
 RecipesBase = "1.2"

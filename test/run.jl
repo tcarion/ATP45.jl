@@ -4,7 +4,7 @@ import ATP45: ATP45_TREE
 import ATP45: cast_id
 import ATP45: Simplified, Detailed
 import ATP45: _circle, _circle_circle, _circle_triangle, _two_circles, _two_circle_triangle
-import ATP45: ChemicalWeapon, BiologicalWeapon, RadiologicalWeapon, NuclearWeapon
+import ATP45: ChemicalAgent, ChemicalWeapon, BiologicalAgent, RadiologicalAgent, NuclearAgent
 import ATP45: ReleaseTypeA, ReleaseTypeB, ReleaseTypeC
 import ATP45: Shell
 import ATP45: WindAzimuth, ReleaseLocations
@@ -38,14 +38,14 @@ import ATP45: MissingInputsException
 end
 
 @testset "Run" begin
-    model_parameters = (Simplified(), BiologicalWeapon(), WindAzimuth(45, 4), ReleaseLocations([4., 50.]))
+    model_parameters = (Simplified(), BiologicalAgent(), WindAzimuth(45, 4), ReleaseLocations([4., 50.]))
     result = run_atp(model_parameters)
     @test result isa Atp45Result
     model_parameters_str = ("simplified", "bio", WindAzimuth(45, 4), ReleaseLocations([4., 50.]))
     @test cast_id.(model_parameters_str) == model_parameters
     res2 = run_atp(model_parameters_str)
     @test res2 isa Atp45Result
-    res3 = run_atp("simplified", "chem", WindAzimuth(2, 5), ReleaseLocations([4, 50]))
+    res3 = run_atp("simplified", "chem", "chem_weapon",WindAzimuth(2, 5), ReleaseLocations([4, 50]))
     @test res3 isa Atp45Result
 end
 
@@ -58,10 +58,11 @@ end
     two_releases = ReleaseLocations([4., 50.], [4.15, 50.03])
 
     @testset "Chemical" begin
-        chemical = ChemicalWeapon()
+        chemical_ag = ChemicalAgent()
+        chemical_weap = ChemicalWeapon()
 
         @testset "Simplified" begin
-            simple_params = (Simplified(), chemical) 
+            simple_params = (Simplified(), chemical_ag, chemical_weap) 
             @test_throws MissingInputsException run_atp(simple_params)
             result = run_atp(simple_params..., windhigher, release)
             @test result isa Atp45Result
@@ -69,9 +70,9 @@ end
 
         @testset "Detailed" begin 
             @testset "Release A" begin
-                typeAwrong = (chemical, Detailed(), ReleaseTypeA())
+                typeAwrong = (chemical_weap, Detailed(), ReleaseTypeA())
                 @test_throws MissingInputsException run_atp(typeAwrong...,windhigher, release)
-                typeA = (chemical, Detailed(), ReleaseTypeA(), Shell())
+                typeA = (chemical_ag, chemical_weap, Detailed(), ReleaseTypeA(), Shell())
                 @test_throws MissingInputsException run_atp(typeA..., windhigher, release)
                 inputs = (windhigher, release, unstable)
                 r = run_atp(typeA..., inputs...)
@@ -82,24 +83,24 @@ end
             end
     
             @testset "Release B" begin
-                @test_throws MissingInputsException run_atp(chemical, Detailed(), ReleaseTypeB(), windlower, release)
-                typeBcontB = (chemical, Detailed(), ReleaseTypeB(), Shell())
+                @test_throws MissingInputsException run_atp(chemical_weap, Detailed(), ReleaseTypeB(), windlower, release)
+                typeBcontB = (chemical_ag, chemical_weap, Detailed(), ReleaseTypeB(), Shell())
                 @test run_atp(typeBcontB..., windhigher, release).zones[2] isa HazardZone
     
                 @testset "with ContainerGroup" begin
-                    withgroup = ("chem", "detailed", "typeB", "containergroupb")
+                    withgroup = ("chem", "chem_weapon","detailed", "typeB", "containergroupb")
                     @test run_atp(withgroup..., windhigher, release).zones[2] isa HazardZone
                 end
     
                 @testset "two releases case" begin
-                    tworel_res = run_atp("detailed", "chem", "typeB", "SPR", windlower, two_releases)
+                    tworel_res = run_atp("detailed", "chem", "chem_weapon","typeB", "SPR", windlower, two_releases)
                     @test tworel_res.zones[2] isa HazardZone 
-                    @test_throws ErrorException run_atp("detailed", "chem", "typeB", "SPR", windlower, release)
+                    @test_throws ErrorException run_atp("detailed", "chem", "chem_weapon","typeB", "SPR", windlower, release)
                 end
             end
     
             @testset "Release C" begin
-                typeC = (chemical, Detailed(), ReleaseTypeC())
+                typeC = (chemical_ag, chemical_weap, Detailed(), ReleaseTypeC())
                 @test run_atp(typeC..., windlower, release).zones[1] isa ReleaseZone
             end
         end
@@ -107,7 +108,7 @@ end
     end
 
     @testset "Biological" begin
-        biological = BiologicalWeapon()
+        biological = BiologicalAgent()
         @testset "Simplified" begin
             biosimple = (Simplified(), biological)
             bioresult = run_atp(biosimple..., windhigher, release)
@@ -120,10 +121,10 @@ end
     release = ReleaseLocations([4., 50.])
     wind = WindAzimuth(5., 45)
 
-    categories = ("detailed", "chem", "typeA", Shell())
+    categories = ("detailed", "chem", "chem_weapon", "typeA", Shell())
     result = run_atp(categories..., release, wind, Stable())
     @test result[:locations] == release
-    @test result[:categories] == (ChemicalWeapon(), ReleaseTypeA(), Shell(), Detailed())
+    @test result[:categories] == (ChemicalAgent(), ChemicalWeapon(), ReleaseTypeA(), Shell(), Detailed())
     @test result[:weather] == (wind, Stable())
 
     release_zones = get_zones(result, "release")

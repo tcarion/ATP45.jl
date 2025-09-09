@@ -12,6 +12,7 @@ coords(ps::PointsSeries) = ps.coords
 
 abstract type AbstractReleaseLocations{N, T} <: PointsSeries{N, T} end
 GI.isgeometry(geom::AbstractReleaseLocations)::Bool = true
+GI.isgeometry(geom::Type{<:AbstractReleaseLocations})::Bool = true
 GI.geomtrait(::AbstractReleaseLocations) = MultiPointTrait()
 GI.ngeom(::MultiPointTrait, ::AbstractReleaseLocations{N, T}) where {N, T} = N
 GI.getgeom(::MultiPointTrait, geom::AbstractReleaseLocations, i) = coords(geom)[i]
@@ -58,6 +59,7 @@ struct ZoneBoundary{N, T} <: PointsSeries{N, T}
     coords::NTuple{N, NTuple{2, T}}
 end
 GI.isgeometry(::ZoneBoundary)::Bool = true
+GI.isgeometry(::Type{<:ZoneBoundary})::Bool = true
 GI.geomtrait(::ZoneBoundary) = LinearRingTrait()
 
 # We add the first point add the end to make it a closed shape.
@@ -71,6 +73,7 @@ coords(zone::AbstractZone) = coords(boundaries(zone))
 boundaries(zone::AbstractZone) = zone.boundaries
 
 GI.isgeometry(geom::AbstractZone)::Bool = true
+GI.isgeometry(::Type{<:AbstractZone})::Bool = true
 GI.geomtrait(::AbstractZone) = PolygonTrait()
 GI.ngeom(::PolygonTrait, ::AbstractZone) = 1
 GI.getgeom(::PolygonTrait, zone::AbstractZone, i) = boundaries(zone)
@@ -160,7 +163,7 @@ It implements the `GeoInterface.FeatureCollection` trait. The properties can be 
 # Examples
 This is the output type of [`run_atp`](@ref):
 ```jldoctest atp45result
-result = run_atp("chem", "simplified", WindAzimuth(2., 90.), ReleaseLocations([4., 50.]))
+result = run_atp("chem", "chem_weapon","simplified", WindAzimuth(2., 90.), ReleaseLocations([4., 50.]))
 
 # output
 Atp45Result with 2 zones and properties:

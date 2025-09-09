@@ -1,11 +1,11 @@
 module ATP45
 
 import Base.==
+using RecipesBase
 using GeoInterface
 using LibGEOS
 using WellKnownGeometry: getwkt
 using Proj
-using RecipesBase
 using InteractiveUtils
 using AbstractTrees
 import AbstractTrees: children, parent, nodevalue

@@ -11,7 +11,7 @@ CurrentModule = ATP45
 ```@setup generate_readme
 using ATP45
 using Plots
-detailed_chem = (ChemicalWeapon(), Detailed(), ReleaseTypeB(), "SPR")
+detailed_chem = (ChemicalAgent(), ChemicalWeapon(), Detailed(), ReleaseTypeB(), "SPR")
 releases = ReleaseLocations([4., 50.], [4.15, 50.03])
 wind = WindAzimuth(2., 45.)
 result = run_atp(detailed_chem..., releases, wind)
@@ -20,10 +20,10 @@ savefig("example.png")
 ```
 ### Run ATP-45:
 The package provides a simple and flexible API to run the proper ATP-45 case, according to the parameters and inputs provided by the user.
-Setting up the simplified ATP-45 model in case of chemical weapons goes like this:
+Setting up the simplified ATP-45 model in case of chemical agents goes like this:
 ```@example getstarted
 using ATP45
-simple_chem = (ChemicalWeapon(), Simplified()) 
+simple_chem = (ChemicalAgent(), ChemicalWeapon(), Simplified()) 
 ```
 
 After defining the desired categories of ATP-45, we define the location of the release at longitude 4.0 and latitude 50.0, as well as a wind of speed 5.0 m/s and pointing 45° from North:
