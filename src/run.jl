@@ -7,7 +7,7 @@ High level function to run the ATP-45 procedure. The arguments `args` can be pre
 ```julia
 locations = ReleaseLocationss([4., 50.])
 wind = WindAzimuth(2.5, 45.)
-run_atp(Simplified(), ChemicalWeapon(), locations, wind)
+run_atp(Simplified(), ChemicalAgent(), ChemicalWeapon(), locations, wind)
 ```
 
 - string corresponding to the categories' id's. See [`map_ids`](@ref ATP45.map_ids) to know the id's of the existing categories:
@@ -22,7 +22,7 @@ run_atp(Simplified(), "chem", locations, wind)
 """
 function run_atp(model_parameters::Tuple)
     model_parameters = cast_id.(model_parameters)
-    leave = descendall(ATP45_TREE, model_parameters)
+    leave = descendall(ATP45_TREE([x for x in model_parameters if typeof(x) <: ATP45.AbstractWind][1]), model_parameters)
     nodeval = nodevalue(leave)
     method, args = nodeval.fname, nodeval.args
     geometry = eval(method)(model_parameters, args...)

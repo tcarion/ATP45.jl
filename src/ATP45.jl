@@ -30,8 +30,11 @@ function __init__()
 
     add_ids_to_map!(AbstractModel)
     add_ids_to_map!(AbstractStability)
-    add_ids_to_map!(AbstractWeapon)
+    add_ids_to_map!(AbstractAgent)
+    add_ids_to_map!(AbstractChemAgent)
     add_ids_to_map!(AbstractReleaseType)
+    add_ids_to_map!(AbstractReleaseSize)
+    add_ids_to_map!(AbstractAgentName)
     add_ids_to_map!(AbstractContainerType)
     # add_ids_to_map!(AbstractContainerGroup)
 end
@@ -45,17 +48,17 @@ include("inputs.jl")
 include("models.jl")
 include("tree.jl")
 
-const ATP45_TREE = build_tree()
+ATP45_TREE(wind::AbstractWind) = build_tree(wind)
 
 include("dict.jl")
 
-const ATP45_VERBOSE_TREE = build_verbose_tree()
-const ATP45_DICT_TREE = tree_to_dict(ATP45_VERBOSE_TREE)
+ATP45_VERBOSE_TREE(wind::AbstractWind) = build_verbose_tree(wind)
+ATP45_DICT_TREE(wind::AbstractWind) = tree_to_dict(ATP45_VERBOSE_TREE(wind))
 
 include("run.jl")
 include("recipes.jl")
 
-decision_tree(; typedict = false) = typedict ? ATP45_DICT_TREE : ATP45_VERBOSE_TREE
+decision_tree(wind::AbstractWind; typedict = false) = typedict ? ATP45_DICT_TREE(wind) : ATP45_VERBOSE_TREE(wind)
 
 """
     map_ids()
@@ -67,7 +70,7 @@ julia> ATP45.map_ids()
 Dict{String, Any} with 29 entries:
   "MPL"             => MissilesPayload()
   "MSL"             => Missile()
-  "chem"            => ChemicalWeapon()
+  "chem"            => Chemical()
   "typeC"           => ReleaseTypeC()
   "MNE"             => Mine()
   ⋮                 => ⋮
@@ -77,8 +80,10 @@ map_ids() = MAP_IDS
 
 export WindVector, WindAzimuth, Stable, Unstable, Neutral, ReleaseLocations
 export Simplified, Detailed, run_atp
-export ChemicalWeapon, BiologicalWeapon, RadiologicalWeapon, NuclearWeapon
-export ReleaseTypeA, ReleaseTypeB, ReleaseTypeC
+export ChemicalAgent, ChemicalWeapon, ChemicalSubstance, BiologicalAgent, RadiologicalAgent, NuclearAgent
+export ReleaseTypeA, ReleaseTypeB, ReleaseTypeC, ReleaseBloodAgent, ReleaseTypeD, SubType1, SubType2, SubType3, ReleaseTypeP, ReleaseTypeQ, ReleaseTypeR, ReleaseTypeS
+export ReleaseSmall, ReleaseMedium, ReleaseLarge, ReleaseExtraLarge
+export Sarin
 export decision_tree
 export get_zones
 

@@ -5,55 +5,185 @@ struct Leaf{N}
 end
 Leaf(d, fname::Symbol, args::Vararg{Any}) = Leaf(d, fname, Tuple(args))
 
-const DECISION_TREE = [
-    ChemicalWeapon => [
-        Simplified => [
-            LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 2_000, 10_000),
-            HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 2_000, 10_000),
-        ],
-        Detailed => [
-            ReleaseTypeA => [
-                LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 1_000, 10_000),
-                HigherThan10 => [
-                    ContainerGroupE => [
-                        Unstable => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 10_000),
-                        Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 30_000),
-                        Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 50_000),
-                    ],
-                    ContainerGroupF => [
-                        Unstable => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 15_000),
-                        Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 30_000),
-                        Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 50_000),
-                    ],
-                ],
-            ],
-            ReleaseTypeB => [
-                ContainerGroupB => [
-                    LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 1_000, 10_000),
-                    HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 10_000),
-                ],
-                ContainerGroupC => [
+function decision_tree_full(wind::AbstractWind)
+    DECISION_TREE = [
+        ChemicalAgent => [
+            ChemicalWeapon => [
+                Simplified => [
                     LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 2_000, 10_000),
-                    HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 2_000, 10_000),
+                    HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 2_000, 10_000)
                 ],
-                ContainerGroupD => [
-                    LowerThan10 => Leaf(ReleaseLocations{2}, :_two_circles, 1_000, 10_000),
-                    HigherThan10 => Leaf(ReleaseLocations{2}, :_two_circle_triangle, 1_000, 10_000),
+                Detailed => [
+                    ReleaseTypeA => [
+                        LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 1_000, 10_000),
+                        HigherThan10 => [
+                            ContainerGroupE => [
+                                Unstable => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 10_000),
+                                Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 30_000),
+                                Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 50_000)
+                            ],
+                            ContainerGroupF => [
+                                Unstable => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 15_000),
+                                Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 30_000),
+                                Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 50_000)
+                            ]
+                        ]
+                    ],
+                    ReleaseTypeB => [
+                        ContainerGroupB => [
+                            LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 1_000, 10_000),
+                            HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 10_000)
+                        ],
+                        ContainerGroupC => [
+                            LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 2_000, 10_000),
+                            HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 2_000, 10_000)
+                        ],
+                        ContainerGroupD => [
+                            LowerThan10 => Leaf(ReleaseLocations{2}, :_two_circles, 1_000, 10_000),
+                            HigherThan10 => Leaf(ReleaseLocations{2}, :_two_circle_triangle, 1_000, 10_000)
+                        ]
+                    ],
+                    ReleaseTypeC => Leaf(ReleaseLocations{1}, :_circle, 10_000),
+                    ReleaseBloodAgent => Leaf(ReleaseLocations{1}, :_circle, 1_000)
                 ]
             ],
-            ReleaseTypeC => Leaf(ReleaseLocations{1}, :_circle, 10_000),
+            ChemicalSubstance => [
+                Simplified => [
+                    LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 1_000, 3_000),
+                    HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 1_000, 3_000)
+                ],
+                Detailed => [
+                    ReleaseTypeD => [
+                        SubType1 => [
+                            ReleaseSmall => [
+                                Sarin => [
+                                    LowerThan10 => [
+                                        Unstable => Leaf(ReleaseLocations{1}, :_circle_circle, 60, 400),
+                                        Neutral => Leaf(ReleaseLocations{1}, :_circle_circle, 60, 1_100),
+                                        Stable => Leaf(ReleaseLocations{1}, :_circle_circle, 60, 1_100)
+                                    ],
+                                    HigherThan10 => [
+                                        Unstable => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 400),
+                                        Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100),
+                                        Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100)
+                                    ]
+                                ]
+                            ],
+                            ReleaseMedium => [
+                                LowerThan10 => [
+                                    Unstable => Leaf(ReleaseLocations{1}, :_circle_circle, 60, 400),
+                                    Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100),
+                                    Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100)
+                                ],
+                                HigherThan10 => [
+                                    Unstable => Leaf(ReleaseLocations{1}, :_circle_circle, 60, 400),
+                                    Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100),
+                                    Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100)
+                                ]
+                            ],
+                            ReleaseLarge => [
+                                LowerThan10 => [
+                                    Unstable => Leaf(ReleaseLocations{1}, :_circle_circle, 60, 400),
+                                    Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100),
+                                    Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100)
+                                ],
+                                HigherThan10 => [
+                                    Unstable => Leaf(ReleaseLocations{1}, :_circle_circle, 60, 400),
+                                    Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100),
+                                    Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100)
+                                ]
+                            ],
+                            ReleaseExtraLarge => [
+                                LowerThan10 => [
+                                    Unstable => Leaf(ReleaseLocations{1}, :_circle_circle, 60, 400),
+                                    Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100),
+                                    Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100)
+                                ],
+                                HigherThan10 => [
+                                    Unstable => Leaf(ReleaseLocations{1}, :_circle_circle, 60, 400),
+                                    Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100),
+                                    Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100)
+                                ]
+                            ]
+                        ],
+                        SubType2 => [
+                            ReleaseSmall => [
+                                LowerThan10 => [
+                                    Unstable => Leaf(ReleaseLocations{1}, :_circle_circle, 60, 400),
+                                    Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100),
+                                    Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100)
+                                ],
+                                HigherThan10 => [
+                                    Unstable => Leaf(ReleaseLocations{1}, :_circle_circle, 60, 400),
+                                    Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100),
+                                    Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100)
+                                ]
+                            ],
+                            ReleaseMedium => [
+                                LowerThan10 => [
+                                    Unstable => Leaf(ReleaseLocations{1}, :_circle_circle, 60, 400),
+                                    Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100),
+                                    Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100)
+                                ],
+                                HigherThan10 => [
+                                    Unstable => Leaf(ReleaseLocations{1}, :_circle_circle, 60, 400),
+                                    Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100),
+                                    Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100)
+                                ]
+                            ],
+                            ReleaseLarge => [
+                                LowerThan10 => [
+                                    Unstable => Leaf(ReleaseLocations{1}, :_circle_circle, 60, 400),
+                                    Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100),
+                                    Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100)
+                                ],
+                                HigherThan10 => [
+                                    Unstable => Leaf(ReleaseLocations{1}, :_circle_circle, 60, 400),
+                                    Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100),
+                                    Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100)
+                                ]
+                            ],
+                            ReleaseExtraLarge => [
+                                LowerThan10 => [
+                                    Unstable => Leaf(ReleaseLocations{1}, :_circle_circle, 60, 400),
+                                    Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100),
+                                    Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100)
+                                ],
+                                HigherThan10 => [
+                                    Unstable => Leaf(ReleaseLocations{1}, :_circle_circle, 60, 400),
+                                    Neutral => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100),
+                                    Stable => Leaf(ReleaseLocations{1}, :_circle_triangle, 60, 1_100)
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
         ],
-    ],
-    BiologicalWeapon => [
-        Simplified => [
-            LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 2_000, 10_000),
-            HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 2_000, 10_000),
+        BiologicalAgent => [
+            Simplified => [
+                LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 2_000, 10_000),
+                HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 2_000, 10_000)
+            ],
+            Detailed => [
+                ReleaseTypeP => [
+                    LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 2_000, 20_000),
+                    HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 2_000, 2*wind_speed(wind)*3.6*1000)
+                ],
+                ReleaseTypeQ => [
+                    LowerThan10 => Leaf(ReleaseLocations{1}, :_circle_circle, 10_000, 20_000),
+                    HigherThan10 => Leaf(ReleaseLocations{1}, :_circle_triangle, 10_000, 2*wind_speed(wind)*3.6*1000)
+                ],
+                ReleaseTypeR => [
+                    LowerThan10 => Leaf(ReleaseLocations{2}, :_two_circles, 2_000, 20_000),
+                    HigherThan10 => Leaf(ReleaseLocations{2}, :_two_circle_triangle, 2_000, 2*wind_speed(wind)*3.6*1000)
+                ],
+                ReleaseTypeS => Leaf(ReleaseLocations{1}, :_circle, 10_000)
+            ]
         ],
-        Detailed => [
-            BiologicalWeapon => (nothing,),
-        ]
-    ],
-]
+    ]
+    return DECISION_TREE
+end
 
 mutable struct TreeNode{T} <: AT.AbstractNode{T}
     value::T
@@ -90,7 +220,7 @@ children(node::TreeNode) = node.children
 parent(node::TreeNode) = node.parent
 nodevalue(node::TreeNode) = node.value
 
-build_tree() = TreeNode(DECISION_TREE)
+build_tree(wind::AbstractWind) = TreeNode(decision_tree_full(wind))
 
 function allparents(node::TreeNode)
     parents = TreeNode[]
