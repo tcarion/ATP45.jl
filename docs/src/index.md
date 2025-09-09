@@ -50,7 +50,7 @@ savefig("simplified_example.png"); nothing # hide
 We can also use the string id's corresponding to the categories instead of the Julia objects:
 ```@example getstarted
 using ATP45
-run_atp("detailed", "chem", "typeA", ATP45.Shell(), "stable", wind, release)
+run_atp("detailed", "chem", "chem_weapon", "typeA", ATP45.Shell(), "stable", wind, release)
 ```
 
 The id's and their corresponding objects can be seen with [`ATP45.map_ids`](@ref ATP45.map_ids):
@@ -65,7 +65,7 @@ ATP45.properties("typeA")
 
 If some categories or some inputs are missing, you should get an explanatory error about what's missing:
 ```@repl getstarted
-run_atp("detailed", "chem", "typeA", ATP45.Shell(), wind, release)
+run_atp("detailed", "chem", "chem_weapon", "typeA", ATP45.Shell(), wind, release)
 ```
 
 ```
@@ -75,7 +75,7 @@ run_atp("detailed", "chem", "typeA", ATP45.Shell(), wind, release)
 The `Atp45Result` type implements the [GeoInterface.jl](https://github.com/JuliaGeo/GeoInterface.jl) interface, which means that the coordinates of the ATP-45 zones can be accessed with the `GeoInterface.jl` methods:
 ```@example getstarted
 using GeoInterface
-result = run_atp("chem", "simplified", wind, release)
+result = run_atp("chem", "chem_weapon", "simplified", wind, release)
 GeoInterface.coordinates(result)
 ```
 
