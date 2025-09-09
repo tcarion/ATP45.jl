@@ -179,7 +179,7 @@ get_zones(result, "release")
 
 # output
 1-element Vector{ATP45.AbstractZoneFeature}:
- ReleaseZone{100, Float64}(ATP45.CircleLikeZone{100, Float64}(ReleaseLocations{1, Float64}(((4.0, 50.0),)), 2000.0))
+ ATP45.ReleaseZone{100, Float64}(ATP45.CircleLikeZone{100, Float64}(ReleaseLocations{1, Float64}(((4.0, 50.0),)), 2000.0))
 ```
 """
 struct Atp45Result <: AbstractAtp45Result
