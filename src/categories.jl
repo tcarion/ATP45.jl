@@ -265,7 +265,7 @@ end
 # Create the ContainerGroups methods and add the categories to the MAP_IDS
 for (k, v) in pairs(container_groups)
     eval(containergroupmacro(k, v))
-    instantiated_group = eval(k)()
+    instantiated_group = invokelatest(eval(k))
     push!(MAP_IDS, id(instantiated_group) => instantiated_group)
 end
 
